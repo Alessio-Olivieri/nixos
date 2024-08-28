@@ -47,8 +47,8 @@
   services.xserver.enable = true;
 
   # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
+services.xserver.displayManager.lightdm.enable = true;
+services.desktopManager.plasma6.enable = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -109,6 +109,7 @@
   git
   python3
   poetry
+  vlc
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
