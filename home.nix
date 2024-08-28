@@ -139,15 +139,21 @@
       urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
       urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
     };
+  };
 
   programs.vscode = {
     enable = true;
     extensions = with pkgs.vscode-extensions; [
       ms-python.python
-      bbenoist.vscode-nix
+      ms-python.debugpy
+      mechatroner.rainbow-csv
+      oderwat.indent-rainbow
       ms-vscode.cpptools
+      bbenoist.Nix
+      ms-azuretools.vscode-docker
+      ms-vscode-remote.vscode-remote-extensionpack
+
     ];
-  };
   };
 
 
