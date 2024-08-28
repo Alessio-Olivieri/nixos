@@ -94,8 +94,9 @@
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # Install firefox.
+  # Install some programs.
   programs.firefox.enable = true;
+  programs.kdeconnect.enable = true; 
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;

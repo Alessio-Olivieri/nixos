@@ -146,13 +146,8 @@
     extensions = with pkgs.vscode-extensions; [
       ms-python.python
       ms-python.debugpy
-      mechatroner.rainbow-csv
-      oderwat.indent-rainbow
-      ms-vscode.cpptools
-      bbenoist.Nix
-      ms-azuretools.vscode-docker
-      ms-vscode-remote.vscode-remote-extensionpack
-
+      bbenoist.nix
+      ms-vscode-remote.remote-ssh
     ];
   };
 
