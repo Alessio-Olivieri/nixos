@@ -90,9 +90,6 @@
     ethtool
     pciutils # lspci
     usbutils # lsusb
-
-    # dev
-    vscode
   ];
 
   # basic configuration of git, please change to your own
@@ -142,6 +139,15 @@
       urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
       urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
     };
+
+  programs.vscode = {
+    enable = true;
+    extensions = with pkgs.vscode-extensions; [
+      ms-python.python
+      bbenoist.vscode-nix
+      ms-vscode.cpptools
+    ];
+  };
   };
 
 
