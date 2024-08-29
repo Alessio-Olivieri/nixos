@@ -4,9 +4,12 @@
   home.username = "lexyo";
   home.homeDirectory = "/home/lexyo";
 
-  imports = [./home/kde-manager.nix];
-  kde-manager.enable = true;
-  
+  imports = [
+    ./modules/kde-manager.nix
+    ./modules/hyprland.nix];
+  kde-manager.enable = false;
+  hyprland-manager = true
+
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
 

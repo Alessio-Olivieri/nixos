@@ -14,6 +14,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
+
+    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
   };
 
   outputs = { self, nixpkgs, home-manager, plasma-manager, ... }@inputs: {
@@ -26,7 +28,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.sharedModules = [plasma-manager.homeManagerModules.plasma-manager];
-          home-manager.users.lexyo = import ./home/home.nix;
+          home-manager.users.lexyo = import home/home.nix;
         }
       ];
     };

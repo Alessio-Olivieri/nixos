@@ -1,9 +1,9 @@
 { pkgs, lib, config, ... }:
 {
     options = {
-        kde-manager.enable = lib.mkEnableOption "Enables kde nix settings"
+        kde-manager.enable = lib.mkEnableOption "Enables kde nix settings";
     };
-    
+
     config = lib.mkIf config.kde-manager.enable {
         programs.plasma = {
             enable = true;
