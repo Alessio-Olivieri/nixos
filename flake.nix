@@ -26,7 +26,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.sharedModules = [plasma-manager.homeManagerModules.plasma-manager];
-          home-manager.users.lexyo = import ./home.nix;
+          home-manager.users.lexyo = import ./home/home.nix;
         }
       ];
     };
