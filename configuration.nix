@@ -23,14 +23,16 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+  # Ensure the service is started at boot
+  systemd.services.NetworkManager.wantedBy = [ "multi-user.target" ];
 
   # Set your time zone.
   time.timeZone = "Europe/Rome";
 
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
-
-  i18n.extraLocaleSettings = {
+  i18n = {
+    # Select internationalisation properties.
+    defaultLocale = "en_US.UTF-8";
+    extraLocaleSettings = {
     LC_ADDRESS = "it_IT.UTF-8";
     LC_IDENTIFICATION = "it_IT.UTF-8";
     LC_MEASUREMENT = "it_IT.UTF-8";
@@ -40,18 +42,29 @@
     LC_PAPER = "it_IT.UTF-8";
     LC_TELEPHONE = "it_IT.UTF-8";
     LC_TIME = "it_IT.UTF-8";
+    };
   };
 
   # Enable the X11 windowing system.
   # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
 
-  # Enable the KDE Plasma Desktop Environment.
-#services.xserver.displayManager.lightdm.enable = true;
-#services.desktopManager.plasma6.enable = true;
+  # Display manager
+  services.displayManager.sddm.enable = true; # Hyprland
+  #services.xserver.displayManager.lightdm.enable = true; # Kde
 
-# Enable for hyprland
-services.displayManager.sddm.enable = true;
+  #GUI
+  #services.desktopManager.plasma6.enable = true;
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+  };
+
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1"; # This variable fixes electron apps in Wayland
+    XKB_DEFAULT_LAYOUT = "it"; # Set the Wayland keyboard layout to Italian
+  };
+
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -60,7 +73,7 @@ services.displayManager.sddm.enable = true;
   };
 
   # Configure console keymap
-  console.keyMap = "it2";
+  console.keyMap = "it";
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -73,8 +86,9 @@ services.displayManager.sddm.enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    audio.enable = true;
     # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
+    jack.enable = true;
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
@@ -113,6 +127,9 @@ services.displayManager.sddm.enable = true;
   python3
   poetry
   vlc
+  dolphin
+  kcalc
+  spectacle
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

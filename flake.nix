@@ -14,9 +14,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
+
+    # Adding the anyrun flake
+    anyrun = {
+      url = "github:anyrun-org/anyrun";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, plasma-manager, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, plasma-manager, anyrun, ... }@inputs: {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
@@ -28,6 +34,8 @@
           home-manager.sharedModules = [plasma-manager.homeManagerModules.plasma-manager];
           home-manager.users.lexyo = import home/home.nix;
         }
+
+        inputs.anyrun.nixosModules
       ];
     };
   };

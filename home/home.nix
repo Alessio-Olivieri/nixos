@@ -10,7 +10,7 @@
     ./modules/vscode-module.nix
     ];
   kde-manager.enable = false;
-  hyprland-manager.enable = false;
+  hyprland-manager.enable = true;
   vscode-module.enable = true;
 
   # link the configuration file in current directory to the specified location in home directory

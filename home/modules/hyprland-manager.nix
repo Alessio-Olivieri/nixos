@@ -5,39 +5,47 @@
     };
 
     config = lib.mkIf config.hyprland-manager.enable {
-        wayland.windowManager.hyprland = {
-            enable = true;
-            xwayland.enable = true;
-            systemd.enable = true; # startup
-
-            settings = {
-                decoration = {
-                shadow_offset = "0 5";
-                "col.shadow" = "rgba(00000099)";
-                };
-
-                "$mod" = "SUPER";
-
-                bindm = [
-                # mouse movements
-                "$mod, mouse:272, movewindow"
-                "$mod, mouse:273, resizewindow"
-                "$mod ALT, mouse:272, resizewindow"
-                ];
+        wayland.windowManager.hyprland.settings = {
+            input = {
+                kb_layout = "it";
             };
             
         };
+          home.file."~/.config/hypr/hyprland.conf".text = ''
+        decoration {
+        shadow_offset = 0 5
+        col.shadow = rgba(00000099)
+        }
+
+        input:kb_layout = it
+
+        $mod = SUPER
+
+        bindm = $mod, mouse:272, movewindow
+        bindm = $mod, mouse:273, resizewindow
+        bindm = $mod ALT, mouse:272, resizewindow
+        bind = ,XF86AudioLowerVolume, exec, pactl -- set-sink-volume 0 -10%
+        bind = ,XF86AudioRaiseVolume, exec, pactl -- set-sink-volume 0 +10%
+        bind = ,XF86AudioMute, exec, pactl -- set-sink-mute 0 toggle
+        bind = ,XF86AudioMicMute, exec, pactl -- set-source-mute 0 toggle
+        bind = ,XF86MonBrightnessDown, exec, brightnessctl s 10%-
+        bind = ,XF86MonBrightnessUp, exec, brightnessctl s +10%
+    '';
         
         home.packages = with pkgs; [
-            (pkgs.waybar.overrideAttrs (oldAttrs: {
-                mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
-            })
-            )
+            waybar
+
+            networkmanager
+            networkmanagerapplet
+
             # notifications
             mako 
             libnotify
             
             rofi-wayland
+            kitty
+
+            grimblast
         ];
     };
 } 
