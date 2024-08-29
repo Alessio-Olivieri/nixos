@@ -1,7 +1,7 @@
 { pkgs, lib, config, ... }:
 {
     options = {
-        vscpde-module.enable = lib.mkEnableOption "Enables vscode";
+        vscode-module.enable = lib.mkEnableOption "Enables vscode";
     };
 
     config = lib.mkIf config.vscode-module.enable {
