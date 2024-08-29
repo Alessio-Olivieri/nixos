@@ -21,9 +21,6 @@
 
         $mod = SUPER
 
-        bindm = $mod, mouse:272, movewindow
-        bindm = $mod, mouse:273, resizewindow
-        bindm = $mod ALT, mouse:272, resizewindow
         bind = ,XF86AudioLowerVolume, exec, pactl -- set-sink-volume 0 -10%
         bind = ,XF86AudioRaiseVolume, exec, pactl -- set-sink-volume 0 +10%
         bind = ,XF86AudioMute, exec, pactl -- set-sink-mute 0 toggle
@@ -34,6 +31,8 @@
         
         home.packages = with pkgs; [
             waybar
+            hyprshot
+            hyprcursor
 
             networkmanager
             networkmanagerapplet
@@ -46,6 +45,7 @@
             kitty
 
             grimblast
+            brightnessctl
         ];
     };
 } 

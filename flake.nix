@@ -20,6 +20,8 @@
       url = "github:anyrun-org/anyrun";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    rose-pine-hyprcursor.url = "github:ndom91/rose-pine-hyprcursor";
   };
 
   outputs = { self, nixpkgs, home-manager, plasma-manager, anyrun, ... }@inputs: {
@@ -35,8 +37,8 @@
           home-manager.users.lexyo = import home/home.nix;
         }
 
-        inputs.anyrun.nixosModules
       ];
+      specialArgs = { inherit inputs; };
     };
   };
 }

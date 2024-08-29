@@ -62,7 +62,6 @@
 
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1"; # This variable fixes electron apps in Wayland
-    XKB_DEFAULT_LAYOUT = "it"; # Set the Wayland keyboard layout to Italian
   };
 
 
@@ -103,10 +102,6 @@
     isNormalUser = true;
     description = "Alessio Olivieri";
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-      kdePackages.kate
-    #  thunderbird
-    ];
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -130,6 +125,7 @@
   dolphin
   kcalc
   spectacle
+  inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
