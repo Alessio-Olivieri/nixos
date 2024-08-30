@@ -6,7 +6,9 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [ 
+      ./battery-optimizations.nix
+      # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
 
@@ -94,6 +96,8 @@
     #media-session.enable = true;
   };
 
+  hardware.bluetooth.enable = true; # enables support for Bluetooth
+
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
@@ -125,7 +129,8 @@
   dolphin
   kcalc
   spectacle
-  inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
+  # inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
+  tlp
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

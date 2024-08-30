@@ -1,7 +1,7 @@
 { pkgs, lib, config, inputs, ... }:
 
 let
-  klassy = pkgs.kdePackages.callPackage ../../custom-packages/klassy.nix { };
+#   klassy = pkgs.kdePackages.callPackage ../../custom-packages/klassy.nix { };
 in
 {
   options = {
@@ -34,7 +34,7 @@ in
 
     };
 
-    # Enable Klassy theme
-    home.packages = [ klassy ];
+    # # Enable Klassy theme
+    # home.packages = [ klassy ];
   };
 }
