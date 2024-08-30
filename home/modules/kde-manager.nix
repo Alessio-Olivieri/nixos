@@ -5,13 +5,14 @@ let
 in
 {
   options = {
-    kde-manager.enable = lib.mkEnableOption "Enables KDE Nix settings";
+    kde-manager.enable = lib.mkEnableOption "Enables KDE";
   };
 
-  config = lib.mkIf config.kde-manager.enable {
+   {
 
     programs.plasma = {
       enable = true;
+      overrideConfig= true; #disable setting changes outside manager
 
       desktop.widgets = [
         {
