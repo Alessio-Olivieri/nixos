@@ -1,7 +1,4 @@
-{ klassy ? builtins.fetchGit {
-    url = "https://github.com/paulmcauley/klassy.git";
-    rev = "67f0584e0eae8af31b01baecf3146e0fcc747c5b";
-  },
+{ klassy ? ./klassy,
   cmake,
   kdePackages,
   libsForQt5,
