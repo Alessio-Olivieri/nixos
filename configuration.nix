@@ -10,8 +10,9 @@
       ./battery-optimizations.nix
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./modules/kde-settings.nix
+      ./modules/kde.nix
     ];
+    kde.enable = true;
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
