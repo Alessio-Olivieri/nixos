@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   imports =
@@ -50,19 +50,19 @@
   services.xserver.enable = true;
 
   # Display manager
-  services.displayManager.sddm.enable = true; # Hyprland
+  #services.displayManager.sddm.enable = true; # Hyprland
   #services.xserver.displayManager.lightdm.enable = true; # Kde
 
   #GUI
-  #services.desktopManager.plasma6.enable = true;
-  programs.hyprland = {
-    enable = true;
-    xwayland.enable = true;
-  };
+  services.desktopManager.plasma6.enable = true;
+  # programs.hyprland = {
+  #   enable = true;
+  #   xwayland.enable = true;
+  # };
 
-  environment.sessionVariables = {
-    NIXOS_OZONE_WL = "1"; # This variable fixes electron apps in Wayland
-  };
+  # environment.sessionVariables = {
+  #   NIXOS_OZONE_WL = "1"; # This variable fixes electron apps in Wayland
+  # };
 
 
   # Configure keymap in X11
