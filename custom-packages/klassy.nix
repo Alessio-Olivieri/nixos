@@ -1,5 +1,7 @@
-{
-  klassy,
+{ klassy ? builtins.fetchGit {
+    url = "https://github.com/paulmcauley/klassy.git";
+    rev = "67f0584e0eae8af31b01baecf3146e0fcc747c5b";
+  },
   cmake,
   kdePackages,
   libsForQt5,
@@ -7,9 +9,8 @@
   xdg-utils,
   stdenv,
 }:
+
 stdenv.mkDerivation rec {
-  # based on https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/kde/plasma/breeze/default.nix
-  # & archlinux package
   pname = "klassy";
   name = pname;
 
@@ -23,7 +24,6 @@ stdenv.mkDerivation rec {
     ]
     ++ (with kdePackages; [
       wrapQtAppsHook
-      # breeze-icons
       frameworkintegration
       kcmutils
       kcolorscheme
@@ -51,8 +51,7 @@ stdenv.mkDerivation rec {
     "dev"
     "qt5"
   ];
-  # We can't add qt5 stuff to dependencies or the hooks blow up,
-  # so manually point everything to everything. Oof.
+
   cmakeFlags = [
     "-DQt5_DIR=${libsForQt5.qtbase.dev}/lib/cmake/Qt5"
     "-DQt5Core_DIR=${libsForQt5.qtbase.dev}/lib/cmake/Qt5Core"
@@ -85,7 +84,6 @@ stdenv.mkDerivation rec {
     "-DBUILD_QT5=ON"
   ];
 
-  # Move Qt5 plugin to Qt5 plugin path
   postInstall = ''
     mkdir -p $qt5/${libsForQt5.qtbase.qtPluginPrefix}/styles
     mv $out/${kdePackages.qtbase.qtPluginPrefix}/styles/klassy5.so $qt5/${libsForQt5.qtbase.qtPluginPrefix}/styles

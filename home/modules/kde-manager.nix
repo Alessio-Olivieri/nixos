@@ -1,7 +1,7 @@
 { pkgs, lib, config, inputs, ... }:
 
 let
-  klassy = pkgs.kdePackages.callPackage ./path/to/klassy.nix { inherit (inputs) klassy; };
+  klassy = pkgs.kdePackages.callPackage ../../custom-packages/klassy.nix { };
 in
 {
   options = {
@@ -9,6 +9,7 @@ in
   };
 
   config = lib.mkIf config.kde-manager.enable {
+
     programs.plasma = {
       enable = true;
 
@@ -30,9 +31,10 @@ in
           };
         }
       ];
+
     };
 
     # Enable Klassy theme
-    environment.systemPackages = [ klassy ];
+    home.packages = [ klassy ];
   };
 }
