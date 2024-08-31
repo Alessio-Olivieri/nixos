@@ -9,7 +9,7 @@
     ./modules/hyprland-manager.nix
     ./modules/vscode-module.nix
     ];
-  kde-manager.enable = true;
+  kde-manager.enable = false;
   hyprland-manager.enable = false;
   vscode-module.enable = true;
 
@@ -72,10 +72,6 @@
     # it provides the command `nom` works just like `nix`
     # with more details log output
     nix-output-monitor
-
-    # productivity
-    hugo # static site generator
-    glow # markdown previewer in terminal
 
     btop  # replacement of htop/nmon
     iotop # io monitoring

@@ -11,8 +11,10 @@
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./modules/kde.nix
+      ./modules/gnome.nix
     ];
-    kde.enable = true;
+    kde.enable = false;
+    gnome.enable = true;
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -55,10 +57,8 @@
 
   # Display manager
   #services.displayManager.sddm.enable = true; # Hyprland
-  #services.xserver.displayManager.lightdm.enable = true; # Kde
 
   #GUI
-  services.desktopManager.plasma6.enable = true;
   # programs.hyprland = {
   #   enable = true;
   #   xwayland.enable = true;
@@ -128,11 +128,9 @@
   python3
   poetry
   vlc
-  dolphin
-  kcalc
-  spectacle
+  # dolphin
   # inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
-  tlp
+  libinput
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
