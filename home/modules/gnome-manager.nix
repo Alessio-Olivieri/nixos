@@ -16,10 +16,12 @@
             # If the extension you want to enable is packaged in nixpkgs,
             # you can easily get its UUID by accessing its extensionUuid
             # field (look at the following example).
-            pkgs.gnomeExtensions.gsconnect.extensionUuid
+            pkgs.gnomeExtensions.blur-my-shell.extensionUuid
             
+            pkgs.gnomeExtensions.paperwm.extensionUuid
+
             # Alternatively, you can manually pass UUID as a string.  
-            "blur-my-shell@aunetx"
+            pkgs.gnomeExtensions.gsconnect.extensionUuid
             # ...
           ];
         };

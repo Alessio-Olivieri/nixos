@@ -14,6 +14,9 @@
         pkgs.kdePackages.kate
     ];
 
+    programs.kdeconnect.enable = true; 
+
+
     environment.systemPackages = with pkgs; [
         libsForQt5.polonium
     ];

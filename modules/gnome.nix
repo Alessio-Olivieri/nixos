@@ -12,7 +12,15 @@
 
         environment.systemPackages = with pkgs.gnomeExtensions; [
             blur-my-shell
-            pop-shell
-        ]
+            paperwm
+            gsconnect
+        ];
+
+        environment.gnome.excludePackages = (with pkgs; [
+            gnome-tour
+        ]) ++ (with pkgs.gnome; [
+            epiphany # web browser
+        ]);
+        
     };
 }
