@@ -8,9 +8,11 @@
     ./modules/kde-manager.nix
     ./modules/hyprland-manager.nix
     ./modules/vscode-module.nix
+    ./modules/gnome-manager.nix
     ];
   kde-manager.enable = false;
   hyprland-manager.enable = false;
+  gnome-manager.enable = true;
   vscode-module.enable = true;
 
   # link the configuration file in current directory to the specified location in home directory
