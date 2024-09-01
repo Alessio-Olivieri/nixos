@@ -125,7 +125,6 @@
   wget
   git
   python3
-  poetry
   vlc
   # dolphin
   # inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default

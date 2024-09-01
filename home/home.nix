@@ -9,12 +9,20 @@
     ./modules/hyprland-manager.nix
     ./modules/vscode-module.nix
     ./modules/gnome-manager.nix
+    ./modules/git-module.nix
+    ./modules/starship-module.nix
+    ./modules/bash-module.nix
+
     # ./modules/sub/dconf.nix
     ];
   kde-manager.enable = false;
   hyprland-manager.enable = false;
   gnome-manager.enable = true;
   vscode-module.enable = true;
+  starship-module.enable = true;
+  bash-module.enable = true;
+
+
 
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
@@ -73,40 +81,6 @@
     usbutils # lsusb
     wev # wayland input
       ];
-
-  # basic configuration of git, please change to your own
-  programs.git = {
-    enable = true;
-    userName = "Alessio-Olivieri";
-    userEmail = "lexyo.2002@gmial.com";
-  };
-
-  # starship - an customizable prompt for any shell
-  programs.starship = {
-    enable = true;
-    # custom settings
-    settings = {
-      add_newline = false;
-      aws.disabled = true;
-      gcloud.disabled = true;
-      line_break.disabled = true;
-    };
-  };
-
-  programs.bash = {
-    enable = true;
-    enableCompletion = true;
-    # TODO add your custom bashrc here
-    bashrcExtra = ''
-      export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin"
-    '';
-
-    # set some aliases, feel free to add more or remove some
-    shellAliases = {
-      urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
-      urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
-    };
-  };
 
   # This value determines the home Manager release that your configuration is compatible with. 
   # This helps avoid breakage when a new home Manager release introduces backwards 
