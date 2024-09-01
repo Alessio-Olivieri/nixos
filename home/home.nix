@@ -9,6 +9,7 @@
     ./modules/hyprland-manager.nix
     ./modules/vscode-module.nix
     ./modules/gnome-manager.nix
+    # ./modules/sub/dconf.nix
     ];
   kde-manager.enable = false;
   hyprland-manager.enable = false;

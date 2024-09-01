@@ -6,10 +6,6 @@
   };
 
   config = lib.mkIf config.gnome-manager.enable {
-
-          imports = [
-      ./sub/dconf.nix
-      ];
       dconf = {
       enable = true;
       settings = {
@@ -37,11 +33,11 @@
           noise-amount = 0;
         };
       };
-    };
 
+    };
     home.packages = with pkgs; [
       dconf2nix
-    ];
+      ];
 
   };
 

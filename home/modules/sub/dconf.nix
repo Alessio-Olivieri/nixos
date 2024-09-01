@@ -5,13 +5,55 @@ with lib.hm.gvariant;
 
 {
   dconf.settings = {
+    "org/gnome/Connections" = {
+      first-run = false;
+    };
+
+    "org/gnome/Console" = {
+      last-window-maximised = false;
+      last-window-size = mkTuple [ 652 1028 ];
+    };
+
+    "org/gnome/Extensions" = {
+      window-height = 1028;
+      window-width = 744;
+    };
+
+    "org/gnome/Snapshot" = {
+      is-maximized = false;
+      window-height = 640;
+      window-width = 800;
+    };
+
+    "org/gnome/Weather" = {
+      locations = [ (mkVariant [ (mkUint32 2) (mkVariant [ "Rome" "LIRU" true [ (mkTuple [ 0.7321656212116213 0.2181661564992912 ]) ] [ (mkTuple [ 0.731292956585624 0.21787526247286132 ]) ] ]) ]) ];
+    };
 
     "org/gnome/calculator" = {
+      accuracy = 9;
+      angle-units = "degrees";
+      base = 10;
       button-mode = "advanced";
+      number-format = "automatic";
+      show-thousands = false;
+      show-zeroes = false;
+      source-currency = "";
+      source-units = "degree";
+      target-currency = "";
+      target-units = "radian";
+      window-maximized = false;
+      window-size = mkTuple [ 680 1028 ];
+      word-size = 64;
+    };
+
+    "org/gnome/calendar" = {
+      active-view = "month";
+      window-maximized = false;
+      window-size = mkTuple [ 1717 1028 ];
     };
 
     "org/gnome/control-center" = {
-      last-panel = "power";
+      last-panel = "background";
       window-state = mkTuple [ 1860 1028 false ];
     };
 
@@ -38,6 +80,15 @@ with lib.hm.gvariant;
       translate = true;
     };
 
+    "org/gnome/desktop/background" = {
+      color-shading-type = "solid";
+      picture-options = "zoom";
+      picture-uri = "file:///run/current-system/sw/share/backgrounds/gnome/vnc-l.png";
+      picture-uri-dark = "file:///run/current-system/sw/share/backgrounds/gnome/vnc-d.png";
+      primary-color = "#77767B";
+      secondary-color = "#000000";
+    };
+
     "org/gnome/desktop/input-sources" = {
       sources = [ (mkTuple [ "xkb" "it" ]) ];
       xkb-options = [ "terminate:ctrl_alt_bksp" ];
@@ -49,7 +100,15 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/desktop/notifications" = {
-      application-children = [ "org-gnome-console" "org-kde-kdeconnect-daemon" ];
+      application-children = [ "org-gnome-console" "org-kde-kdeconnect-daemon" "gnome-power-panel" "code" ];
+    };
+
+    "org/gnome/desktop/notifications/application/code" = {
+      application-id = "code.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/gnome-power-panel" = {
+      application-id = "gnome-power-panel.desktop";
     };
 
     "org/gnome/desktop/notifications/application/org-gnome-console" = {
@@ -66,6 +125,14 @@ with lib.hm.gvariant;
 
     "org/gnome/desktop/peripherals/touchpad" = {
       two-finger-scrolling-enabled = true;
+    };
+
+    "org/gnome/desktop/screensaver" = {
+      color-shading-type = "solid";
+      picture-options = "zoom";
+      picture-uri = "file:///run/current-system/sw/share/backgrounds/gnome/vnc-l.png";
+      primary-color = "#77767B";
+      secondary-color = "#000000";
     };
 
     "org/gnome/desktop/wm/keybindings" = {
@@ -142,7 +209,7 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/nautilus/window-state" = {
-      initial-size = mkTuple [ 890 1028 ];
+      initial-size = mkTuple [ 890 1060 ];
       maximized = false;
     };
 
@@ -150,9 +217,13 @@ with lib.hm.gvariant;
       rotate-video-lock-static = [];
     };
 
+    "org/gnome/settings-daemon/plugins/power" = {
+      power-button-action = "nothing";
+    };
+
     "org/gnome/shell" = {
       disable-user-extensions = false;
-      disabled-extensions = [ "apps-menu@gnome-shell-extensions.gcampax.github.com" "auto-move-windows@gnome-shell-extensions.gcampax.github.com" "light-style@gnome-shell-extensions.gcampax.github.com" "native-window-placement@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "drive-menu@gnome-shell-extensions.gcampax.github.com" ];
+      disabled-extensions = [ "apps-menu@gnome-shell-extensions.gcampax.github.com" "auto-move-windows@gnome-shell-extensions.gcampax.github.com" "light-style@gnome-shell-extensions.gcampax.github.com" "native-window-placement@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "drive-menu@gnome-shell-extensions.gcampax.github.com" "blur-my-shell@aunetx" ];
       enabled-extensions = [ "blur-my-shell@aunetx" "paperwm@paperwm.github.com" "gsconnect@andyholmes.github.io" ];
       welcome-dialog-last-shown-version = "46.2";
     };
@@ -277,6 +348,7 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/shell/extensions/paperwm" = {
+      gesture-workspace-fingers = 4;
       last-used-display-server = "Wayland";
       open-window-position = 0;
       restore-attach-modal-dialogs = "false";
@@ -295,37 +367,35 @@ with lib.hm.gvariant;
 
     "org/gnome/shell/extensions/paperwm/workspaces/041e9fd0-f288-4426-97a3-f7767bd82260" = {
       index = 4;
-      name = "yourself";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/3caef056-a11b-47c6-a7e3-301eccb2a922" = {
+      background = "/etc/nixos/files/wallpapers/220954.jpg";
       index = 0;
-      name = "I am";
+      name = "Hello";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/68f151bf-0926-4239-961a-d56156bdf6d6" = {
+      background = "/home/lexyo/Downloads/wall1.webp";
       index = 1;
-      name = "Always";
+      name = "Bro";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/9dbb45ba-983f-422e-a4ae-ac024f664ae5" = {
       index = 5;
-      name = "Daje tutta";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/ac221d71-90ef-41b6-9924-d9739b0f40f4" = {
       index = 2;
-      name = "100%";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/be7ab809-48a2-43d4-971e-150fbdf99148" = {
       index = 3;
-      name = "Love";
       show-top-bar = true;
     };
 
