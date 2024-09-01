@@ -11,12 +11,19 @@ with lib.hm.gvariant;
 
     "org/gnome/Console" = {
       last-window-maximised = false;
-      last-window-size = mkTuple [ 652 1028 ];
+      last-window-size = mkTuple [ 1890 1028 ];
     };
 
     "org/gnome/Extensions" = {
       window-height = 1028;
       window-width = 744;
+    };
+
+    "org/gnome/Geary" = {
+      compose-as-html = true;
+      formatting-toolbar-visible = false;
+      migrated-config = true;
+      window-height = 1028;
     };
 
     "org/gnome/Snapshot" = {
@@ -54,7 +61,7 @@ with lib.hm.gvariant;
 
     "org/gnome/control-center" = {
       last-panel = "background";
-      window-state = mkTuple [ 1860 1028 false ];
+      window-state = mkTuple [ 1890 1028 false ];
     };
 
     "org/gnome/desktop/app-folders" = {
@@ -83,10 +90,10 @@ with lib.hm.gvariant;
     "org/gnome/desktop/background" = {
       color-shading-type = "solid";
       picture-options = "zoom";
-      picture-uri = "file:///run/current-system/sw/share/backgrounds/gnome/vnc-l.png";
-      picture-uri-dark = "file:///run/current-system/sw/share/backgrounds/gnome/vnc-d.png";
-      primary-color = "#77767B";
-      secondary-color = "#000000";
+      picture-uri = "file:///home/lexyo/.local/share/backgrounds/2024-09-01-15-41-16-dragon_ball_z_2-wallpaper-1920x1080.jpg";
+      picture-uri-dark = "file:///home/lexyo/.local/share/backgrounds/2024-09-01-15-41-16-dragon_ball_z_2-wallpaper-1920x1080.jpg";
+      primary-color = "#000000000000";
+      secondary-color = "#000000000000";
     };
 
     "org/gnome/desktop/input-sources" = {
@@ -100,11 +107,15 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/desktop/notifications" = {
-      application-children = [ "org-gnome-console" "org-kde-kdeconnect-daemon" "gnome-power-panel" "code" ];
+      application-children = [ "org-gnome-console" "org-kde-kdeconnect-daemon" "gnome-power-panel" "code" "org-gnome-settings" "firefox" "org-gnome-loupe" "org-gnome-geary" ];
     };
 
     "org/gnome/desktop/notifications/application/code" = {
       application-id = "code.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/firefox" = {
+      application-id = "firefox.desktop";
     };
 
     "org/gnome/desktop/notifications/application/gnome-power-panel" = {
@@ -113,6 +124,18 @@ with lib.hm.gvariant;
 
     "org/gnome/desktop/notifications/application/org-gnome-console" = {
       application-id = "org.gnome.Console.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/org-gnome-geary" = {
+      application-id = "org.gnome.Geary.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/org-gnome-loupe" = {
+      application-id = "org.gnome.Loupe.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/org-gnome-settings" = {
+      application-id = "org.gnome.Settings.desktop";
     };
 
     "org/gnome/desktop/notifications/application/org-kde-kdeconnect-daemon" = {
@@ -130,9 +153,13 @@ with lib.hm.gvariant;
     "org/gnome/desktop/screensaver" = {
       color-shading-type = "solid";
       picture-options = "zoom";
-      picture-uri = "file:///run/current-system/sw/share/backgrounds/gnome/vnc-l.png";
-      primary-color = "#77767B";
-      secondary-color = "#000000";
+      picture-uri = "file:///home/lexyo/.local/share/backgrounds/2024-09-01-15-41-16-dragon_ball_z_2-wallpaper-1920x1080.jpg";
+      primary-color = "#000000000000";
+      secondary-color = "#000000000000";
+    };
+
+    "org/gnome/desktop/search-providers" = {
+      sort-order = [ "org.gnome.Contacts.desktop" "org.gnome.Documents.desktop" "org.gnome.Nautilus.desktop" ];
     };
 
     "org/gnome/desktop/wm/keybindings" = {
@@ -159,8 +186,8 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/desktop/wm/preferences" = {
-      num-workspaces = 6;
-      workspace-names = [ "Hello" "Bro" ];
+      num-workspaces = 8;
+      workspace-names = [ "Resilient" "Wise" "Chaotic" "Ferocius" "Tyrannical" "Perfectionist" "Determined" "Unstoppable" ];
     };
 
     "org/gnome/evince" = {
@@ -202,6 +229,10 @@ with lib.hm.gvariant;
       restore-shortcuts = [];
     };
 
+    "org/gnome/nautilus/icon-view" = {
+      default-zoom-level = "extra-large";
+    };
+
     "org/gnome/nautilus/preferences" = {
       default-folder-viewer = "icon-view";
       migrated-gtk-settings = true;
@@ -209,8 +240,12 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/nautilus/window-state" = {
-      initial-size = mkTuple [ 890 1060 ];
+      initial-size = mkTuple [ 890 1028 ];
       maximized = false;
+    };
+
+    "org/gnome/portal/filechooser/org/gnome/Settings" = {
+      last-folder-path = "/etc/nixos/files/wallpapers/Dragonball";
     };
 
     "org/gnome/settings-daemon/plugins/media-keys" = {
@@ -224,7 +259,7 @@ with lib.hm.gvariant;
     "org/gnome/shell" = {
       disable-user-extensions = false;
       disabled-extensions = [ "apps-menu@gnome-shell-extensions.gcampax.github.com" "auto-move-windows@gnome-shell-extensions.gcampax.github.com" "light-style@gnome-shell-extensions.gcampax.github.com" "native-window-placement@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "drive-menu@gnome-shell-extensions.gcampax.github.com" "blur-my-shell@aunetx" ];
-      enabled-extensions = [ "blur-my-shell@aunetx" "paperwm@paperwm.github.com" "gsconnect@andyholmes.github.io" ];
+      enabled-extensions = [ "blur-my-shell@aunetx" "gsconnect@andyholmes.github.io" "paperwm@paperwm.github.com" ];
       welcome-dialog-last-shown-version = "46.2";
     };
 
@@ -349,54 +384,89 @@ with lib.hm.gvariant;
 
     "org/gnome/shell/extensions/paperwm" = {
       gesture-workspace-fingers = 4;
+      horizontal-margin = 11;
       last-used-display-server = "Wayland";
+      minimap-shade-opacity = 3;
       open-window-position = 0;
+      overview-ensure-viewport-animation = 1;
+      overview-min-windows-per-row = 15;
       restore-attach-modal-dialogs = "false";
       restore-edge-tiling = "false";
       restore-keybinds = ''
         {"toggle-tiled-right":{"bind":"[\\"<Super>Right\\"]","schema_id":"org.gnome.mutter.keybindings"},"toggle-tiled-left":{"bind":"[\\"<Super>Left\\"]","schema_id":"org.gnome.mutter.keybindings"},"cancel-input-capture":{"bind":"[\\"<Super><Shift>Escape\\"]","schema_id":"org.gnome.mutter.keybindings"},"restore-shortcuts":{"bind":"[\\"<Super>Escape\\"]","schema_id":"org.gnome.mutter.wayland.keybindings"},"switch-panels":{"bind":"[\\"<Control><Alt>Tab\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"switch-to-workspace-left":{"bind":"[\\"<Super>Page_Up\\",\\"<Super><Alt>Left\\",\\"<Control><Alt>Left\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"switch-group-backward":{"bind":"[\\"<Shift><Super>Above_Tab\\",\\"<Shift><Alt>Above_Tab\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"move-to-monitor-down":{"bind":"[\\"<Super><Shift>Down\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"switch-to-workspace-1":{"bind":"[\\"<Super>Home\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"move-to-monitor-left":{"bind":"[\\"<Super><Shift>Left\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"unmaximize":{"bind":"[\\"<Super>Down\\",\\"<Alt>F5\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"switch-group":{"bind":"[\\"<Super>Above_Tab\\",\\"<Alt>Above_Tab\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"move-to-workspace-left":{"bind":"[\\"<Super><Shift>Page_Up\\",\\"<Super><Shift><Alt>Left\\",\\"<Control><Shift><Alt>Left\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"move-to-workspace-right":{"bind":"[\\"<Super><Shift>Page_Down\\",\\"<Super><Shift><Alt>Right\\",\\"<Control><Shift><Alt>Right\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"switch-panels-backward":{"bind":"[\\"<Shift><Control><Alt>Tab\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"move-to-workspace-up":{"bind":"[\\"<Control><Shift><Alt>Up\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"switch-to-workspace-right":{"bind":"[\\"<Super>Page_Down\\",\\"<Super><Alt>Right\\",\\"<Control><Alt>Right\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"move-to-workspace-down":{"bind":"[\\"<Control><Shift><Alt>Down\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"switch-applications":{"bind":"[\\"<Super>Tab\\",\\"<Alt>Tab\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"maximize":{"bind":"[\\"<Super>Up\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"switch-to-workspace-last":{"bind":"[\\"<Super>End\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"move-to-monitor-right":{"bind":"[\\"<Super><Shift>Right\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"switch-applications-backward":{"bind":"[\\"<Shift><Super>Tab\\",\\"<Shift><Alt>Tab\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"move-to-monitor-up":{"bind":"[\\"<Super><Shift>Up\\"]","schema_id":"org.gnome.desktop.wm.keybindings"},"shift-overview-up":{"bind":"[\\"<Super><Alt>Up\\"]","schema_id":"org.gnome.shell.keybindings"},"shift-overview-down":{"bind":"[\\"<Super><Alt>Down\\"]","schema_id":"org.gnome.shell.keybindings"},"focus-active-notification":{"bind":"[\\"<Super>n\\"]","schema_id":"org.gnome.shell.keybindings"},"rotate-video-lock-static":{"bind":"[\\"<Super>o\\",\\"XF86RotationLockToggle\\"]","schema_id":"org.gnome.settings-daemon.plugins.media-keys"}}
       '';
       restore-workspaces-only-on-primary = "false";
+      selection-border-size = 8;
       show-window-position-bar = false;
       show-workspace-indicator = true;
+      vertical-margin = 10;
+      window-gap = 20;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces" = {
-      list = [ "3caef056-a11b-47c6-a7e3-301eccb2a922" "68f151bf-0926-4239-961a-d56156bdf6d6" "ac221d71-90ef-41b6-9924-d9739b0f40f4" "be7ab809-48a2-43d4-971e-150fbdf99148" "041e9fd0-f288-4426-97a3-f7767bd82260" "9dbb45ba-983f-422e-a4ae-ac024f664ae5" ];
+      list = [ "3caef056-a11b-47c6-a7e3-301eccb2a922" "68f151bf-0926-4239-961a-d56156bdf6d6" "ac221d71-90ef-41b6-9924-d9739b0f40f4" "be7ab809-48a2-43d4-971e-150fbdf99148" "041e9fd0-f288-4426-97a3-f7767bd82260" "9dbb45ba-983f-422e-a4ae-ac024f664ae5" "d7a3c3af-0b08-445b-b632-07fa8c4df16e" "22ac0db7-0bfc-4642-95a4-dd6312774095" "dbcd1e00-9606-4306-b4ed-37a36dd33ee7" "021e9ec3-7ede-4d86-a793-826a60d09168" ];
+    };
+
+    "org/gnome/shell/extensions/paperwm/workspaces/021e9ec3-7ede-4d86-a793-826a60d09168" = {
+      index = 9;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/041e9fd0-f288-4426-97a3-f7767bd82260" = {
+      background = "/etc/nixos/files/wallpapers/Dragonball/tyrannical.png";
       index = 4;
+      name = "Tyrannical";
       show-top-bar = true;
     };
 
+    "org/gnome/shell/extensions/paperwm/workspaces/22ac0db7-0bfc-4642-95a4-dd6312774095" = {
+      background = "/etc/nixos/files/wallpapers/Dragonball/unstoppable.png";
+      index = 7;
+      name = "Unstoppable";
+    };
+
     "org/gnome/shell/extensions/paperwm/workspaces/3caef056-a11b-47c6-a7e3-301eccb2a922" = {
-      background = "/etc/nixos/files/wallpapers/220954.jpg";
+      background = "/etc/nixos/files/wallpapers/Dragonball/resilient.jpg";
       index = 0;
-      name = "Hello";
+      name = "Resilient";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/68f151bf-0926-4239-961a-d56156bdf6d6" = {
-      background = "/home/lexyo/Downloads/wall1.webp";
+      background = "/etc/nixos/files/wallpapers/Dragonball/wise.png";
       index = 1;
-      name = "Bro";
+      name = "Wise";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/9dbb45ba-983f-422e-a4ae-ac024f664ae5" = {
+      background = "/etc/nixos/files/wallpapers/Dragonball/perfectionist.png";
       index = 5;
+      name = "Perfectionist";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/ac221d71-90ef-41b6-9924-d9739b0f40f4" = {
+      background = "/etc/nixos/files/wallpapers/Dragonball/chaotic.png";
       index = 2;
+      name = "Chaotic";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/be7ab809-48a2-43d4-971e-150fbdf99148" = {
+      background = "/etc/nixos/files/wallpapers/Dragonball/ferocius.png";
       index = 3;
+      name = "Ferocius";
       show-top-bar = true;
+    };
+
+    "org/gnome/shell/extensions/paperwm/workspaces/d7a3c3af-0b08-445b-b632-07fa8c4df16e" = {
+      background = "/etc/nixos/files/wallpapers/Dragonball/determined.jpg";
+      index = 6;
+      name = "Determined";
+    };
+
+    "org/gnome/shell/extensions/paperwm/workspaces/dbcd1e00-9606-4306-b4ed-37a36dd33ee7" = {
+      index = 8;
     };
 
     "org/gnome/shell/keybindings" = {
@@ -414,6 +484,11 @@ with lib.hm.gvariant;
       locations = [];
     };
 
+    "org/gtk/gtk4/settings/color-chooser" = {
+      custom-colors = [ (mkTuple [ 0.29411765933036804 0.4117647111415863 0.5137255191802979 1.0 ]) (mkTuple [ 0.4000000059604645 0.21960784494876862 0.13333334028720856 1.0 ]) (mkTuple [ 0.2666666805744171 0.33725491166114807 0.19607843458652496 1.0 ]) ];
+      selected-color = mkTuple [ true 0.29411765933036804 0.4117647111415863 0.5137255191802979 1.0 ];
+    };
+
     "org/gtk/gtk4/settings/file-chooser" = {
       date-format = "regular";
       location-mode = "path-bar";
@@ -423,8 +498,8 @@ with lib.hm.gvariant;
       sort-directories-first = true;
       sort-order = "ascending";
       type-format = "category";
-      view-type = "list";
-      window-size = mkTuple [ 859 326 ];
+      view-type = "grid";
+      window-size = mkTuple [ 744 858 ];
     };
 
     "org/gtk/settings/file-chooser" = {
