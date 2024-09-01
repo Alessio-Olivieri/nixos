@@ -21,6 +21,7 @@
   vscode-module.enable = true;
   starship-module.enable = true;
   bash-module.enable = true;
+  git-module.enable = true;
 
 
 
@@ -35,7 +36,7 @@
   # };
 
   # encode the file content in nix configuration file directly
-  # home.file.".xxx".text = ''
+  # home.file.".xxx".text = ''vscode
   #     xxx
   # '';
 
