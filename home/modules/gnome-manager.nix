@@ -26,6 +26,7 @@
           ];
         };
 
+
         # Configure individual extensions
         "org/gnome/shell/extensions/blur-my-shell" = {
           brightness = 0.75;
@@ -33,6 +34,9 @@
         };
       };
     };
+    home.packages = with pkgs; [
+      dconf2nix
+    ];
   };
 
 }
