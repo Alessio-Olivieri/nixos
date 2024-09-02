@@ -22,9 +22,6 @@
   starship-module.enable = true;
   bash-module.enable = true;
   git-module.enable = true;
-
-
-
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
 
@@ -81,6 +78,8 @@
     pciutils # lspci
     usbutils # lsusb
     wev # wayland input
+
+    poetry
       ];
 
   # This value determines the home Manager release that your configuration is compatible with. 

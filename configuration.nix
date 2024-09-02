@@ -19,6 +19,13 @@
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.grub.configurationLimit = 15;
+
+  gc = {
+		automatic = true;
+		dates = "weekly";
+		options = "--delete-older-than 30d";
+	};
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
