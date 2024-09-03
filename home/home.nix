@@ -79,6 +79,10 @@
     usbutils # lsusb
     wev # wayland input
 
+    telegram-desktop
+    zoom-us
+    discord
+
     poetry
       ];
 

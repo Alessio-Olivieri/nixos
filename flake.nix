@@ -21,7 +21,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    rose-pine-hyprcursor.url = "github:ndom91/rose-pine-hyprcursor";
+    #rose-pine-hyprcursor.url = "github:ndom91/rose-pine-hyprcursor";
+    zen-browser.url = "github:MarceColl/zen-browser-flake";
   };
 
   outputs = { self, nixpkgs, home-manager, plasma-manager, anyrun, ... }@inputs: {
