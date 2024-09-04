@@ -86,6 +86,7 @@ in
     discord
 
     poetry
+    step-cli
       ];
 
   # This value determines the home Manager release that your configuration is compatible with. 
