@@ -1,5 +1,7 @@
 { config, pkgs, ... }:
-
+let 
+  system = "x86_64-linux";
+in
 {
   home.username = "lexyo";
   home.homeDirectory = "/home/lexyo";

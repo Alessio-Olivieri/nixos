@@ -3,7 +3,9 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, inputs, ... }:
-
+    let 
+      system = "x86_64-linux";
+    in
 {
   imports =
     [ 
@@ -127,15 +129,15 @@
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = [
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  wget
-  git
-  python3
-  vlc
+  pkgs.wget
+  pkgs.git
+  pkgs.python3
+  pkgs.vlc
   # dolphin
   # inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
-  libinput
+  pkgs.libinput
   ];
 
   #set up garbage collector

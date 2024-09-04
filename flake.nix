@@ -18,9 +18,14 @@
     zen-browser.url = "github:MarceColl/zen-browser-flake";
   };
 
-  outputs = { self, nixpkgs, home-manager, plasma-manager, ... }@inputs: {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+  outputs = { self, nixpkgs, home-manager, plasma-manager, ... }@inputs:
+    let 
       system = "x86_64-linux";
+    in
+    {
+
+    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      specialArgs = { inherit inputs; };
       modules = [
         ./configuration.nix
         inputs.home-manager.nixosModules.home-manager {
