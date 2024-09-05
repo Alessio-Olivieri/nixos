@@ -84,6 +84,7 @@ in
     telegram-desktop
     zoom-us
     discord
+    obs-studio
 
     poetry
     step-cli
