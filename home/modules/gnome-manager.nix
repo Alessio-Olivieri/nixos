@@ -21,7 +21,7 @@
             pkgs.gnomeExtensions.paperwm.extensionUuid
 
             # Alternatively, you can manually pass UUID as a string.  
-            pkgs.gnomeExtensions.gsconnect.extensionUuid
+            # pkgs.gnomeExtensions.gsconnect.extensionUuid
             # ...
           ];
         };
