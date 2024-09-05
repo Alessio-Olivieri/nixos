@@ -11,7 +11,7 @@ with lib.hm.gvariant;
 
     "org/gnome/Console" = {
       last-window-maximised = false;
-      last-window-size = mkTuple [ 1890 1028 ];
+      last-window-size = mkTuple [ 1898 1028 ];
     };
 
     "org/gnome/Extensions" = {
@@ -34,6 +34,11 @@ with lib.hm.gvariant;
 
     "org/gnome/Weather" = {
       locations = [ (mkVariant [ (mkUint32 2) (mkVariant [ "Rome" "LIRU" true [ (mkTuple [ 0.7321656212116213 0.2181661564992912 ]) ] [ (mkTuple [ 0.731292956585624 0.21787526247286132 ]) ] ]) ]) ];
+    };
+
+    "org/gnome/baobab/ui" = {
+      is-maximized = false;
+      window-size = mkTuple [ 960 1028 ];
     };
 
     "org/gnome/calculator" = {
@@ -60,8 +65,8 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/control-center" = {
-      last-panel = "background";
-      window-state = mkTuple [ 1890 1028 false ];
+      last-panel = "multitasking";
+      window-state = mkTuple [ 1898 1028 false ];
     };
 
     "org/gnome/desktop/app-folders" = {
@@ -107,11 +112,15 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/desktop/notifications" = {
-      application-children = [ "org-gnome-console" "org-kde-kdeconnect-daemon" "gnome-power-panel" "code" "org-gnome-settings" "firefox" "org-gnome-loupe" "org-gnome-geary" ];
+      application-children = [ "org-gnome-console" "org-kde-kdeconnect-daemon" "gnome-power-panel" "code" "org-gnome-settings" "firefox" "org-gnome-loupe" "org-gnome-geary" "org-gnome-baobab" "org-telegram-desktop" "org-gnome-evolution-alarm-notify" "discord" ];
     };
 
     "org/gnome/desktop/notifications/application/code" = {
       application-id = "code.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/discord" = {
+      application-id = "discord.desktop";
     };
 
     "org/gnome/desktop/notifications/application/firefox" = {
@@ -122,8 +131,16 @@ with lib.hm.gvariant;
       application-id = "gnome-power-panel.desktop";
     };
 
+    "org/gnome/desktop/notifications/application/org-gnome-baobab" = {
+      application-id = "org.gnome.baobab.desktop";
+    };
+
     "org/gnome/desktop/notifications/application/org-gnome-console" = {
       application-id = "org.gnome.Console.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/org-gnome-evolution-alarm-notify" = {
+      application-id = "org.gnome.Evolution-alarm-notify.desktop";
     };
 
     "org/gnome/desktop/notifications/application/org-gnome-geary" = {
@@ -140,6 +157,10 @@ with lib.hm.gvariant;
 
     "org/gnome/desktop/notifications/application/org-kde-kdeconnect-daemon" = {
       application-id = "org.kde.kdeconnect.daemon.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/org-telegram-desktop" = {
+      application-id = "org.telegram.desktop.desktop";
     };
 
     "org/gnome/desktop/peripherals/keyboard" = {
@@ -191,7 +212,7 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/evince" = {
-      document-directory = "file:///home/lexyo/Downloads";
+      document-directory = "file:///home/lexyo/Documents/papers";
     };
 
     "org/gnome/evince/default" = {
@@ -203,13 +224,46 @@ with lib.hm.gvariant;
       inverted-colors = false;
       show-sidebar = true;
       sidebar-page = "thumbnails";
-      sidebar-size = 132;
+      sidebar-size = 148;
       sizing-mode = "free";
-      zoom = 0.5993653857035783;
+      window-ratio = mkTuple [ 2.138888888888889 1.297979797979798 ];
+      zoom = 0.5625328167490407;
     };
 
     "org/gnome/evolution-data-server" = {
       migrated = true;
+    };
+
+    "org/gnome/evolution-data-server/calendar" = {
+      reminders-past = [ "4fc1b98ad7aed08d02fac68df774486a9ca4a462n79e99eae4a12a3e2bc63f3fde1bbf572c062e65ct20240904T080000n1725429000n1725429600n1725436800nBEGIN:VEVENTrnDTSTART;TZID=Europe/Rome:20240904T080000rnDTEND;TZID=Europe/Rome:20240904T100000rnRRULE:FREQ=WEEKLY;BYDAY=WErnDTSTAMP:20240225T224341ZrnUID:rn clj6ae33clj3ab9i68sm8b9k6osmcb9pcosjgbb16phmcp3674sj2e1gc4@google.comrnCREATED:20240216T170533ZrnX-LIC-ERROR;X-LIC-ERRORTYPE=VALUE-PARSE-ERROR:No value for DESCRIPTION rn property. Removing entire property:rnLAST-MODIFIED:20240225T224341ZrnLOCATION:Dipartimento di informatica\\, (RM115\\, Edificio G) Sapienza\\, rn Viale Regina Elena\\, 295\\, 00161 Roma RM\\, ItaliarnSEQUENCE:1rnSTATUS:CONFIRMEDrnSUMMARY:OptimizationrnTRANSP:OPAQUErnX-EVOLUTION-CALDAV-ETAG:63851380414rnRECURRENCE-ID;TZID=Europe/Rome:20240904T080000rnBEGIN:VALARMrnACTION:DISPLAYrnDESCRIPTION:This is an event reminderrnTRIGGER:-PT10MrnX-EVOLUTION-ALARM-UID:79e99eae4a12a3e2bc63f3fde1bbf572c062e65crnEND:VALARMrnEND:VEVENTrn" ];
+    };
+
+    "org/gnome/gnome-system-monitor" = {
+      current-tab = "processes";
+      show-dependencies = false;
+      show-whose-processes = "user";
+      window-height = 1028;
+      window-width = 874;
+    };
+
+    "org/gnome/gnome-system-monitor/disktreenew" = {
+      col-6-visible = true;
+      col-6-width = 0;
+    };
+
+    "org/gnome/gnome-system-monitor/proctree" = {
+      columns-order = [ 0 1 2 3 4 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 ];
+      sort-col = 8;
+      sort-order = 0;
+    };
+
+    "org/gnome/maps" = {
+      last-viewed-location = [ 46.0723087508336 11.128500602401942 ];
+      map-type = "MapsStreetSource";
+      transportation-type = "pedestrian";
+      window-maximized = false;
+      window-size = [ 1898 1028 ];
+      zoom-level = 13;
     };
 
     "org/gnome/mutter" = {
@@ -244,6 +298,10 @@ with lib.hm.gvariant;
       maximized = false;
     };
 
+    "org/gnome/portal/filechooser/discord" = {
+      last-folder-path = "/home/lexyo/Dev/thesis";
+    };
+
     "org/gnome/portal/filechooser/org/gnome/Settings" = {
       last-folder-path = "/etc/nixos/files/wallpapers/Dragonball";
     };
@@ -259,7 +317,7 @@ with lib.hm.gvariant;
     "org/gnome/shell" = {
       disable-user-extensions = false;
       disabled-extensions = [ "apps-menu@gnome-shell-extensions.gcampax.github.com" "auto-move-windows@gnome-shell-extensions.gcampax.github.com" "light-style@gnome-shell-extensions.gcampax.github.com" "native-window-placement@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "drive-menu@gnome-shell-extensions.gcampax.github.com" "blur-my-shell@aunetx" ];
-      enabled-extensions = [ "blur-my-shell@aunetx" "gsconnect@andyholmes.github.io" "paperwm@paperwm.github.com" ];
+      enabled-extensions = [ "blur-my-shell@aunetx" "paperwm@paperwm.github.com" ];
       welcome-dialog-last-shown-version = "46.2";
     };
 
@@ -340,12 +398,11 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/shell/extensions/gsconnect/device/d891693c_35f1_42a1_b4be_e96cc440eae9" = {
-      certificate-pem = "-----BEGIN CERTIFICATE-----nMIIBlDCCATmgAwIBAgIBATAKBggqhkjOPQQDBDBTMS0wKwYDVQQDDCRkODkxNjkznY18zNWYxXzQyYTFfYjRiZV9lOTZjYzQ0MGVhZTkxFDASBgNVBAsMC0tERSBDb25unZWN0MQwwCgYDVQQKDANLREUwHhcNMjMwODIyMjIwMDAwWhcNMzQwODIyMjIwMDAwnWjBTMS0wKwYDVQQDDCRkODkxNjkzY18zNWYxXzQyYTFfYjRiZV9lOTZjYzQ0MGVhnZTkxFDASBgNVBAsMC0tERSBDb25uZWN0MQwwCgYDVQQKDANLREUwWTATBgcqhkjOnPQIBBggqhkjOPQMBBwNCAATZtW4fgyU5SASOYZIDySG7tU2yjW9Z7iDjeMNVScYCnmlnxMErQlB5tKkloRVFBP6hE3eTtXnbWhH6O/xoo9NDDMAoGCCqGSM49BAMEA0kAnMEYCIQC0dU9GT3ejQjdqzYzqEHNB8xM+KMIByffGjGyaPPTRNgIhAK0xR2hpgBwbnJkGt934osYBfJK5qe3dCvNsLbnRYuZSgn-----END CERTIFICATE-----n";
       incoming-capabilities = [ "kdeconnect.battery" "kdeconnect.bigscreen.stt" "kdeconnect.clipboard" "kdeconnect.clipboard.connect" "kdeconnect.contacts.request_all_uids_timestamps" "kdeconnect.contacts.request_vcards_by_uid" "kdeconnect.findmyphone.request" "kdeconnect.mousepad.keyboardstate" "kdeconnect.mousepad.request" "kdeconnect.mpris" "kdeconnect.mpris.request" "kdeconnect.notification" "kdeconnect.notification.action" "kdeconnect.notification.reply" "kdeconnect.notification.request" "kdeconnect.ping" "kdeconnect.runcommand" "kdeconnect.sftp.request" "kdeconnect.share.request" "kdeconnect.share.request.update" "kdeconnect.sms.request" "kdeconnect.sms.request_attachment" "kdeconnect.sms.request_conversation" "kdeconnect.sms.request_conversations" "kdeconnect.systemvolume" "kdeconnect.telephony.request" "kdeconnect.telephony.request_mute" ];
-      last-connection = "lan://192.168.26.23:1716";
+      last-connection = "lan://192.168.148.216:1716";
       name = "Redmi K20 Pro";
       outgoing-capabilities = [ "kdeconnect.battery" "kdeconnect.bigscreen.stt" "kdeconnect.clipboard" "kdeconnect.clipboard.connect" "kdeconnect.connectivity_report" "kdeconnect.contacts.response_uids_timestamps" "kdeconnect.contacts.response_vcards" "kdeconnect.findmyphone.request" "kdeconnect.mousepad.echo" "kdeconnect.mousepad.keyboardstate" "kdeconnect.mousepad.request" "kdeconnect.mpris" "kdeconnect.mpris.request" "kdeconnect.notification" "kdeconnect.notification.request" "kdeconnect.ping" "kdeconnect.presenter" "kdeconnect.runcommand.request" "kdeconnect.sftp" "kdeconnect.share.request" "kdeconnect.sms.attachment_file" "kdeconnect.sms.messages" "kdeconnect.systemvolume.request" "kdeconnect.telephony" ];
-      paired = true;
+      paired = false;
       supported-plugins = [ "battery" "clipboard" "connectivity_report" "contacts" "findmyphone" "mousepad" "mpris" "notification" "ping" "presenter" "runcommand" "sftp" "share" "sms" "systemvolume" "telephony" ];
       type = "phone";
     };
@@ -364,7 +421,7 @@ with lib.hm.gvariant;
 
     "org/gnome/shell/extensions/gsconnect/device/d891693c_35f1_42a1_b4be_e96cc440eae9/plugin/notification" = {
       applications = ''
-        {"Power":{"iconName":"org.gnome.Settings-power-symbolic","enabled":true},"Clocks":{"iconName":"org.gnome.clocks","enabled":true},"Color":{"iconName":"org.gnome.Settings-color-symbolic","enabled":true},"File Roller":{"iconName":"org.gnome.FileRoller","enabled":true},"Printers":{"iconName":"org.gnome.Settings-printers-symbolic","enabled":true},"Files":{"iconName":"org.gnome.Nautilus","enabled":true},"Disk Usage Analyzer":{"iconName":"org.gnome.baobab","enabled":true},"Disks":{"iconName":"org.gnome.DiskUtility","enabled":true},"Events and Tasks Reminders":{"iconName":"org.gnome.Evolution-alarm-notify","enabled":true},"Console":{"iconName":"org.gnome.Console","enabled":true},"Geary":{"iconName":"org.gnome.Geary","enabled":true},"Date & Time":{"iconName":"org.gnome.Settings-time-symbolic","enabled":true}}
+        {"Power":{"iconName":"org.gnome.Settings-power-symbolic","enabled":true},"Clocks":{"iconName":"org.gnome.clocks","enabled":true},"Color":{"iconName":"org.gnome.Settings-color-symbolic","enabled":true},"File Roller":{"iconName":"org.gnome.FileRoller","enabled":true},"Printers":{"iconName":"org.gnome.Settings-printers-symbolic","enabled":true},"Files":{"iconName":"org.gnome.Nautilus","enabled":true},"Disk Usage Analyzer":{"iconName":"org.gnome.baobab","enabled":true},"Disks":{"iconName":"org.gnome.DiskUtility","enabled":true},"Events and Tasks Reminders":{"iconName":"org.gnome.Evolution-alarm-notify","enabled":true},"Console":{"iconName":"org.gnome.Console","enabled":true},"Geary":{"iconName":"org.gnome.Geary","enabled":true},"Date & Time":{"iconName":"org.gnome.Settings-time-symbolic","enabled":true},"Telegram Desktop":{"iconName":"telegram","enabled":true}}
       '';
       send-notifications = false;
     };
@@ -492,7 +549,7 @@ with lib.hm.gvariant;
     "org/gtk/gtk4/settings/file-chooser" = {
       date-format = "regular";
       location-mode = "path-bar";
-      show-hidden = true;
+      show-hidden = false;
       sidebar-width = 140;
       sort-column = "name";
       sort-directories-first = true;

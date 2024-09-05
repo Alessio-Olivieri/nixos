@@ -36,7 +36,7 @@
 
     };
     home.packages = with pkgs; [
-      dconf2nix
+      dconf2nix # dconf dump / | dconf2nix > /etc/nixos/home/modules/sub/dconf.nix
       ];
 
   };
