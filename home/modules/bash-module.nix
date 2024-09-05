@@ -22,7 +22,7 @@
             shellAliases = {
             urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
             urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
-            dconf-update = "dconf dump / | dconf2nix > /etc/nixos/home/modules/sub/dconf.nix"
+            dconf-update = "dconf dump / | dconf2nix > /etc/nixos/home/modules/sub/dconf.nix";
             };
         };
     };
