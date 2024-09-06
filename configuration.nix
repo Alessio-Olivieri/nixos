@@ -141,6 +141,9 @@
   pkgs.libinput
   ];
 
+  programs.ssh.extraConfig = ''
+  '';
+
   #set up garbage collector
 
   # Some programs need SUID wrappers, can be configured further or are

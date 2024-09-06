@@ -85,9 +85,11 @@ in
     zoom-us
     discord
     obs-studio
+    slack
 
     poetry
     step-cli
+    libgcc
       ];
 
   # This value determines the home Manager release that your configuration is compatible with. 
