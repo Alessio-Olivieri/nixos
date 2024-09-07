@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ inputs, config, pkgs, ... }:
 let 
   system = "x86_64-linux";
 in
@@ -14,7 +14,7 @@ in
     ./modules/git-module.nix
     ./modules/starship-module.nix
     ./modules/bash-module.nix
-    ./modules/nvim-module.nix
+    ./modules/nvchad-module.nix
 
     # ./modules/sub/dconf.nix
     ];
@@ -25,7 +25,7 @@ in
   starship-module.enable = true;
   bash-module.enable = true;
   git-module.enable = true;
-  nvim-module.enable = true;
+  nvchad-module.enable = true;
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
 
@@ -93,7 +93,6 @@ in
     step-cli
     libgcc
 
-    nvchad
       ];
 
   # This value determines the home Manager release that your configuration is compatible with. 
