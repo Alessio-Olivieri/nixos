@@ -53,6 +53,44 @@
         "type": "github"
       }
     },
+    "nvchad-starter": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1723385181,
+        "narHash": "sha256-J0iB+5aRuirhF91CnFfG8hDmkY5jOT2QlHrkoku3WVw=",
+        "owner": "NvChad",
+        "repo": "starter",
+        "rev": "3e1667ef3c5c5f74ba0783eb50984f5e2700948c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NvChad",
+        "ref": "main",
+        "repo": "starter",
+        "type": "github"
+      }
+    },
+    "nvchad4nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "nvchad-starter": "nvchad-starter"
+      },
+      "locked": {
+        "lastModified": 1725590444,
+        "narHash": "sha256-kyy8DoJynw6NAdIVUgJBYtO+jmNKZeB7uArIxvtOGvQ=",
+        "owner": "nix-community",
+        "repo": "nix4nvchad",
+        "rev": "4354c40dee0aece859465808f549463789bc3c18",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nix4nvchad",
+        "type": "github"
+      }
+    },
     "plasma-manager": {
       "inputs": {
         "home-manager": [
@@ -80,6 +118,7 @@
       "inputs": {
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
+        "nvchad4nix": "nvchad4nix",
         "plasma-manager": "plasma-manager",
         "zen-browser": "zen-browser"
       }

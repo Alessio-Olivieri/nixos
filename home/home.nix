@@ -92,6 +92,8 @@ in
     poetry
     step-cli
     libgcc
+
+    nvchad
       ];
 
   # This value determines the home Manager release that your configuration is compatible with. 
