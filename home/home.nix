@@ -14,6 +14,7 @@ in
     ./modules/git-module.nix
     ./modules/starship-module.nix
     ./modules/bash-module.nix
+    ./modules/nvim-manager.nix
 
     # ./modules/sub/dconf.nix
     ];
@@ -24,6 +25,7 @@ in
   starship-module.enable = true;
   bash-module.enable = true;
   git-module.enable = true;
+  nvim-manager.enable = true;
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
 
