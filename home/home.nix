@@ -25,7 +25,7 @@ in
   starship-module.enable = true;
   bash-module.enable = true;
   git-module.enable = true;
-  nvchad-module.enable = true;
+  nvchad-module.enable = false;
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
 
@@ -94,6 +94,14 @@ in
     libgcc
 
       ];
+
+
+
+programs.neovim = {
+  enable = true;
+  viAlias = true;
+  vimAlias = true;
+};
 
   # This value determines the home Manager release that your configuration is compatible with. 
   # This helps avoid breakage when a new home Manager release introduces backwards 

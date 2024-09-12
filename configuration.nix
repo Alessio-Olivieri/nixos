@@ -14,9 +14,11 @@
       ./hardware-configuration.nix
       ./modules/kde.nix
       ./modules/gnome.nix
+      ./modules/firefox.nix
     ];
     kde.enable = false;
     gnome.enable = true;
+    firefox.enable = true;
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -122,7 +124,6 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # Install some programs.
-  programs.firefox.enable = true;
   programs.kdeconnect.enable = true;
 
   # Allow unfree packages
