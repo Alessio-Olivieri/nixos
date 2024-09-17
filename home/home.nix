@@ -93,6 +93,8 @@ in
     step-cli
     libgcc
 
+    whatsapp-for-linux
+
       ];
 
 
