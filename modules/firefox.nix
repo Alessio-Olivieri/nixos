@@ -18,6 +18,7 @@
     config = lib.mkIf config.firefox.enable {
         programs.firefox = {
         enable = true;
+        policies = {
         DisableTelemetry = true;
         DisableFirefoxStudies = true;
         DisablePocket = true;
@@ -32,7 +33,8 @@
             "svg.context-properties.content.enabled" = lock-true;
             "widget.gtk.ignore-bogus-leave-notify" = { Value = 1 ; Status = "locked"; };
             
-        };
+                };
+            };
         };
 
     };
