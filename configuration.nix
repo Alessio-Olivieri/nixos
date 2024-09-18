@@ -118,7 +118,7 @@
   users.users.lexyo = {
     isNormalUser = true;
     description = "Alessio Olivieri";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "adbusers"];
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -126,6 +126,8 @@
   # Install some programs.
   programs.kdeconnect.enable = true;
 
+  programs.adb.enable = true;
+  
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -141,6 +143,8 @@
   # inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
   pkgs.libinput
   ];
+
+
 
   programs.ssh.extraConfig = ''
   '';
