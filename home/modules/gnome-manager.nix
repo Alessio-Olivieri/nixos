@@ -15,13 +15,12 @@
             # Put UUIDs of extensions that you want to enable here.
             # If the extension you want to enable is packaged in nixpkgs,
             # you can easily get its UUID by accessing its extensionUuid
-            # field (look at the following example).
-            pkgs.gnomeExtensions.blur-my-shell.extensionUuid
-            
+            # field (look at the following example).            
             pkgs.gnomeExtensions.paperwm.extensionUuid
 
             # Alternatively, you can manually pass UUID as a string.  
             # pkgs.gnomeExtensions.gsconnect.extensionUuid
+            pkgs.gnomeExtensions.boost-volume.extensionUuid
             # ...
           ];
         };
