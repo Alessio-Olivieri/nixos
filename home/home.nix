@@ -88,6 +88,7 @@ in
     discord
     obs-studio
     slack
+    onlyoffice-bin
 
     poetry
     step-cli
