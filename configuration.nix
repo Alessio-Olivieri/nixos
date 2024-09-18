@@ -129,7 +129,7 @@
   programs.adb.enable = true; 
   # adb server -a
   # adb devices
-
+  programs.direnv.enable=true;
   
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
