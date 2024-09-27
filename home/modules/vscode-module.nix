@@ -12,6 +12,7 @@
             ms-python.debugpy
             bbenoist.nix
             ms-vscode-remote.remote-ssh
+            yzhang.markdown-all-in-one
             ];
         };
     };
