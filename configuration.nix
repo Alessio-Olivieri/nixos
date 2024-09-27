@@ -111,6 +111,12 @@
 
   hardware.bluetooth.enable = true; # enables support for Bluetooth
 
+  virtualisation.podman = {
+  enable = true;
+  dockerCompat = true;
+};
+
+
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
@@ -118,7 +124,7 @@
   users.users.lexyo = {
     isNormalUser = true;
     description = "Alessio Olivieri";
-    extraGroups = [ "networkmanager" "wheel" "adbusers"];
+    extraGroups = [ "networkmanager" "wheel" "adbusers" "EduRadius-22"];
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];

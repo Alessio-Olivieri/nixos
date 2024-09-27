@@ -95,6 +95,7 @@ in
     libgcc
 
     whatsapp-for-linux
+    distrobox
 
       ];
 

@@ -27,7 +27,7 @@
 
             login-leonardo = "ssh -i ~/.step/certs/my_key aolivie1@login.leonardo.cineca.it";
             leonardo-setup-step = ''step ca bootstrap --ca-url=https://sshproxy.hpc.cineca.it --fingerprint 2ae1543202304d3f434bdc1a2c92eff2cd2b02110206ef06317e70c1c1735ecd '';
-            leonardo-certificate = ''step ssh certificate olivieri.1973323@studenti.uniroma1.it --provisioner cineca-hpc ~/.step/cert/my_key'';
+            leonardo-certificate = ''step ssh certificate olivieri.1973323@studenti.uniroma1.it --provisioner cineca-hpc ~/.step/certs/my_key'';
             leonardo-certificate-troubleshoot = ''
             ssh aolivie1@login01-ext.leonardo.cineca.it -o hashknownhosts=no
             ssh aolivie1@login02-ext.leonardo.cineca.it -o hashknownhosts=no
