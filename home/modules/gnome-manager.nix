@@ -22,6 +22,7 @@
             # pkgs.gnomeExtensions.gsconnect.extensionUuid
             pkgs.gnomeExtensions.boost-volume.extensionUuid
             # ...
+            pkgs.gnomeExtensions.smile-complementary-extension.extensionUuid
           ];
         };
 
