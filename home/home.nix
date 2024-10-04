@@ -36,11 +36,6 @@ in
   #   executable = true;  # make all files executable
   # };
 
-  # encode the file content in nix configuration file directly
-  # home.file.".xxx".text = ''vscode
-  #     xxx
-  # '';
-
   # Packages that should be installed to the user profile.
   home.packages = with pkgs; [
     # here is some command line tools I use frequently
@@ -64,6 +59,7 @@ in
     gawk
     zstd
     gnupg
+    smile
 
     # nix related
     #
@@ -82,21 +78,31 @@ in
     pciutils # lspci
     usbutils # lsusb
     wev # wayland input
+    distrobox
 
+    # Network
     telegram-desktop
     zoom-us
     discord
-    obs-studio
     slack
-    onlyoffice-bin
 
+    # Content creation
+    obs-studio
+    onlyoffice-bin
+    gimp-with-plugins
+
+    # Dev
     poetry
     step-cli
     libgcc
+    nodejs
+    kicad
 
-    smile
+    # Other
+    protonvpn-gui
+
     
-    distrobox
+
 
       ];
 
