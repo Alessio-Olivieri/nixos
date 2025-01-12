@@ -48,7 +48,8 @@ in
     xz
     unzip
     p7zip
-
+    unrar
+    
     # misc
     cowsay
     file
@@ -101,9 +102,15 @@ in
     # Other
     protonvpn-gui
 
+    cpufetch
     
+    kodi
+    
+    okular
 
+    inputs.zen-browser.packages."${system}".specific
 
+    filezilla
       ];
 
 

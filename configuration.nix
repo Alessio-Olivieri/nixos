@@ -152,6 +152,8 @@
   # inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
   pkgs.libinput
   pkgs.devenv
+
+  pkgs.xorg.xhost
   ];
 
 
