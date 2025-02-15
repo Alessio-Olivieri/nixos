@@ -23,7 +23,6 @@
               pkgs.gnomeExtensions.boost-volume.extensionUuid
               # ...
               pkgs.gnomeExtensions.smile-complementary-extension.extensionUuid
-              pkgs.gnomeExtensions.bluetooth-battery
             ];
           };
         };
