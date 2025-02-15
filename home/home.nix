@@ -8,24 +8,18 @@ in
 
   imports = [
     ./modules/kde-manager.nix
-    ./modules/hyprland-manager.nix
     ./modules/vscode-module.nix
     ./modules/gnome-manager.nix
     ./modules/git-module.nix
-    ./modules/starship-module.nix
     ./modules/bash-module.nix
-    ./modules/nvchad-module.nix
 
     # ./modules/sub/dconf.nix
     ];
   kde-manager.enable = false;
-  hyprland-manager.enable = false;
   gnome-manager.enable = true;
   vscode-module.enable = true;
-  starship-module.enable = true;
   bash-module.enable = true;
   git-module.enable = true;
-  nvchad-module.enable = false;
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
 
