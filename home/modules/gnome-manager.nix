@@ -23,21 +23,15 @@
               pkgs.gnomeExtensions.boost-volume.extensionUuid
               # ...
               pkgs.gnomeExtensions.smile-complementary-extension.extensionUuid
+              pkgs.gnomeExtensions.bluetooth-battery
             ];
           };
-
-
-        # Configure individual extensions
-        "org/gnome/shell/extensions/blur-my-shell" = {
-          brightness = 0;
-          noise-amount = 0;
-
         };
-      };
-
     };
     home.packages = with pkgs; [
       dconf2nix # dconf dump / | dconf2nix > /etc/nixos/home/modules/sub/dconf.nix
+      # dconf dump /org/gnome/shell/extensions/paperwm/ | dconf2nix
+
       ];
 
   };
