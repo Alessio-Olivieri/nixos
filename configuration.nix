@@ -102,7 +102,7 @@
     pulse.enable = true;
     audio.enable = true;
     # If you want to use JACK applications, uncomment this
-    jack.enable = true;
+    # jack.enable = true;
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
@@ -110,6 +110,11 @@
   };
 
   hardware.bluetooth.enable = true; # enables support for Bluetooth
+  hardware.bluetooth.settings = {
+	General = {
+		Experimental = true; # To show the battery of connected devices
+	};
+};
 
   virtualisation.podman = {
   enable = true;
@@ -152,6 +157,8 @@
   # inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
   pkgs.libinput
   pkgs.devenv
+
+  # pkgs.easyeffects # For audio effects on pipewire applications
 
   pkgs.xorg.xhost
   ];
