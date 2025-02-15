@@ -13,7 +13,7 @@ in
     ./modules/git-module.nix
     ./modules/bash-module.nix
 
-    # ./modules/sub/dconf.nix
+     ./modules/sub/dconf.nix
     ];
   kde-manager.enable = false;
   gnome-manager.enable = true;
