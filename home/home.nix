@@ -7,7 +7,6 @@ in
   home.homeDirectory = "/home/lexyo";
 
   imports = [
-    ./modules/kde-manager.nix
     ./modules/vscode-module.nix
     ./modules/gnome-manager.nix
     ./modules/git-module.nix
@@ -15,7 +14,6 @@ in
 
      ./modules/sub/dconf.nix
     ];
-  kde-manager.enable = false;
   gnome-manager.enable = true;
   vscode-module.enable = true;
   bash-module.enable = true;
@@ -100,8 +98,6 @@ in
     kodi
     
     okular
-
-    inputs.zen-browser.packages."${system}".specific
 
     filezilla
     obsidian

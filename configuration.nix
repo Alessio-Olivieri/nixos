@@ -12,11 +12,9 @@
       ./battery-optimizations.nix
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./modules/kde.nix
       ./modules/gnome.nix
       ./modules/firefox.nix
     ];
-    kde.enable = false;
     gnome.enable = true;
     firefox.enable = true;
 
