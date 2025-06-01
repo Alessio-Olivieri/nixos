@@ -63,6 +63,7 @@ in
     nix-output-monitor
 
     btop  # replacement of htop/nmon
+    htop
     iotop # io monitoring
     iftop # network monitoring
 
@@ -87,11 +88,9 @@ in
     gimp-with-plugins
 
     # Dev
-    poetry
-    step-cli
     libgcc
-    nodejs
-    kicad
+    # kicad
+    
 
     # Other
     protonvpn-gui
@@ -105,6 +104,7 @@ in
     inputs.zen-browser.packages."${system}".specific
 
     filezilla
+    obsidian
       ];
 
 
@@ -127,3 +127,5 @@ programs.neovim = {
   # Let home Manager install and manage itself.
   programs.home-manager.enable = true;
 }
+
+
