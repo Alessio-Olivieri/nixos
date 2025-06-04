@@ -11,7 +11,7 @@
   in
 {   
     options = {
-    firefox.enable = lib.mkEnableOption "Enables KDE Nix settings";
+    firefox.enable = lib.mkEnableOption "Enables Firefox Nix settings";
     };
 
 

@@ -1,7 +1,7 @@
 { config, pkgs, lib, inputs, ... }:
 {   
     options = {
-    gnome.enable = lib.mkEnableOption "Enables KDE Nix settings";
+    gnome.enable = lib.mkEnableOption "Enables Gnome Nix settings";
     };
 
 
