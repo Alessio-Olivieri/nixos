@@ -21,6 +21,16 @@
         environment.gnome.excludePackages = (with pkgs; [
             gnome-tour
             epiphany # web browser
+            xterm
+            yelp
+            gnome-contacts
+            gnome-maps  
+            simple-scan
+            gedit
+            evince
+            seahorse
+            gnome-font-viewer
+            gnome-characters
         ]) ++ (with pkgs.gnome; [
         ]);
         

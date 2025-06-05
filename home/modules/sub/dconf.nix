@@ -5,6 +5,13 @@ with lib.hm.gvariant;
 
 {
   dconf.settings = {
+
+
+    "org/gnome/desktop/default-applications/terminal" = {
+      exec = "ghostty";
+      exec-arg = "--";
+    };
+    
     "org/gnome/shell/extensions/paperwm" =
     {
       gesture-horizontal-fingers = 3;

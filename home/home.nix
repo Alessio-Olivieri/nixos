@@ -11,14 +11,12 @@ in
     ./modules/gnome-manager.nix
     ./modules/git-module.nix
     ./modules/bash-module.nix
-    ./modules/ghostty-module.nix
      ./modules/sub/dconf.nix
     ];
   gnome-manager.enable = true;
   vscode-module.enable = true;
   bash-module.enable = true;
   git-module.enable = true;
-  ghostty-module.enable = true;
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
 
@@ -62,7 +60,6 @@ in
     nix-output-monitor
 
     btop  # replacement of htop/nmon
-    htop
     iotop # io monitoring
     iftop # network monitoring
 
@@ -102,14 +99,6 @@ in
     filezilla
     obsidian
       ];
-
-
-
-programs.neovim = {
-  enable = true;
-  viAlias = true;
-  vimAlias = true;
-};
 
   # This value determines the home Manager release that your configuration is compatible with. 
   # This helps avoid breakage when a new home Manager release introduces backwards 
