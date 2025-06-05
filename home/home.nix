@@ -97,7 +97,7 @@ in
     
     kodi
     
-    okular
+    kdePackages.okular
 
     filezilla
     obsidian
