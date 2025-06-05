@@ -9,7 +9,7 @@
             programs.git = {
                 enable = true;
                 userName = "Alessio-Olivieri";
-                userEmail = "lexyo.2002@gmial.com";
+                userEmail = "lexyo.2002@gmail.com";
             };
     };
 }

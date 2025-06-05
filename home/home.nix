@@ -11,13 +11,14 @@ in
     ./modules/gnome-manager.nix
     ./modules/git-module.nix
     ./modules/bash-module.nix
-
+    ./modules/ghostty-module.nix
      ./modules/sub/dconf.nix
     ];
   gnome-manager.enable = true;
   vscode-module.enable = true;
   bash-module.enable = true;
   git-module.enable = true;
+  ghostty-module.enable = true;
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
 
@@ -98,7 +99,6 @@ in
     kodi
     
     kdePackages.okular
-
     filezilla
     obsidian
       ];
