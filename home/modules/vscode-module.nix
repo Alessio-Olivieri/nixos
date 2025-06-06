@@ -10,10 +10,22 @@
       profiles.default = {
         extensions = with pkgs.vscode-extensions; [
           bbenoist.nix
+          ms-vscode.cpptools
+          ms-vscode.cpptools
           ms-python.debugpy
           ms-python.python
+          ms-python.vscode-pylance
+          ms-toolsai.jupyter
+          ms-toolsai.vscode-jupyter-cell-tags
+          ms-toolsai.jupyter-keymap
+          ms-toolsai.jupyter-renderers
+          ms-toolsai.vscode-jupyter-slideshow
+          ms-vscode-remote.remote-containers
           ms-vscode-remote.remote-ssh
           yzhang.markdown-all-in-one
+          mechatroner.rainbow-csv
+          catppuccin.catppuccin-vsc
+          catppuccin.catppuccin-vsc-icons
         ];
         userSettings = {
           ### Editor & UI ###
