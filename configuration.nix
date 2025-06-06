@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, lib, ... }:
     let 
       system = "x86_64-linux";
     in
@@ -120,6 +120,7 @@
   enable = true;
   dockerCompat = true;
 };
+security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
 
 
   # Enable touchpad support (enabled default in most desktopManager).
