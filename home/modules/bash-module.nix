@@ -37,11 +37,14 @@
             # ssh aolivie1@login05-ext.leonardo.cineca.it -o hashknownhosts=no
             # ssh aolivie1@login07-ext.leonardo.cineca.it -o hashknownhosts=no
             # '';
-
-
-
-
             };
+        };
+        programs.zoxide = {
+            enable = true;
+            enableBashIntegration = true;
+            options = [
+                "--cmd cd"
+            ];
         };
     };
 }
