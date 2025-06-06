@@ -8,34 +8,44 @@
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs:
-    let 
+    let
       system = "x86_64-linux";
-      lib = nixpkgs.lib;
       pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
-      extraSpecialArgs = { inherit system; inherit inputs; };  # <- passing inputs to the attribute set for home-manager
-      specialArgs = { inherit system; inherit inputs; };       # <- passing inputs to the attribute set for NixOS (optional)
+      # You can pass inputs to all modules this way.
+      specialArgs = { inherit inputs; };
     in
     {
+      nixosConfigurations = {
+        nixos = nixpkgs.lib.nixosSystem {
+          inherit specialArgs; # Makes `inputs` available in all NixOS modules.
+          modules = [
+            ./configuration.nix
 
-    nixosConfigurations = {
-      nixos = lib.nixosSystem {
-        inherit specialArgs;        # <- this will make inputs available anywhere in the NixOS configuration
-        modules = [
-          ./configuration.nix
-          home-manager.nixosModules.home-manager {
-            home-manager = {
-              inherit extraSpecialArgs; # <- this will make inputs available anywhere in the HM configuration
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              users.lexyo = import ./home/home.nix;
-            };
-          }
-        ];
+            # The main Home Manager module for NixOS.
+            home-manager.nixosModules.home-manager
+            {
+              # Home Manager configuration.
+              home-manager = {
+                backupFileExtension = "hm-bak";
+                # This makes `inputs` available in all Home Manager modules.
+                # It inherits the `specialArgs` from the nixosSystem call above,
+                # so `extraSpecialArgs` is not strictly needed but doesn't hurt.
+                extraSpecialArgs = specialArgs;
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.lexyo = {
+                  imports = [
+                    # Your personal home-manager configuration.
+                    ./home/home.nix
+                  ];
+                };
+              };
+            }
+          ];
+        };
       };
     };
-  };
 }
