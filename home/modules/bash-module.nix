@@ -13,10 +13,12 @@
             export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin"
             '';
 
-            initExtra = '' 
-            eval `ssh-agent`
-            ssh-add ~/.ssh/github/key;   
-            ssh-add ~/.ssh/tensordock/key;        
+            initExtra = ''
+            if ! pgrep -u "$USER" ssh-agent >/dev/null; then
+                eval "$(ssh-agent -s)" >/dev/null 2>&1
+            fi
+            ssh-add ~/.ssh/github/key </dev/null >/dev/null 2>&1
+            ssh-add ~/.ssh/tensordock/key </dev/null >/dev/null 2>&1
             '';
 
             # set some aliases, feel free to add more or remove some
