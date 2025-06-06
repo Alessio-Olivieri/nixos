@@ -23,6 +23,7 @@
             epiphany # web browser
             xterm
             yelp
+            gnome-console
             gnome-contacts
             gnome-maps  
             simple-scan

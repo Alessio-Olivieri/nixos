@@ -21,7 +21,8 @@
               # Alternatively, you can manually pass UUID as a string.  
               # pkgs.gnomeExtensions.gsconnect.extensionUuid
               pkgs.gnomeExtensions.boost-volume.extensionUuid
-              # ...
+              # pkgs.gnomeExtensions.bluetooth-battery-indicator.extensionUuid
+              pkgs.gnomeExtensions.unite.extensionUuid
               pkgs.gnomeExtensions.smile-complementary-extension.extensionUuid
             ];
           };
@@ -30,7 +31,11 @@
     home.packages = with pkgs; [
       dconf2nix # dconf dump / | dconf2nix > /etc/nixos/home/modules/sub/dconf.nix
       # dconf dump /org/gnome/shell/extensions/paperwm/ | dconf2nix
-
+      dconf-editor
+      gnomeExtensions.paperwm
+      gnomeExtensions.boost-volume
+      gnomeExtensions.unite
+      gnomeExtensions.smile-complementary-extension
       ];
 
   };

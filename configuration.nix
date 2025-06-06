@@ -159,6 +159,7 @@
 
   # pkgs.easyeffects # For audio effects on pipewire applications
   pkgs.xorg.xhost
+  pkgs.kitty
   ];
 
 
