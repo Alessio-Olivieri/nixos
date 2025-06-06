@@ -31,10 +31,8 @@ in
   home.stateVersion = "25.05";
   programs.home-manager.enable = true;
 
-  programs.starship = {
-    enable = true;
-    configFile = ./modules/sub/starship.toml;  # Path relative to this Nix file
-  };
+  programs.starship.enable = true;
+  xdg.configFile."starship.toml".source = ./modules/sub/starship.toml;
 
   home.packages = with pkgs; [
     neofetch
