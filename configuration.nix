@@ -86,6 +86,9 @@
     variant = "";
   };
 
+  fonts.packages = with pkgs; [ nerd-fonts.jetbrains-mono ];  
+
+
   # Configure console keymap
   console.keyMap = "it";
 

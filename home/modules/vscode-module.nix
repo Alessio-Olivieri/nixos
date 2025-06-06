@@ -57,6 +57,8 @@
 
           ### Terminal ###
           "terminal.integrated.enableMultiLinePasteWarning" = false;
+          "editor.fontFamily" = ["JetBrainsMono Nerd Font" "monospace"];
+          "editor.fontLigatures" = true;
         };
       };
     };

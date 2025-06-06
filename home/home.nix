@@ -28,6 +28,13 @@ in
   #   recursive = true;   # link recursively
   #   executable = true;  # make all files executable
   # };
+  home.stateVersion = "25.05";
+  programs.home-manager.enable = true;
+
+  programs.starship = {
+    enable = true;
+    configFile = ./modules/sub/starship.toml;  # Path relative to this Nix file
+  };
 
   home.packages = with pkgs; [
     neofetch
@@ -87,8 +94,6 @@ in
     obsidian
       ];
       
-  home.stateVersion = "25.05";
-  programs.home-manager.enable = true;
 }
 
 
