@@ -160,12 +160,12 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   # inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
   pkgs.libinput
   pkgs.devenv
+  pkgs.stress-ng
 
   # pkgs.easyeffects # For audio effects on pipewire applications
   pkgs.xorg.xhost
   pkgs.kitty
   ];
-
 
 
 

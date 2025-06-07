@@ -12,6 +12,7 @@ in
     ./modules/git-module.nix
     ./modules/bash-module.nix
     ./modules/kitty-module.nix
+    ./modules/yazi-module.nix
      ./modules/sub/dconf.nix
     ];
   gnome-manager.enable = true;
@@ -19,6 +20,7 @@ in
   bash-module.enable = true;
   git-module.enable = true;
   kitty-module.enable = true;
+  yazi-module.enable=true;
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
 
@@ -85,6 +87,7 @@ in
 
     cpufetch
     
+    youtube-music
     kodi
     ghostty
     kdePackages.okular

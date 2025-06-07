@@ -3,6 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    
+    yazi = {
+      url = "github:sxyazi/yazi";
+    };
 
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
@@ -10,7 +14,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, yazi, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
@@ -44,6 +48,9 @@
                 };
               };
             }
+            ({ pkgs, ... }: {
+						environment.systemPackages = [ yazi.packages.${pkgs.system}.default ];
+					  })
           ];
         };
       };

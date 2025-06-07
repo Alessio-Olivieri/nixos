@@ -10,7 +10,17 @@
             enableCompletion = true;
             # TODO add your custom bashrc here
             bashrcExtra = ''
-            export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin"
+                export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin";
+
+                y() {
+                    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+                    yazi "$@" --cwd-file="$tmp"
+                    if [ -f "$tmp" ]; then
+                        local cwd="$(cat "$tmp")"
+                        [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && cd "$cwd"
+                        rm -f "$tmp"
+                    fi
+                }
             '';
 
             initExtra = ''
