@@ -1,0 +1,21 @@
+{
+    "editor.minimap.enabled": false,
+    "window.autoDetectColorScheme": true,
+    "window.titleBarStyle": "custom",
+    "workbench.colorTheme": "Catppuccin Frappé",
+    "workbench.iconTheme": "catppuccin-frappe",
+    "workbench.preferredDarkColorTheme": "Catppuccin Frappé",
+    "workbench.preferredLightColorTheme": "Catppuccin Latte",
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.confirmPasteNative": false,
+    "git.enableSmartCommit": true,
+    "git.ignoreMissingGitWarning": true,
+    "python.analysis.extraPaths": [
+        "source",
+        "../source"
+    ],
+    "remote.SSH.showLoginTerminal": true,
+    "terminal.integrated.enableMultiLinePasteWarning": false,
+    "editor.fontLigatures": true
+}

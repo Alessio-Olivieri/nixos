@@ -8,6 +8,7 @@
     programs.vscode = {
       enable = true;
       profiles.default = {
+        # Your extensions remain managed by Home Manager
         extensions = with pkgs.vscode-extensions; [
           bbenoist.nix
           ms-vscode.cpptools
@@ -27,39 +28,21 @@
           catppuccin.catppuccin-vsc
           catppuccin.catppuccin-vsc-icons
         ];
-        userSettings = {
-          ### Editor & UI ###
-          "editor.minimap.enabled" = false;
-          "window.autoDetectColorScheme" = true;
-          "window.titleBarStyle" = "custom";
-          "workbench.colorTheme" = "Catppuccin Frappé";
-          "workbench.iconTheme" = "catppuccin-latte";
-          "workbench.preferredDarkColorTheme" = "Catppuccin Frappé";
-          "workbench.preferredLightColorTheme" = "Catppuccin Latte";
-
-          ### Explorer (File Tree) ###
-          "explorer.confirmDelete" = false;
-          "explorer.confirmDragAndDrop" = false;
-          "explorer.confirmPasteNative" = false;
-
-          ### Git ###
-          "git.enableSmartCommit" = true;
-          "git.ignoreMissingGitWarning" = true;
-
-          ### Python ###
-          "python.analysis.extraPaths" = [
-            "source"
-            "../source"
-          ];
-
-          ### Remote - SSH ###
-          "remote.SSH.showLoginTerminal" = true;
-
-          ### Terminal ###
-          "terminal.integrated.enableMultiLinePasteWarning" = false;
-          "editor.fontLigatures" = true;
-        };
+        
+        # The userSettings block is removed from here.
+        # Your settings will now be read from the symlinked file specified below.
       };
     };
+
+    # This section creates a symlink to a writable settings.json file. [1]
+    # This allows you to edit your VSCode settings directly, and the changes
+    # will persist and can be committed to your configuration repository.
+    # The path is for standard VSCode on Linux. If you use VSCodium, change
+    # ".config/Code/User/settings.json" to ".config/VSCodium/User/settings.json".
+    home.file.".config/Code/User/settings.json".source = lib.mkForce (
+      # IMPORTANT: You must replace the path below with the absolute path
+      # to your own vscode-settings.json file.
+      config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/modules/sub/vscode-settings.json"
+    );
   };
 }
