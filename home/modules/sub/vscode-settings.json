@@ -1,6 +1,5 @@
 {
     "editor.minimap.enabled": false,
-    "window.autoDetectColorScheme": true,
     "window.titleBarStyle": "custom",
     "workbench.colorTheme": "Catppuccin Frappé",
     "workbench.iconTheme": "catppuccin-frappe",
@@ -17,5 +16,9 @@
     ],
     "remote.SSH.showLoginTerminal": true,
     "terminal.integrated.enableMultiLinePasteWarning": false,
-    "editor.fontLigatures": true
+    "editor.fontLigatures": true,
+    "remote.autoForwardPortsSource": "hybrid",
+    "extensions.autoCheckUpdates": false,
+    "update.mode": "none",
+    "window.autoDetectColorScheme": true
 }

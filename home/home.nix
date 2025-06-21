@@ -72,7 +72,7 @@ in
     wev 
     distrobox
 
-    telegram-desktop
+    ayugram-desktop
     zoom-us
     discord
     slack
@@ -86,7 +86,7 @@ in
     protonvpn-gui
 
     cpufetch
-    
+    google-chrome
     youtube-music
     kodi
     ghostty
