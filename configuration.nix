@@ -17,7 +17,7 @@
       ./modules/niri.nix
       ./modules/firefox.nix
     ];
-    gnome.enable = true;
+    gnome.enable = false;
     niri.enable = true;
     firefox.enable = true;
 
