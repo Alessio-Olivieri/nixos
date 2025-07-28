@@ -13,16 +13,14 @@ in
     ./modules/bash-module.nix
     ./modules/kitty-module.nix
     ./modules/yazi-module.nix
-    ./modules/niri-module.nix
-    ./modules/sub/dconf.nix
+     ./modules/sub/dconf.nix
     ];
-  gnome-manager.enable = false;
+  gnome-manager.enable = true;
   vscode-module.enable = true;
   bash-module.enable = true;
   git-module.enable = true;
   kitty-module.enable = true;
   yazi-module.enable=true;
-  niri-module.enable=true;
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
 
