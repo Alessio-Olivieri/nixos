@@ -1,5 +1,0 @@
-binds {
-  Mod+T { spawn "kitty"; }        // or: "alacritty", "ghostty", "foot"
-  Mod+D { spawn "fuzzel"; }       // app launcher (optional)
-  Mod+O { toggle-overview; }      // niri’s Overview
-}
