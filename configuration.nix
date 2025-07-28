@@ -193,7 +193,12 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
     ];
   };
+
+  nixpkgs.config.permittedInsecurePackages = [
+              "ventoy-qt5-1.1.05"
+            ];
     
+  
 
   system.stateVersion = "25.05"; # Did you read the comment?
 
