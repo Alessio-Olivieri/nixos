@@ -15,7 +15,8 @@
       ./modules/gnome.nix
       ./modules/firefox.nix
     ];
-    gnome.enable = true;
+    # gnome.enable = true;
+    programs.niri.enable = true;
     firefox.enable = true;
 
   # Bootloader.
