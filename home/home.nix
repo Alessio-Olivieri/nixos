@@ -93,8 +93,11 @@ in
     kdePackages.okular
     filezilla
     obsidian
+
+    android-tools
+
+    openfortivpn
       ];
-      
 }
 
 
