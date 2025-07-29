@@ -22,8 +22,11 @@
               # pkgs.gnomeExtensions.gsconnect.extensionUuid
               pkgs.gnomeExtensions.boost-volume.extensionUuid
               # pkgs.gnomeExtensions.bluetooth-battery-indicator.extensionUuid
-              pkgs.gnomeExtensions.unite.extensionUuid
               pkgs.gnomeExtensions.smile-complementary-extension.extensionUuid
+              pkgs.gnomeExtensions.just-perfection.extensionUuid
+              pkgs.gnomeExtensions.tophat.extensionUuid
+              pkgs.gnomeExtensions.headsetcontrol.extensionUuid
+              pkgs.gnomeExtensions.quick-settings-audio-panel.extensionUuid
             ];
           };
         };
@@ -34,8 +37,11 @@
       dconf-editor
       gnomeExtensions.paperwm
       gnomeExtensions.boost-volume
-      gnomeExtensions.unite
       gnomeExtensions.smile-complementary-extension
+      gnomeExtensions.just-perfection
+      gnomeExtensions.tophat
+      gnomeExtensions.headsetcontrol
+      pkgs.gnomeExtensions.quick-settings-audio-panel
       ];
 
   };
