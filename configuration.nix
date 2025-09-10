@@ -82,8 +82,9 @@
 
   # Configure keymap in X11
   services.xserver.xkb = {
-    layout = "it";
-    variant = "";
+    layout = "it,us";             # Italian first, English (US) second
+    variant = ",";                 # default variants
+    options = "grp:super_space_toggle"; # switch with Super+Space
   };
 
   fonts.packages = with pkgs; [ nerd-fonts.jetbrains-mono ];  
@@ -141,9 +142,6 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   # Install some programs.
   programs.kdeconnect.enable = true;
 
-  programs.adb.enable = true; 
-  # adb server -a
-  # adb devices
   programs.direnv.enable=true;
   
   # Allow unfree packages
@@ -165,6 +163,7 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   # pkgs.easyeffects # For audio effects on pipewire applications
   pkgs.xorg.xhost
   pkgs.kitty
+  pkgs.android-tools
   ];
 
 
