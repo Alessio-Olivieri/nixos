@@ -646,55 +646,47 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/041e9fd0-f288-4426-97a3-f7767bd82260" = {
-      background = "/etc/nixos/files/wallpapers/Dragonball/tyrannical.png";
       index = 4;
       name = "Tyrannical";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/22ac0db7-0bfc-4642-95a4-dd6312774095" = {
-      background = "/etc/nixos/files/wallpapers/Dragonball/unstoppable.png";
       index = 7;
       name = "Unstoppable";
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/3caef056-a11b-47c6-a7e3-301eccb2a922" = {
-      background = "/etc/nixos/files/wallpapers/Dragonball/resilient.jpg";
       index = 0;
       name = "Resilient";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/68f151bf-0926-4239-961a-d56156bdf6d6" = {
-      background = "/etc/nixos/files/wallpapers/Dragonball/wise.png";
       index = 1;
       name = "Wise";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/9dbb45ba-983f-422e-a4ae-ac024f664ae5" = {
-      background = "/etc/nixos/files/wallpapers/Dragonball/perfectionist.png";
       index = 5;
       name = "Perfectionist";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/ac221d71-90ef-41b6-9924-d9739b0f40f4" = {
-      background = "/etc/nixos/files/wallpapers/Dragonball/chaotic.png";
       index = 2;
       name = "Chaotic";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/be7ab809-48a2-43d4-971e-150fbdf99148" = {
-      background = "/etc/nixos/files/wallpapers/Dragonball/ferocius.png";
       index = 3;
       name = "Ferocius";
       show-top-bar = true;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/d7a3c3af-0b08-445b-b632-07fa8c4df16e" = {
-      background = "/etc/nixos/files/wallpapers/Dragonball/determined.jpg";
       index = 6;
       name = "Determined";
     };

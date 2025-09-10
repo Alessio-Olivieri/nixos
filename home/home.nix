@@ -72,7 +72,6 @@ in
     wev 
     distrobox
 
-    ayugram-desktop
     zoom-us
     discord
     slack
@@ -95,9 +94,20 @@ in
     obsidian
 
     android-tools
-
+    tmux
     openfortivpn
-      ];
+    ];
+
+  #NEXTCLOUD
+    services.nextcloud-client = {
+      enable = true;
+      #startInBackground = false;
+    };
+    systemd.user.services.nextcloud-client = {
+      Unit = {
+        After = pkgs.lib.mkForce "graphical-session.target"; 
+      };
+    };
 }
 
 

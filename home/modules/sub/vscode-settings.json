@@ -20,5 +20,10 @@
     "remote.autoForwardPortsSource": "hybrid",
     "extensions.autoCheckUpdates": false,
     "update.mode": "none",
-    "window.autoDetectColorScheme": true
+    "window.autoDetectColorScheme": true,
+    "workbench.startupEditor": "none",
+    "jupyter.widgetScriptSources": [
+        "jsdelivr.com",
+        "unpkg.com"
+    ]
 }

@@ -31,6 +31,13 @@
           };
         };
     };
+    home.file.".config/gtk-4.0/gtk.css".text = ''
+      @import 'colors.css';
+      * {
+          border-radius: 0;
+      }
+    '';
+
     home.packages = with pkgs; [
       dconf2nix # dconf dump / | dconf2nix > /etc/nixos/home/modules/sub/dconf.nix
       # dconf dump /org/gnome/shell/extensions/paperwm/ | dconf2nix
