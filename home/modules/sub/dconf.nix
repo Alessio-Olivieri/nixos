@@ -60,6 +60,10 @@ with lib.hm.gvariant;
       subtitle-encoding = "UTF-8";
     };
 
+    "org/gnome/Weather" = {
+      locations = [ (mkVariant [ (mkUint32 2) (mkVariant [ "Rome" "LIRU" true [ (mkTuple [ 0.7321656212116213 0.2181661564992912 ]) ] [ (mkTuple [ 0.731292956585624 0.21787526247286132 ]) ] ]) ]) ];
+    };
+
     "org/gnome/baobab/ui" = {
       is-maximized = false;
       window-size = mkTuple [ 960 1040 ];
@@ -155,6 +159,7 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/desktop/input-sources" = {
+      mru-sources = [ (mkTuple [ "xkb" "it" ]) ];
       sources = [ (mkTuple [ "xkb" "it" ]) ];
       xkb-options = [ "terminate:ctrl_alt_bksp" ];
     };
@@ -186,6 +191,10 @@ with lib.hm.gvariant;
 
     "org/gnome/desktop/notifications/application/com-ayugram-desktop" = {
       application-id = "com.ayugram.desktop.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/com-nextcloud-desktopclient-nextcloud" = {
+      application-id = "com.nextcloud.desktopclient.nextcloud.desktop";
     };
 
     "org/gnome/desktop/notifications/application/discord" = {
@@ -302,7 +311,7 @@ with lib.hm.gvariant;
 
     "org/gnome/desktop/peripherals/mouse" = {
       accel-profile = "flat";
-      speed = -0.24463519313304716;
+      speed = -0.244635;
     };
 
     "org/gnome/desktop/peripherals/touchpad" = {
@@ -380,12 +389,16 @@ with lib.hm.gvariant;
       sidebar-page = "thumbnails";
       sidebar-size = 148;
       sizing-mode = "free";
-      window-ratio = mkTuple [ 3.1372549019607843 1.3232323232323233 ];
-      zoom = 0.856152906389528;
+      window-ratio = mkTuple [ 3.137255 1.323232 ];
+      zoom = 0.856153;
     };
 
     "org/gnome/evolution-data-server" = {
       migrated = true;
+    };
+
+    "org/gnome/evolution-data-server/calendar" = {
+      reminders-past = [];
     };
 
     "org/gnome/evolution" = {
@@ -402,6 +415,8 @@ with lib.hm.gvariant;
     "org/gnome/file-roller/file-selector" = {
       show-hidden = false;
       sidebar-size = 300;
+      sort-method = "name";
+      sort-type = "ascending";
       window-size = mkTuple [ (-1) (-1) ];
     };
 
@@ -442,7 +457,7 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/maps" = {
-      last-viewed-location = [ 40.54216674951329 10.656517196087748 ];
+      last-viewed-location = [ 40.542167 10.656517 ];
       map-type = "MapsStreetSource";
       transportation-type = "pedestrian";
       window-maximized = false;
@@ -521,6 +536,14 @@ with lib.hm.gvariant;
       last-folder-path = "/home/lexyo/Dev/thesis";
     };
 
+    "org/gnome/portal/filechooser/obsidian" = {
+      last-folder-path = "/home/lexyo/Nextcloud/ObsidianVault";
+    };
+
+    "org/gnome/portal/filechooser/org/gnome/Settings" = {
+      last-folder-path = "/etc/nixos/files/wallpapers/Dragonball";
+    };
+
     "org/gnome/portal/filechooser/org/gnome/Settings" = {
       last-folder-path = "/etc/nixos/files/wallpapers/Dragonball";
     };
@@ -552,18 +575,45 @@ with lib.hm.gvariant;
       sleep-inactive-ac-timeout = 1200;
       sleep-inactive-ac-type = "suspend";
       sleep-inactive-battery-timeout = 900;
+      sleep-inactive-battery-type = "nothing";
     };
 
     "org/gnome/shell" = {
+      command-history = [ "kg" "lg" ];
       disable-user-extensions = false;
       disabled-extensions = [ "auto-move-windows@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "apps-menu@gnome-shell-extensions.gcampax.github.com" "launch-new-instance@gnome-shell-extensions.gcampax.github.com" "light-style@gnome-shell-extensions.gcampax.github.com" "native-window-placement@gnome-shell-extensions.gcampax.github.com" "drive-menu@gnome-shell-extensions.gcampax.github.com" "tilingshell@ferrarodomenico.com" "forge@jmmaranan.com" "blur-my-shell@aunetx" "bluetooth-battery@michalw.github.com" "openbar@neuromorph" "unite@hardpixel.eu" "vertical-overview@RensAlthuis.github.com" "system-monitor@gnome-shell-extensions.gcampax.github.com" "gestureImprovements@gestures" "touchpad-gesture-customization@coooolapps.com" ];
-      enabled-extensions = [ "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "paperwm@paperwm.github.com" ];
+      enabled-extensions = [ "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "paperwm@paperwm.github.com" "paperwm@paperwm.github.com" "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" ];
       favorite-apps = [ "org.gnome.Nautilus.desktop" "code.desktop" "firefox.desktop" ];
       welcome-dialog-last-shown-version = "46.2";
     };
 
     "org/gnome/shell/app-switcher" = {
       current-workspace-only = true;
+    };
+
+    "org/gnome/shell/extensions/HeadsetControl" = {
+      show-systemindicator = false;
+    };
+
+    "org/gnome/shell/extensions/dash-to-panel" = {
+      extension-version = 68;
+      panel-anchors = ''
+        {}
+      '';
+      panel-element-positions = ''
+        {}
+      '';
+      panel-lengths = ''
+        {}
+      '';
+      panel-positions = ''
+        {}
+      '';
+      panel-sizes = ''
+        {}
+      '';
+      prefs-opened = false;
+      primary-monitor = "LGD-0x00000000";
     };
 
     "org/gnome/shell/extensions/just-perfection" = {
@@ -589,6 +639,7 @@ with lib.hm.gvariant;
       support-notifier-showed-version = 34;
       support-notifier-type = 0;
       theme = true;
+      top-panel-position = 0;
       window-demands-attention-focus = true;
       window-maximized-on-create = false;
       window-picker-icon = false;
@@ -606,6 +657,139 @@ with lib.hm.gvariant;
       layout = [ [ "gnome@main" "quick-settings-audio-panel@rayzeq.github.io/main" ] ];
     };
 
+    "org/gnome/shell/extensions/openbar" = {
+      accent-color = [ "0" "0.75" "0.75" ];
+      autohg-bar = true;
+      autohg-menu = true;
+      autotheme-dark = "Dark";
+      autotheme-font = true;
+      autotheme-light = "Light";
+      bartype = "Islands";
+      bcolor = [ "0.643" "0.612" "0.675" ];
+      bg-change = true;
+      bgalpha = 0.0;
+      bgcolor = [ "0.843" "0.843" "0.851" ];
+      bgcolor-wmax = [ "0.922" "0.922" "0.922" ];
+      bgcolor2 = [ "0.725" "0.725" "0.725" ];
+      bguri = "file:///home/lexyo/.local/share/backgrounds/2025-06-05-16-15-21-Background.png";
+      boxalpha = 0.0;
+      boxcolor = [ "0.843" "0.843" "0.851" ];
+      color-scheme = "default";
+      count1 = 497448;
+      count10 = 12;
+      count11 = 2;
+      count12 = 1;
+      count2 = 11474;
+      count3 = 10107;
+      count4 = 507;
+      count5 = 209;
+      count6 = 141;
+      count7 = 40;
+      count8 = 32;
+      count9 = 27;
+      dark-bcolor = [ "0.643" "0.612" "0.675" ];
+      dark-bgcolor = [ "0.259" "0.259" "0.275" ];
+      dark-bgcolor-wmax = [ "0.118" "0.118" "0.118" ];
+      dark-bgcolor2 = [ "0.224" "0.224" "0.243" ];
+      dark-bguri = "file:///home/lexyo/.local/share/backgrounds/2025-06-05-16-15-21-Background.png";
+      dark-boxcolor = [ "0.259" "0.259" "0.275" ];
+      dark-hcolor = [ "0.643" "0.643" "0.663" ];
+      dark-hscd-color = [ "0.349" "0.314" "0.380" ];
+      dark-iscolor = [ "0.259" "0.259" "0.275" ];
+      dark-mbcolor = [ "0.643" "0.643" "0.663" ];
+      dark-mbgcolor = [ "0.075" "0.075" "0.075" ];
+      dark-mhcolor = [ "0.643" "0.643" "0.663" ];
+      dark-mscolor = [ "0.349" "0.314" "0.380" ];
+      dark-mshcolor = [ "0.000" "0.000" "0.000" ];
+      dark-palette1 = [ "83" "75" "91" ];
+      dark-palette10 = [ "124" "116" "132" ];
+      dark-palette11 = [ "52" "36" "52" ];
+      dark-palette12 = [ "164" "156" "172" ];
+      dark-palette2 = [ "9" "7" "14" ];
+      dark-palette3 = [ "244" "244" "245" ];
+      dark-palette4 = [ "145" "141" "148" ];
+      dark-palette5 = [ "112" "106" "119" ];
+      dark-palette6 = [ "44" "39" "52" ];
+      dark-palette7 = [ "164" "164" "169" ];
+      dark-palette8 = [ "124" "124" "131" ];
+      dark-palette9 = [ "100" "100" "107" ];
+      dark-shcolor = [ "0.000" "0.000" "0.000" ];
+      dark-smbgcolor = [ "0.224" "0.224" "0.243" ];
+      dark-vw-color = [ "0.349" "0.314" "0.380" ];
+      dark-winbcolor = [ "0.349" "0.314" "0.380" ];
+      default-font = "Sans 12";
+      fgalpha = 1.0;
+      fgcolor = [ "1.0" "1.0" "1.0" ];
+      gradient-direction = "horizontal";
+      hcolor = [ "0.204" "0.141" "0.204" ];
+      hscd-color = [ "0.412" "0.290" "0.529" ];
+      import-export = false;
+      isalpha = 0.92;
+      iscolor = [ "0.843" "0.843" "0.851" ];
+      light-bcolor = [ "0.643" "0.612" "0.675" ];
+      light-bgcolor = [ "0.843" "0.843" "0.851" ];
+      light-bgcolor-wmax = [ "0.922" "0.922" "0.922" ];
+      light-bgcolor2 = [ "0.725" "0.725" "0.725" ];
+      light-bguri = "file:///home/lexyo/.local/share/backgrounds/2025-06-05-16-15-21-Background.png";
+      light-boxcolor = [ "0.843" "0.843" "0.851" ];
+      light-hcolor = [ "0.204" "0.141" "0.204" ];
+      light-hscd-color = [ "0.412" "0.290" "0.529" ];
+      light-iscolor = [ "0.843" "0.843" "0.851" ];
+      light-mbcolor = [ "0.204" "0.141" "0.204" ];
+      light-mbgcolor = [ "0.953" "0.953" "0.961" ];
+      light-mhcolor = [ "0.204" "0.141" "0.204" ];
+      light-mscolor = [ "0.412" "0.290" "0.529" ];
+      light-mshcolor = [ "0.000" "0.000" "0.000" ];
+      light-palette1 = [ "83" "75" "91" ];
+      light-palette10 = [ "124" "116" "132" ];
+      light-palette11 = [ "52" "36" "52" ];
+      light-palette12 = [ "164" "156" "172" ];
+      light-palette2 = [ "9" "7" "14" ];
+      light-palette3 = [ "244" "244" "245" ];
+      light-palette4 = [ "145" "141" "148" ];
+      light-palette5 = [ "112" "106" "119" ];
+      light-palette6 = [ "44" "39" "52" ];
+      light-palette7 = [ "164" "164" "169" ];
+      light-palette8 = [ "124" "124" "131" ];
+      light-palette9 = [ "100" "100" "107" ];
+      light-shcolor = [ "0.957" "0.957" "0.961" ];
+      light-smbgcolor = [ "0.725" "0.725" "0.725" ];
+      light-vw-color = [ "0.412" "0.290" "0.529" ];
+      light-winbcolor = [ "0.412" "0.290" "0.529" ];
+      mbcolor = [ "0.204" "0.141" "0.204" ];
+      mbgcolor = [ "0.953" "0.953" "0.961" ];
+      mfgalpha = 1.0;
+      mfgcolor = [ "1.0" "1.0" "1.0" ];
+      mhcolor = [ "0.204" "0.141" "0.204" ];
+      monitor-height = 1080;
+      monitor-width = 1920;
+      mscolor = [ "0.412" "0.290" "0.529" ];
+      mshcolor = [ "0.000" "0.000" "0.000" ];
+      palette1 = [ "83" "75" "91" ];
+      palette10 = [ "124" "116" "132" ];
+      palette11 = [ "52" "36" "52" ];
+      palette12 = [ "164" "156" "172" ];
+      palette2 = [ "9" "7" "14" ];
+      palette3 = [ "244" "244" "245" ];
+      palette4 = [ "145" "141" "148" ];
+      palette5 = [ "112" "106" "119" ];
+      palette6 = [ "44" "39" "52" ];
+      palette7 = [ "164" "164" "169" ];
+      palette8 = [ "124" "124" "131" ];
+      palette9 = [ "100" "100" "107" ];
+      pause-reload = false;
+      reloadstyle = true;
+      shadow = false;
+      shalpha = 0.54;
+      shcolor = [ "0.957" "0.957" "0.961" ];
+      smbgcolor = [ "0.725" "0.725" "0.725" ];
+      trigger-autotheme = true;
+      trigger-reload = true;
+      vw-color = [ "0.412" "0.290" "0.529" ];
+      winbcolor = [ "0.412" "0.290" "0.529" ];
+      wmaxbar = false;
+    };
+
     "org/gnome/shell/extensions/paperwm" = {
       edge-preview-click-enable = false;
       edge-preview-enable = false;
@@ -614,6 +798,7 @@ with lib.hm.gvariant;
       gesture-workspace-fingers = 3;
       horizontal-margin = 0;
       last-used-display-server = "Wayland";
+      maximize-width-percent = 0.98;
       minimap-shade-opacity = 0;
       open-window-position = 0;
       overview-ensure-viewport-animation = 1;
@@ -631,6 +816,11 @@ with lib.hm.gvariant;
       vertical-margin = 0;
       vertical-margin-bottom = 0;
       window-gap = 3;
+      winprops = [ ''
+        {"wm_class":"com.nextcloud.desktopclient.nextcloud","scratch_layer":true,"focus":false}
+      '' ''
+        {"wm_class":"kitty","preferredWidth":"50%"}
+      '' ];
     };
 
     "org/gnome/shell/extensions/paperwm/keybindings" = {
@@ -665,6 +855,7 @@ with lib.hm.gvariant;
     "org/gnome/shell/extensions/paperwm/workspaces/68f151bf-0926-4239-961a-d56156bdf6d6" = {
       index = 1;
       name = "Wise";
+      show-position-bar = true;
       show-top-bar = true;
     };
 
@@ -715,6 +906,7 @@ with lib.hm.gvariant;
 
     "org/gnome/shell/weather" = {
       automatic-location = true;
+      locations = [ (mkVariant [ (mkUint32 2) (mkVariant [ "Rome" "LIRU" true [ (mkTuple [ 0.7321656212116213 0.2181661564992912 ]) ] [ (mkTuple [ 0.731292956585624 0.21787526247286132 ]) ] ]) ]) ];
     };
 
     "org/gnome/shell/world-clocks" = {
@@ -722,7 +914,7 @@ with lib.hm.gvariant;
     };
 
     "org/gtk/gtk4/settings/color-chooser" = {
-      custom-colors = [ (mkTuple [ 0.11372549086809158 0.6745098233222961 0.8392156958580017 1.0 ]) (mkTuple [ 0.5 0.5 0.5 1.0 ]) (mkTuple [ 0.29411765933036804 0.4117647111415863 0.5137255191802979 1.0 ]) (mkTuple [ 0.4000000059604645 0.21960784494876862 0.13333334028720856 1.0 ]) (mkTuple [ 0.2666666805744171 0.33725491166114807 0.19607843458652496 1.0 ]) ];
+      custom-colors = [ (mkTuple [ 0.113725 0.67451 0.839216 1.0 ]) (mkTuple [ 0.5 0.5 0.5 1.0 ]) (mkTuple [ 0.294118 0.411765 0.513726 1.0 ]) (mkTuple [ 0.4 0.219608 0.133333 1.0 ]) (mkTuple [ 0.266667 0.337255 0.196078 1.0 ]) ];
       selected-color = mkTuple [ true 1.0 1.0 1.0 1.0 ];
     };
 
@@ -740,8 +932,8 @@ with lib.hm.gvariant;
     };
 
     "org/gtk/settings/color-chooser" = {
-      custom-colors = [ (mkTuple [ 1.0 0.8431372549019608 0.0 1.0 ]) ];
-      selected-color = mkTuple [ true 0.1411764705882353 0.12156862745098039 0.19215686274509805 1.0 ];
+      custom-colors = [ (mkTuple [ 1.0 0.843137 0.0 1.0 ]) ];
+      selected-color = mkTuple [ true 0.141176 0.121569 0.192157 1.0 ];
     };
 
     "org/gtk/settings/file-chooser" = {
