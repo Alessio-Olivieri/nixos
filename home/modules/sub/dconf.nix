@@ -60,10 +60,6 @@ with lib.hm.gvariant;
       subtitle-encoding = "UTF-8";
     };
 
-    "org/gnome/Weather" = {
-      locations = [ (mkVariant [ (mkUint32 2) (mkVariant [ "Rome" "LIRU" true [ (mkTuple [ 0.7321656212116213 0.2181661564992912 ]) ] [ (mkTuple [ 0.731292956585624 0.21787526247286132 ]) ] ]) ]) ];
-    };
-
     "org/gnome/baobab/ui" = {
       is-maximized = false;
       window-size = mkTuple [ 960 1040 ];
@@ -306,7 +302,7 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/desktop/peripherals/keyboard" = {
-      numlock-state = false;
+      numlock-state = true;
     };
 
     "org/gnome/desktop/peripherals/mouse" = {
@@ -538,10 +534,6 @@ with lib.hm.gvariant;
 
     "org/gnome/portal/filechooser/obsidian" = {
       last-folder-path = "/home/lexyo/Nextcloud/ObsidianVault";
-    };
-
-    "org/gnome/portal/filechooser/org/gnome/Settings" = {
-      last-folder-path = "/etc/nixos/files/wallpapers/Dragonball";
     };
 
     "org/gnome/portal/filechooser/org/gnome/Settings" = {
@@ -902,11 +894,6 @@ with lib.hm.gvariant;
       shift-overview-down = [];
       shift-overview-up = [];
       toggle-message-tray = [];
-    };
-
-    "org/gnome/shell/weather" = {
-      automatic-location = true;
-      locations = [ (mkVariant [ (mkUint32 2) (mkVariant [ "Rome" "LIRU" true [ (mkTuple [ 0.7321656212116213 0.2181661564992912 ]) ] [ (mkTuple [ 0.731292956585624 0.21787526247286132 ]) ] ]) ]) ];
     };
 
     "org/gnome/shell/world-clocks" = {
