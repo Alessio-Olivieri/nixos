@@ -142,7 +142,7 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   # Install some programs.
   programs.kdeconnect.enable = true;
 
-  programs.direnv.enable=true;
+  services.tailscale.enable = true;
   
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
