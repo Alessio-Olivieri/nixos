@@ -25,5 +25,6 @@
     "jupyter.widgetScriptSources": [
         "jsdelivr.com",
         "unpkg.com"
-    ]
+    ],
+    "nixEnvSelector.useFlakes": true	
 }

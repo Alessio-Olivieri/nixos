@@ -7,9 +7,10 @@
   config = lib.mkIf config.vscode-module.enable {
     programs.vscode = {
       enable = true;
-      profiles.default = {
-        # Your extensions remain managed by Home Manager
-        extensions = with pkgs.vscode-extensions; [
+      mutableExtensionsDir = false;
+      extensions = with pkgs.vscode-extensions; [
+          # arrterian.nix-env-selector
+          mkhl.direnv
           bbenoist.nix
           ms-vscode.cpptools
           ms-vscode.cpptools
@@ -28,10 +29,6 @@
           catppuccin.catppuccin-vsc
           catppuccin.catppuccin-vsc-icons
         ];
-        
-        # The userSettings block is removed from here.
-        # Your settings will now be read from the symlinked file specified below.
-      };
     };
 
     # This section creates a symlink to a writable settings.json file. [1]

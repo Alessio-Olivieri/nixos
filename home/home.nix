@@ -87,7 +87,6 @@ in
     cpufetch
     google-chrome
     youtube-music
-    kodi
     ghostty
     kdePackages.okular
     filezilla
@@ -96,6 +95,9 @@ in
     android-tools
     tmux
     openfortivpn
+    apostrophe
+    zettlr
+    hotspot #For visualizing perf.data
     ];
 
   #NEXTCLOUD

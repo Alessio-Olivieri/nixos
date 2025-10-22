@@ -25,8 +25,8 @@
 
   nix.gc = {
 		automatic = true;
-		dates = "weekly";
-		options = "--delete-older-than 30d";
+		dates = "daily";
+		options = "--delete-older-than 3d";
 	};
 
   zramSwap.enable = true;  
@@ -164,6 +164,23 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   pkgs.xorg.xhost
   pkgs.kitty
   pkgs.android-tools
+  pkgs.direnv
+  (pkgs.kodi.withPackages (kodiPkgs: with kodiPkgs; [
+    inputstream-adaptive
+    inputstream-rtmp
+    inputstream-ffmpegdirect
+    inputstreamhelper
+    raiplay
+    netflix
+    libretro
+    libretro-fuse
+    libretro-gw
+    libretro-nestopia
+    libretro-snes9x
+    libretro-mgba
+    libretro-genplus
+    iagl
+    ]))
   ];
 
 
