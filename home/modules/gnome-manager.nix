@@ -27,6 +27,7 @@
               pkgs.gnomeExtensions.tophat.extensionUuid
               pkgs.gnomeExtensions.headsetcontrol.extensionUuid
               pkgs.gnomeExtensions.quick-settings-audio-panel.extensionUuid
+              pkgs.gnomeExtensions.night-theme-switcher.extensionUuid
             ];
           };
         };
@@ -48,6 +49,7 @@
       gnomeExtensions.just-perfection
       gnomeExtensions.tophat
       gnomeExtensions.headsetcontrol
+      gnomeExtensions.night-theme-switcher
       pkgs.gnomeExtensions.quick-settings-audio-panel
       ];
 
