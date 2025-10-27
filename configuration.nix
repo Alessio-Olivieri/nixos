@@ -13,10 +13,8 @@
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./modules/gnome.nix
-      ./modules/firefox.nix
     ];
     gnome.enable = true;
-    firefox.enable = true;
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;

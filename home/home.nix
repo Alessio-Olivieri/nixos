@@ -13,7 +13,8 @@ in
     ./modules/bash-module.nix
     ./modules/kitty-module.nix
     ./modules/yazi-module.nix
-     ./modules/sub/dconf.nix
+    ./modules/firefox-module.nix
+    ./modules/sub/dconf.nix
     ];
   gnome-manager.enable = true;
   vscode-module.enable = true;
@@ -21,6 +22,7 @@ in
   git-module.enable = true;
   kitty-module.enable = true;
   yazi-module.enable=true;
+  firefox-module.enable=true;
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
 
@@ -38,6 +40,7 @@ in
 
   home.packages = with pkgs; [
     neofetch
+    htop
 
     # archives
     zip
