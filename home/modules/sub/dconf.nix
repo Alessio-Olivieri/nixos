@@ -29,6 +29,10 @@ with lib.hm.gvariant;
       last-window-size = mkTuple [ 1200 1048 ];
     };
 
+    "org/gnome/Disks" = {
+      image-dir-uri = "file:///home/lexyo/Documents";
+    };
+
     "org/gnome/Extensions" = {
       window-height = 1080;
       window-maximized = false;
@@ -84,8 +88,15 @@ with lib.hm.gvariant;
 
     "org/gnome/calendar" = {
       active-view = "month";
+      week-view-zoom-level = 1.0;
       window-maximized = false;
       window-size = mkTuple [ 1898 1028 ];
+    };
+
+    "org/gnome/clocks/state/window" = {
+      maximized = false;
+      panel-id = "stopwatch";
+      size = mkTuple [ 870 1080 ];
     };
 
     "org/gnome/control-center" = {
@@ -162,10 +173,15 @@ with lib.hm.gvariant;
 
     "org/gnome/desktop/interface" = {
       accent-color = "purple";
+      clock-show-weekday = false;
       color-scheme = "default";
       enable-animations = true;
       enable-hot-corners = false;
       show-battery-percentage = true;
+    };
+
+    "org/gnome/desktop/notifications" = {
+      application-children = [ "org-gnome-baobab" "gnome-power-panel" "firefox" ];
     };
 
     "org/gnome/desktop/notifications/application/code-url-handler" = {
@@ -353,10 +369,6 @@ with lib.hm.gvariant;
       workspace-names = [ "Resilient" "Wise" "Chaotic" "Ferocius" "Tyrannical" "Perfectionist" "Determined" "Unstoppable" ];
     };
 
-    "org/gnome/evince" = {
-      document-directory = "file:///home/lexyo/Documents/AIRO";
-    };
-
     "org/gnome/evince/default" = {
       continuous = true;
       dual-page = false;
@@ -413,6 +425,19 @@ with lib.hm.gvariant;
       window-width = 830;
     };
 
+    "org/gnome/gitlab/somas/Apostrophe" = {
+      color-scheme = "system";
+      hemingway-mode = false;
+      hemingway-toast-count = 1;
+      input-format = "markdown";
+      open-file-path = "/home/lexyo/Nextcloud/Notes";
+      preview-active = false;
+      preview-mode = "half-width";
+      preview-security = "ask";
+      spellcheck = false;
+      toolbar-active = false;
+    };
+
     "org/gnome/gnome-system-monitor" = {
       current-tab = "resources";
       maximized = false;
@@ -459,6 +484,10 @@ with lib.hm.gvariant;
 
     "org/gnome/mutter/wayland/keybindings" = {
       restore-shortcuts = [];
+    };
+
+    "org/gnome/nautilus/compression" = {
+      default-compression-format = "tar.xz";
     };
 
     "org/gnome/nautilus/icon-view" = {
@@ -523,6 +552,14 @@ with lib.hm.gvariant;
       last-folder-path = "/etc/nixos/files/wallpapers/Dragonball";
     };
 
+    "org/gnome/portal/filechooser/org/gnome/gitlab/somas/Apostrophe" = {
+      last-folder-path = "/home/lexyo/Nextcloud/Notes";
+    };
+
+    "org/gnome/portal/filechooser/org/gnome/Settings" = {
+      last-folder-path = "/etc/nixos/files/wallpapers/Dragonball";
+    };
+
     "org/gnome/portal/filechooser/slack" = {
       last-folder-path = "/home/lexyo/Pictures/Screenshots";
     };
@@ -530,6 +567,7 @@ with lib.hm.gvariant;
     "org/gnome/settings-daemon/plugins/color" = {
       night-light-enabled = true;
       night-light-schedule-automatic = false;
+      night-light-temperature = mkUint32 3509;
     };
 
     "org/gnome/settings-daemon/plugins/media-keys" = {
@@ -553,11 +591,15 @@ with lib.hm.gvariant;
       sleep-inactive-battery-type = "nothing";
     };
 
+    "org/gnome/settings-daemon/plugins/sharing/gnome-user-share-webdav" = {
+      enabled-connections = [];
+    };
+
     "org/gnome/shell" = {
       command-history = [ "kg" "lg" ];
       disable-user-extensions = false;
       disabled-extensions = [ "auto-move-windows@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "apps-menu@gnome-shell-extensions.gcampax.github.com" "launch-new-instance@gnome-shell-extensions.gcampax.github.com" "light-style@gnome-shell-extensions.gcampax.github.com" "native-window-placement@gnome-shell-extensions.gcampax.github.com" "drive-menu@gnome-shell-extensions.gcampax.github.com" "tilingshell@ferrarodomenico.com" "forge@jmmaranan.com" "blur-my-shell@aunetx" "bluetooth-battery@michalw.github.com" "openbar@neuromorph" "unite@hardpixel.eu" "vertical-overview@RensAlthuis.github.com" "system-monitor@gnome-shell-extensions.gcampax.github.com" "gestureImprovements@gestures" "touchpad-gesture-customization@coooolapps.com" ];
-      enabled-extensions = [ "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "paperwm@paperwm.github.com" "paperwm@paperwm.github.com" "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" ];
+      enabled-extensions = [ "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "paperwm@paperwm.github.com" "paperwm@paperwm.github.com" "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "paperwm@paperwm.github.com" "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "nightthemeswitcher@romainvigier.fr" ];
       favorite-apps = [ "org.gnome.Nautilus.desktop" "code.desktop" "firefox.desktop" ];
       welcome-dialog-last-shown-version = "46.2";
     };
@@ -573,19 +615,19 @@ with lib.hm.gvariant;
     "org/gnome/shell/extensions/dash-to-panel" = {
       extension-version = 68;
       panel-anchors = ''
-        {}
+        {}\n
       '';
       panel-element-positions = ''
-        {}
+        {}\n
       '';
       panel-lengths = ''
-        {}
+        {}\n
       '';
       panel-positions = ''
-        {}
+        {}\n
       '';
       panel-sizes = ''
-        {}
+        {}\n
       '';
       prefs-opened = false;
       primary-monitor = "LGD-0x00000000";
@@ -596,8 +638,10 @@ with lib.hm.gvariant;
       accessibility-menu = false;
       background-menu = true;
       controls-manager-spacing-size = 0;
-      dash = true;
+      dash = false;
+      dash-app-running = false;
       dash-icon-size = 16;
+      dash-separator = false;
       double-super-to-appgrid = true;
       looking-glass-height = 0;
       max-displayed-search-results = 0;
@@ -610,7 +654,7 @@ with lib.hm.gvariant;
       ripple-box = false;
       search = false;
       show-apps-button = false;
-      startup-status = 0;
+      startup-status = 1;
       support-notifier-showed-version = 34;
       support-notifier-type = 0;
       theme = true;
@@ -792,9 +836,9 @@ with lib.hm.gvariant;
       vertical-margin-bottom = 0;
       window-gap = 3;
       winprops = [ ''
-        {"wm_class":"com.nextcloud.desktopclient.nextcloud","scratch_layer":true,"focus":false}
+        {"wm_class":"com.nextcloud.desktopclient.nextcloud","scratch_layer":true,"focus":false}\n
       '' ''
-        {"wm_class":"kitty","preferredWidth":"50%"}
+        {"wm_class":"kitty","preferredWidth":"50%"}\n
       '' ];
     };
 
