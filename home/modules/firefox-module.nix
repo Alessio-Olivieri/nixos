@@ -13,10 +13,9 @@
   options = {
     firefox-module.enable = lib.mkEnableOption "Enables Firefox Nix settings";
   };
-  config = lib.mkIf config.firefox.enable {
+  config = lib.mkIf config.firefox-module.enable {
     programs.firefox = {
       enable = true;
-      profiles.default.chrome = ./sub/chrome;
       policies = {
         DisableTelemetry = true;
         DisableFirefoxStudies = true;
@@ -35,6 +34,38 @@
         # "force_installed" and "normal_installed".
         ExtensionSettings = {
           "*".installation_mode = "blocked"; # blocks all addons except the ones specified below
+          "treestyletab@piro.sakura.ne.jp" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/tree-style-tab/latest.xpi";
+            installation_mode = "force_installed";
+          };
+          "uBlock0@raymondhill.net" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
+            installation_mode = "force_installed";
+          };
+          "extension@tabliss.io" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/tabliss/latest.xpi";
+            installation_mode = "force_installed";            
+          }; 
+          "@testpilot-containers" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/multi-account-containers/latest.xpi";
+            installation_mode = "force_installed";    
+          };
+          "Tab-Session-Manager@sienori" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/tab-session-manager/latest.xpi";
+            installation_mode = "force_installed";    
+          };
+          "addon@darkreader.org" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
+            installation_mode = "force_installed";    
+          };
+          "tst-indent-line@piro.sakura.ne.jp" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/tst-indent-line/latest.xpi";
+            installation_mode = "force_installed";   
+          };
+          "jid1-MnnxcxisBPnSXQ@jetpack" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/privacy-badger17/latest.xpi";
+            installation_mode = "force_installed"; 
+          };
         };
 
         Preferences = {
