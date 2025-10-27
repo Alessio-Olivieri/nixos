@@ -548,10 +548,6 @@ with lib.hm.gvariant;
       last-folder-path = "/home/lexyo/Nextcloud/ObsidianVault";
     };
 
-    "org/gnome/portal/filechooser/org/gnome/Settings" = {
-      last-folder-path = "/etc/nixos/files/wallpapers/Dragonball";
-    };
-
     "org/gnome/portal/filechooser/org/gnome/gitlab/somas/Apostrophe" = {
       last-folder-path = "/home/lexyo/Nextcloud/Notes";
     };
@@ -565,7 +561,7 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/settings-daemon/plugins/color" = {
-      night-light-enabled = true;
+      night-light-enabled = false;
       night-light-schedule-automatic = false;
       night-light-temperature = mkUint32 3509;
     };

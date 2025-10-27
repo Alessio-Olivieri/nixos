@@ -14,7 +14,8 @@ in
     ./modules/kitty-module.nix
     ./modules/yazi-module.nix
     ./modules/firefox-module.nix
-    ./modules/sub/dconf.nix
+    ./modules/submodules/dconf.nix 
+    ./modules/submodules/gnome-theme-switcher.nix
     ];
   gnome-manager.enable = true;
   vscode-module.enable = true;
@@ -36,7 +37,7 @@ in
   programs.home-manager.enable = true;
 
   programs.starship.enable = true;
-  xdg.configFile."starship.toml".source = ./modules/sub/starship.toml;
+  xdg.configFile."starship.toml".source = ./modules/submodules/starship.toml;
 
   home.packages = with pkgs; [
     neofetch

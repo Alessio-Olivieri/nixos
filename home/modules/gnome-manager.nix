@@ -7,10 +7,6 @@
 
   config = lib.mkIf config.gnome-manager.enable {
 
-      imports = [
-        ./gnome-theme-switcher.nix
-      ];
-
       dconf = {
         enable = true;
         settings = {
