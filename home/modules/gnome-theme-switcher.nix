@@ -12,7 +12,7 @@ let
     USER_AGENT="NixOS-GNOME-Theme-Switcher/1.0"
 
     get_location() {
-      ${pkgs.curl}/bin/curl -s -A "$USER_AGENT" "https://api.beacondb.net/v1/geolocate"
+      ${pkgs.curl}/bin/curl -X POST -A "$USER_AGENT" "https://api.beacondb.net/v1/geolocate"
     }
 
     while true; do
