@@ -168,25 +168,12 @@ with lib.hm.gvariant;
       show-battery-percentage = true;
     };
 
-    "org/gnome/desktop/notifications" = {
-      application-children = [ "org-gnome-console" "org-kde-kdeconnect-daemon" "gnome-power-panel" "code" "org-gnome-settings" "firefox" "org-gnome-loupe" "org-gnome-geary" "org-gnome-baobab" "org-telegram-desktop" "org-gnome-evolution-alarm-notify" "discord" "org-gnome-shell-extensions-gsconnect" "slack" "code-url-handler" "org-gnome-nautilus" "org-gnome-extensions" "zoom" "it-mijorus-smile" "org-gnome-evince" "org-kde-okular" "org-gnome-fileroller" "gimp" "zen" "filezilla" "org-gnome-clocks" "brave-browser" "gnome-wellbeing-panel" "google-chrome" "com-ayugram-desktop" "onlyoffice-desktopeditors" ];
-      show-banners = false;
-    };
-
-    "org/gnome/desktop/notifications/application/brave-browser" = {
-      application-id = "brave-browser.desktop";
-    };
-
     "org/gnome/desktop/notifications/application/code-url-handler" = {
       application-id = "code-url-handler.desktop";
     };
 
     "org/gnome/desktop/notifications/application/code" = {
       application-id = "code.desktop";
-    };
-
-    "org/gnome/desktop/notifications/application/com-ayugram-desktop" = {
-      application-id = "com.ayugram.desktop.desktop";
     };
 
     "org/gnome/desktop/notifications/application/com-nextcloud-desktopclient-nextcloud" = {
@@ -215,10 +202,6 @@ with lib.hm.gvariant;
 
     "org/gnome/desktop/notifications/application/gnome-wellbeing-panel" = {
       application-id = "gnome-wellbeing-panel.desktop";
-    };
-
-    "org/gnome/desktop/notifications/application/google-chrome" = {
-      application-id = "google-chrome.desktop";
     };
 
     "org/gnome/desktop/notifications/application/it-mijorus-smile" = {

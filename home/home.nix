@@ -85,7 +85,6 @@ in
     protonvpn-gui
 
     cpufetch
-    google-chrome
     youtube-music
     ghostty
     kdePackages.okular
