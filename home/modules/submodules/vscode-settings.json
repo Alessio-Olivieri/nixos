@@ -2,7 +2,7 @@
     "editor.minimap.enabled": false,
     "window.titleBarStyle": "custom",
     "workbench.colorTheme": "Catppuccin Frappé",
-    "workbench.iconTheme": "catppuccin-latte",
+    "workbench.iconTheme": "catppuccin-frappe",
     "workbench.preferredDarkColorTheme": "Catppuccin Frappé",
     "workbench.preferredLightColorTheme": "Catppuccin Latte",
     "explorer.confirmDelete": false,
