@@ -111,12 +111,13 @@
     #media-session.enable = true;
   };
 
-  hardware.bluetooth.enable = true; # enables support for Bluetooth
-  hardware.bluetooth.settings = {
-	General = {
-		Experimental = true; # To show the battery of connected devices
-	};
-};
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = false;
+    settings.General = {
+      Experimental = true; # To show the battery of connected devices
+    };
+  };
 
   virtualisation.podman = {
   enable = true;
