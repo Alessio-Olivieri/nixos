@@ -47,12 +47,10 @@ let
       if [ "$current_time" -ge "$sunset_time" ] || [ "$current_time" -lt "$sunrise_time" ]; then
         echo "It is currently night. Switching to dark mode."
         ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-        ${pkgs.glib}/bin/gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
         sleep_duration=$(( $(date -d "$sunrise" +%s) - $(date +%s) ))
       else
         echo "It is currently day. Switching to light mode."
         ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme 'prefer-light'
-        ${pkgs.glib}/bin/gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled false
         sleep_duration=$(( $(date -d "$sunset" +%s) - $(date +%s) ))
       fi
 
