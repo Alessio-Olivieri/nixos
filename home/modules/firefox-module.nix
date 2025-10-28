@@ -28,6 +28,16 @@
         DisablePocket = true;
         OverrideFirstRunPage = "";
         OverridePostUpdatePage = "";
+        DontCheckDefaultBrowser = true;
+        Preferences = {
+            "toolkit.legacyUserProfileCustomizations.stylesheets" = lock-true;
+            "layers.acceleration.force-enabled" = lock-true;
+            "gfx.webrender.all" = lock-true;
+            "gfx.webrender.enabled" = lock-true;
+            "layout.css.backdrop-filter.enabled" = lock-true;
+            "svg.context-properties.content.enabled" = lock-true;
+            "widget.gtk.ignore-bogus-leave-notify" = lock-true;
+        };
         /* ---- EXTENSIONS ---- */
         # Check about:support for extension/add-on ID strings.
         # Valid strings for installation_mode are "allowed", "blocked",
@@ -78,16 +88,6 @@
             install_url = "https://addons.mozilla.org/firefox/downloads/file/3990306/catppuccin_frappe_lavender-2.0.xpi";
             installation_mode = "force_installed"; 
           };
-        };
-
-        Preferences = {
-            "toolkit.legacyUserProfileCustomizations.stylesheets" = lock-true;
-            "layers.acceleration.force-enabled" = lock-true;
-            "gfx.webrender.all" = lock-true;
-            "gfx.webrender.enabled" = lock-true;
-            "layout.css.backdrop-filter.enabled" = lock-true;
-            "svg.context-properties.content.enabled" = lock-true;
-            "widget.gtk.ignore-bogus-leave-notify" = lock-true;
         };
       };
     };
