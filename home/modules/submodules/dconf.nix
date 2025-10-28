@@ -561,7 +561,7 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/settings-daemon/plugins/color" = {
-      night-light-enabled = false;
+      night-light-enabled = true;
       night-light-schedule-automatic = false;
       night-light-temperature = mkUint32 3509;
     };
@@ -650,7 +650,7 @@ with lib.hm.gvariant;
       ripple-box = false;
       search = false;
       show-apps-button = false;
-      startup-status = 1;
+      startup-status = 0;
       support-notifier-showed-version = 34;
       support-notifier-type = 0;
       theme = true;
@@ -831,11 +831,11 @@ with lib.hm.gvariant;
       vertical-margin = 0;
       vertical-margin-bottom = 0;
       window-gap = 3;
-      winprops = [ ''
-        {"wm_class":"com.nextcloud.desktopclient.nextcloud","scratch_layer":true,"focus":false}\n
-      '' ''
-        {"wm_class":"kitty","preferredWidth":"50%"}\n
-      '' ];
+      # winprops = [ ''
+      #   {"wm_class":"com.nextcloud.desktopclient.nextcloud","scratch_layer":true,"focus":false}\n
+      # '' ''
+      #   {"wm_class":"kitty","preferredWidth":"50%"}\n
+      # '' ];
     };
 
     "org/gnome/shell/extensions/paperwm/keybindings" = {

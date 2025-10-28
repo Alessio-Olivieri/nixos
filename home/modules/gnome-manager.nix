@@ -40,7 +40,7 @@
     '';
 
     home.packages = with pkgs; [
-      dconf2nix # dconf dump / | dconf2nix > /etc/nixos/home/modules/sub/dconf.nix
+      dconf2nix # dconf dump / | dconf2nix > /etc/nixos/home/modules/submodules/dconf.nix
       # dconf dump /org/gnome/shell/extensions/paperwm/ | dconf2nix
       dconf-editor
       gnomeExtensions.paperwm

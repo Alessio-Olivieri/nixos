@@ -35,7 +35,7 @@
             urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
             urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
 
-            dconf-update = "dconf dump / | dconf2nix > /etc/nixos/home/modules/sub/dconf.nix";
+            dconf-update = "dconf dump / | dconf2nix > /etc/nixos/home/modules/submodules/dconf.nix";
 
             # login-leonardo = "ssh -i ~/.step/certs/my_key aolivie1@login.leonardo.cineca.it";
             # leonardo-setup-step = ''step ca bootstrap --ca-url=https://sshproxy.hpc.cineca.it --fingerprint 2ae1543202304d3f434bdc1a2c92eff2cd2b02110206ef06317e70c1c1735ecd '';

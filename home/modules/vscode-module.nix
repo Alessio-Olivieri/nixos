@@ -39,7 +39,7 @@
     home.file.".config/Code/User/settings.json".source = lib.mkForce (
       # IMPORTANT: You must replace the path below with the absolute path
       # to your own vscode-settings.json file.
-      config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/modules/sub/vscode-settings.json"
+      config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/modules/submodules/vscode-settings.json"
     );
   };
 }
