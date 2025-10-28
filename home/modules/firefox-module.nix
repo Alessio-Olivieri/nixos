@@ -66,8 +66,16 @@
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/privacy-badger17/latest.xpi";
             installation_mode = "force_installed"; 
           };
-          "FirefoxColor@mozilla.com" = {
-            install_url = "https://addons.mozilla.org/firefox/downloads/latest/firefox-color/latest.xpi";
+          "{9ed7d361-ccd9-4cad-9846-977da2651fb5}" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/automatic-dark/latest.xpi";
+            installation_mode = "force_installed"; 
+          };
+          "{c827c446-3d00-4160-a992-3ebcbe6d81a6}" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/file/3990326/catppuccin_latte_mauve_git-2.0.xpi";
+            installation_mode = "force_installed";            
+          };
+          "{5ee380f7-abda-467c-ae9a-d30bf8f0d1d6}" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/file/3990306/catppuccin_frappe_lavender-2.0.xpi";
             installation_mode = "force_installed"; 
           };
         };
