@@ -101,7 +101,7 @@ with lib.hm.gvariant;
 
     "org/gnome/control-center" = {
       last-panel = "system";
-      window-state = mkTuple [ 1440 1048 false ];
+      window-state = mkTuple [ 1440 1080 false ];
     };
 
     "org/gnome/desktop/app-folders" = {
@@ -174,7 +174,7 @@ with lib.hm.gvariant;
     "org/gnome/desktop/interface" = {
       accent-color = "purple";
       clock-show-weekday = false;
-      color-scheme = "default";
+      color-scheme = "prefer-dark";
       enable-animations = true;
       enable-hot-corners = false;
       show-battery-percentage = true;
@@ -595,7 +595,7 @@ with lib.hm.gvariant;
       command-history = [ "kg" "lg" ];
       disable-user-extensions = false;
       disabled-extensions = [ "auto-move-windows@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "apps-menu@gnome-shell-extensions.gcampax.github.com" "launch-new-instance@gnome-shell-extensions.gcampax.github.com" "light-style@gnome-shell-extensions.gcampax.github.com" "native-window-placement@gnome-shell-extensions.gcampax.github.com" "drive-menu@gnome-shell-extensions.gcampax.github.com" "tilingshell@ferrarodomenico.com" "forge@jmmaranan.com" "blur-my-shell@aunetx" "bluetooth-battery@michalw.github.com" "openbar@neuromorph" "unite@hardpixel.eu" "vertical-overview@RensAlthuis.github.com" "system-monitor@gnome-shell-extensions.gcampax.github.com" "gestureImprovements@gestures" "touchpad-gesture-customization@coooolapps.com" ];
-      enabled-extensions = [ "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "paperwm@paperwm.github.com" "paperwm@paperwm.github.com" "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "paperwm@paperwm.github.com" "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "nightthemeswitcher@romainvigier.fr" ];
+      enabled-extensions = [ "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "paperwm@paperwm.github.com" "paperwm@paperwm.github.com" "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "paperwm@paperwm.github.com" "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "nightthemeswitcher@romainvigier.fr" "paperwm@paperwm.github.com" "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" ];
       favorite-apps = [ "org.gnome.Nautilus.desktop" "code.desktop" "firefox.desktop" ];
       welcome-dialog-last-shown-version = "46.2";
     };
@@ -611,19 +611,19 @@ with lib.hm.gvariant;
     "org/gnome/shell/extensions/dash-to-panel" = {
       extension-version = 68;
       panel-anchors = ''
-        {}\n
+        {}\\n\n
       '';
       panel-element-positions = ''
-        {}\n
+        {}\\n\n
       '';
       panel-lengths = ''
-        {}\n
+        {}\\n\n
       '';
       panel-positions = ''
-        {}\n
+        {}\\n\n
       '';
       panel-sizes = ''
-        {}\n
+        {}\\n\n
       '';
       prefs-opened = false;
       primary-monitor = "LGD-0x00000000";
@@ -670,6 +670,13 @@ with lib.hm.gvariant;
 
     "org/gnome/shell/extensions/libpanel" = {
       layout = [ [ "gnome@main" "quick-settings-audio-panel@rayzeq.github.io/main" ] ];
+    };
+
+    "org/gnome/shell/extensions/nightthemeswitcher/time" = {
+      manual-schedule = true;
+      nightthemeswitcher-ondemand-keybinding = [ "<Shift><Super>t" ];
+      sunrise = 7.0;
+      sunset = 20.0;
     };
 
     "org/gnome/shell/extensions/openbar" = {
@@ -806,6 +813,8 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/shell/extensions/paperwm" = {
+      cycle-width-steps = [ 0.38195 0.5 0.61804 ];
+      disable-scratch-in-overview = true;
       edge-preview-click-enable = false;
       edge-preview-enable = false;
       edge-preview-timeout-continual = false;
@@ -813,8 +822,9 @@ with lib.hm.gvariant;
       gesture-workspace-fingers = 3;
       horizontal-margin = 0;
       last-used-display-server = "Wayland";
-      maximize-width-percent = 0.98;
+      maximize-width-percent = 1.0;
       minimap-shade-opacity = 0;
+      only-scratch-in-overview = false;
       open-window-position = 0;
       overview-ensure-viewport-animation = 1;
       overview-min-windows-per-row = 4;
@@ -831,11 +841,6 @@ with lib.hm.gvariant;
       vertical-margin = 0;
       vertical-margin-bottom = 0;
       window-gap = 3;
-      # winprops = [ ''
-      #   {"wm_class":"com.nextcloud.desktopclient.nextcloud","scratch_layer":true,"focus":false}\n
-      # '' ''
-      #   {"wm_class":"kitty","preferredWidth":"50%"}\n
-      # '' ];
     };
 
     "org/gnome/shell/extensions/paperwm/keybindings" = {
@@ -850,10 +855,18 @@ with lib.hm.gvariant;
       index = 9;
     };
 
+    "org/gnome/shell/extensions/paperwm/workspaces/03609b13-f1db-47ef-8e02-06a7c92b767b" = {
+      index = 0;
+    };
+
     "org/gnome/shell/extensions/paperwm/workspaces/041e9fd0-f288-4426-97a3-f7767bd82260" = {
       index = 4;
       name = "Tyrannical";
       show-top-bar = true;
+    };
+
+    "org/gnome/shell/extensions/paperwm/workspaces/0eb15eb5-120e-4959-aae6-067b46f2f246" = {
+      index = 2;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/22ac0db7-0bfc-4642-95a4-dd6312774095" = {
@@ -865,6 +878,18 @@ with lib.hm.gvariant;
       index = 0;
       name = "Resilient";
       show-top-bar = true;
+    };
+
+    "org/gnome/shell/extensions/paperwm/workspaces/3fa7db20-2370-49c5-a53e-279f0ac336e4" = {
+      index = 4;
+    };
+
+    "org/gnome/shell/extensions/paperwm/workspaces/44e4c806-bcbc-4455-aced-2c6b0eaefb87" = {
+      index = 3;
+    };
+
+    "org/gnome/shell/extensions/paperwm/workspaces/5f2a96a5-27d3-4818-81d6-b1195ddf3234" = {
+      index = 1;
     };
 
     "org/gnome/shell/extensions/paperwm/workspaces/68f151bf-0926-4239-961a-d56156bdf6d6" = {
@@ -917,6 +942,10 @@ with lib.hm.gvariant;
       shift-overview-down = [];
       shift-overview-up = [];
       toggle-message-tray = [];
+    };
+
+    "org/gnome/shell/weather" = {
+      automatic-location = true;
     };
 
     "org/gnome/shell/world-clocks" = {
