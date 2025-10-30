@@ -8,35 +8,51 @@ let
 
     set -e
 
+    # SapienzAAAAAAAAAAAAAA
+    HARDCODED_LATITUDE="41.8905"
+    HARDCODED_LONGITUDE="12.5127"
+
     # Set a user agent to identify the client to the BeaconDB service.
     USER_AGENT="NixOS-GNOME-Theme-Switcher/1.0"
 
-    get_location() {
-      ${pkgs.curl}/bin/curl -X POST -A "$USER_AGENT" "https://api.beacondb.net/v1/geolocate"
-    }
-
     while true; do
-      echo "Determining location and sun times from BeaconDB..."
-      location=$(get_location)
-      
-      # The API returns a 404 if a location cannot be determined.
-      if echo "$location" | grep -q "404 Not Found"; then
-        echo "Could not determine location. Retrying in 15 minutes."
-        sleep 900
-        continue
+      echo "Attempting to fetch location from BeaconDB with a 5-second timeout..."
+      # We add '|| true' so the script doesn't exit if curl fails (because of 'set -e')
+      location=$( ${pkgs.curl}/bin/curl --max-time 5 -X POST -A "$USER_AGENT" "https://api.beacondb.net/v1/geolocate" || true )
+
+      # Check if the API call failed (empty response from timeout) or returned a known error.
+      if [ -z "$location" ] || echo "$location" | grep -q "404 Not Found"; then
+        echo "Could not fetch location from API. Using hardcoded fallback."
+        latitude="$HARDCODED_LATITUDE"
+        longitude="$HARDCODED_LONGITUDE"
+      else
+        # If we got a response, try to parse it.
+        echo "Successfully fetched a response from the API."
+        parsed_latitude=$(echo "$location" | ${pkgs.jq}/bin/jq '.location.lat')
+        parsed_longitude=$(echo "$location" | ${pkgs.jq}/bin/jq '.location.lng')
+
+        # Check if parsing succeeded. If not, use the fallback.
+        if [ "$parsed_latitude" == "null" ] || [ "$parsed_longitude" == "null" ]; then
+          echo "Could not parse location from API response. Using hardcoded fallback."
+          latitude="$HARDCODED_LATITUDE"
+          longitude="$HARDCODED_LONGITUDE"
+        else
+          echo "Successfully parsed location: Lat=$parsed_latitude, Lon=$parsed_longitude"
+          latitude="$parsed_latitude"
+          longitude="$parsed_longitude"
+        fi
       fi
 
-      latitude=$(echo "$location" | ${pkgs.jq}/bin/jq '.location.lat')
-      longitude=$(echo "$location" | ${pkgs.jq}/bin/jq '.location.lng')
+      # 1. Get the *actual* sunrise and sunset times from sunwait.
+      actual_sunrise=$(${pkgs.sunwait}/bin/sunwait list rise "''${latitude}"N "''${longitude}"W | cut -d' ' -f1)
+      actual_sunset=$(${pkgs.sunwait}/bin/sunwait list set "''${latitude}"N "''${longitude}"W | cut -d' ' -f1)
 
-      if [ -z "$latitude" ] || [ -z "$longitude" ] || [ "$latitude" == "null" ] || [ "$longitude" == "null" ]; then
-        echo "Could not parse location from API response. Retrying in 15 minutes."
-        sleep 900
-        continue
-      fi
+      # 2. Use the 'date' command to subtract 1 hour from each.
+      #    The script will use these new 'sunrise' and 'sunset' variables for its logic.
+      sunrise=$(date -d "$actual_sunrise + 3 hour" +%H:%M)
+      sunset=$(date -d "$actual_sunset + 4 hour" +%H:%M)
 
-      sunrise=$(${pkgs.sunwait}/bin/sunwait list rise "''${latitude}"N "''${longitude}"W | cut -d' ' -f1)
-      sunset=$(${pkgs.sunwait}/bin/sunwait list set "''${latitude}"N "''${longitude}"W | cut -d' ' -f1)
+      echo "Actual Times   -> Sunrise: $actual_sunrise, Sunset: $actual_sunset"
 
       current_time=$(date +%H%M)
       sunrise_time=$(echo "$sunrise" | sed 's/://')
