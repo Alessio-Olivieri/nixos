@@ -14,6 +14,7 @@ in
     ./modules/kitty-module.nix
     ./modules/yazi-module.nix
     ./modules/firefox-module.nix
+    ./modules/thunderbird-module.nix
     ./modules/submodules/dconf.nix 
     ./modules/submodules/gnome-theme-switcher.nix
     ];
@@ -24,6 +25,7 @@ in
   kitty-module.enable = true;
   yazi-module.enable=true;
   firefox-module.enable=true;
+  thunderbird-module.enable=true;
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
 
