@@ -6,6 +6,8 @@
 
   config = lib.mkIf config.thunderbird-module.enable {
     programs.thunderbird = {
-      enable = true;
+      enable=true;
+      profiles={};
+    };
   };
 }
