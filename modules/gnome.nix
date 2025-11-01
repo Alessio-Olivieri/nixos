@@ -18,20 +18,39 @@
         # environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
         environment.gnome.excludePackages = (with pkgs; [
-            gnome-tour
-            epiphany # web browser
-            xterm
-            yelp
+            # baobab # diskmanager
+            # decibels #audioplayer
+            # totem #videoplayer
+            # loupe imageplager
+            # nautilus
+            # snapshot
+            #gnome-calculator
+            #gnome-calendar
+            # gnome-font-viewer
+            # gnome-logs
+            epiphany 
+            gnome-text-editor
+            gnome-characters
+            gnome-clocks
             gnome-console
-            gnome-contacts
-            gnome-maps  
+            # gnome-contacts
+            gnome-maps
+            gnome-music
+            # gnome-system-monitor
+            # gnome-weather
+            # gnome-connections
             simple-scan
+            yelp
+
+
+            gnome-tour
+            xterm
             gedit
             evince
             seahorse
-            gnome-font-viewer
+            geary
+            #gnome-font-viewer
             gnome-characters
-            gnome-text-editor 
         ]) ++ (with pkgs.gnome; [
         ]);
         
