@@ -676,7 +676,7 @@ with lib.hm.gvariant;
       manual-schedule = true;
       nightthemeswitcher-ondemand-keybinding = [ "<Shift><Super>t" ];
       sunrise = 7.0;
-      sunset = 20.0;
+      sunset = 16.0;
     };
 
     "org/gnome/shell/extensions/openbar" = {

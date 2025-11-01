@@ -54,13 +54,12 @@ let
 
       echo "Actual Times   -> Sunrise: $actual_sunrise, Sunset: $actual_sunset"
 
-      current_time=$(date +%H%M)
       sunrise_time=$(echo "$sunrise" | sed 's/://')
       sunset_time=$(echo "$sunset" | sed 's/://')
 
       echo "Sunrise: $sunrise, Sunset: $sunset, Current time: $(date +%H:%M)"
 
-      if [ "$current_time" -ge "$sunset_time" ] || [ "$current_time" -lt "$sunrise_time" ]; then
+      if [ "$(date +%H%M)" -ge "$sunset_time" ] || [ "$(date +%H%M)" -lt "$sunrise_time" ]; then
         echo "It is currently night. Switching to dark mode."
         ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
         sleep_duration=$(( $(date -d "$sunrise" +%s) - $(date +%s) ))
