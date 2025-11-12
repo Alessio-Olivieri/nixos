@@ -15,10 +15,22 @@
             programs.kitty = {
                 enable = true;
                 settings = {
-                   confirm_os_window_close = "-1";
-                   hide_window_decorations = true;
-                   tab_bar_edge = "top";
-                   tab_bar_style = "custom";
+                #     confirm_os_window_close = "-1";
+                    hide_window_decorations = true;
+                    tab_bar_style = "powerline";
+                    tab_powerline_style = "round";
+                    notify_on_cmd_finish = "invisible 20";
+                    background_opacity = 0.9;
+                    scrollback_lines = 1000000;
+                    copy_on_select = "yes";
+                #     tab_bar_edge = "top";
+                #     tab_bar_style = "custom";
+                #     remember_window_size = "yes";
+                #     initial_window_width = 640;
+                #     initial_window_height = 400;
+                #     #mouse
+                #     mouse_hide_wait = 3;
+                    
                 };
                 font = {
                     name = "JetBrainsMono Nerd Font";
