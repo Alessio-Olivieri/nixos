@@ -1,5 +1,4 @@
 format = """\
-[╭╴](fg:arrow)\
 $container\
 $username\
 $os\
@@ -7,7 +6,7 @@ $git_branch\
 ( at $directory)\
 $cmd_duration\
 ( via $python$conda$nodejs$c$rust$java)
-[╰─](fg:arrow)$character\
+$character\
 """
 
 add_newline = false
