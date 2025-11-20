@@ -216,4 +216,13 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
 
   system.stateVersion = "25.05"; # Did you read the comment?
 
+  # Watch stuff
+  boot.kernel.sysctl."net.ipv4.ip_forward" = true;
+  
+  networking.nat = {
+  enable = true;
+  externalInterface = "wlp1s0";
+  internalInterfaces = [ "enp4s0f3u4" ];
+  };
+
 }
