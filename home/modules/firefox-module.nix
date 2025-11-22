@@ -44,17 +44,21 @@
         # "force_installed" and "normal_installed".
         ExtensionSettings = {
           "*".installation_mode = "blocked"; # blocks all addons except the ones specified below
+          #TreeStyleTab
           "treestyletab@piro.sakura.ne.jp" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/tree-style-tab/latest.xpi";
             installation_mode = "force_installed";
+            private_browsing = lock-true;
           };
           "uBlock0@raymondhill.net" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
             installation_mode = "force_installed";
+            private_browsing = lock-true;
           };
           "extension@tabliss.io" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/tabliss/latest.xpi";
-            installation_mode = "force_installed";            
+            installation_mode = "force_installed";
+            private_browsing = lock-true;            
           }; 
           "@testpilot-containers" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/multi-account-containers/latest.xpi";
@@ -66,27 +70,38 @@
           };
           "addon@darkreader.org" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
-            installation_mode = "force_installed";    
+            installation_mode = "force_installed";
+            private_browsing = lock-true;    
           };
           "tst-indent-line@piro.sakura.ne.jp" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/tst-indent-line/latest.xpi";
-            installation_mode = "force_installed";   
+            installation_mode = "force_installed";
+            private_browsing = lock-true;   
+          };
+          "idcac-pub@guus.ninja" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/istilldontcareaboutcookies/latest.xpi";
+            installation_mode = "force_installed"; 
+            private_browsing = lock-true;
           };
           "jid1-MnnxcxisBPnSXQ@jetpack" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/privacy-badger17/latest.xpi";
-            installation_mode = "force_installed"; 
+            installation_mode = "force_installed";
+            private_browsing = lock-true; 
           };
           "{9ed7d361-ccd9-4cad-9846-977da2651fb5}" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/automatic-dark/latest.xpi";
-            installation_mode = "force_installed"; 
+            installation_mode = "force_installed";
+            private_browsing = lock-true; 
           };
           "{c827c446-3d00-4160-a992-3ebcbe6d81a6}" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/file/3990326/catppuccin_latte_mauve_git-2.0.xpi";
-            installation_mode = "force_installed";            
+            installation_mode = "force_installed";
+            private_browsing = lock-true;            
           };
           "{5ee380f7-abda-467c-ae9a-d30bf8f0d1d6}" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/file/3990306/catppuccin_frappe_lavender-2.0.xpi";
-            installation_mode = "force_installed"; 
+            installation_mode = "force_installed";
+            private_browsing = lock-true; 
           };
         };
       };
