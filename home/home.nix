@@ -104,6 +104,7 @@ in
     apostrophe
     zettlr
     hotspot #For visualizing perf.data
+    chromium
     ];
 
   #NEXTCLOUD

@@ -12,9 +12,13 @@
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-vscode-extensions = {
+      url = "github:nix-community/nix-vscode-extensions";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, yazi, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, yazi, nix-vscode-extensions, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
@@ -31,6 +35,8 @@
             # The main Home Manager module for NixOS.
             home-manager.nixosModules.home-manager
             {
+              nixpkgs.overlays = [ nix-vscode-extensions.overlays.default ];
+
               # Home Manager configuration.
               home-manager = {
                 backupFileExtension = "hm-bak";

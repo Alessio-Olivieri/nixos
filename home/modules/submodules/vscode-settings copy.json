@@ -1,0 +1,32 @@
+{
+    "editor.minimap.enabled": false,
+    "window.titleBarStyle": "custom",
+    "workbench.colorTheme": "Catppuccin Frappé",
+    "workbench.iconTheme": "catppuccin-frappe",
+    "workbench.preferredDarkColorTheme": "Catppuccin Frappé",
+    "workbench.preferredLightColorTheme": "Catppuccin Latte",
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.confirmPasteNative": false,
+    "git.enableSmartCommit": true,
+    "git.ignoreMissingGitWarning": true,
+    "python.analysis.extraPaths": [
+        "source",
+        "../source"
+    ],
+    "remote.SSH.showLoginTerminal": true,
+    "terminal.integrated.enableMultiLinePasteWarning": false,
+    "editor.fontLigatures": true,
+    "remote.autoForwardPortsSource": "hybrid",
+    "extensions.autoCheckUpdates": false,
+    "update.mode": "none",
+    "window.autoDetectColorScheme": true,
+    "workbench.startupEditor": "none",
+    "jupyter.widgetScriptSources": [
+        "jsdelivr.com",
+        "unpkg.com"
+    ],
+    "nixEnvSelector.useFlakes": true,
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "chat.agent.enabled": false
+}
