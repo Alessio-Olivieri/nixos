@@ -42,6 +42,37 @@ in
   programs.starship.enable = true;
   xdg.configFile."starship.toml".source = ./modules/submodules/starship.toml;
 
+  xdg = {
+    mimeApps = {
+      enable = true;
+      defaultApplications = {
+        "x-scheme-handler/sms" = [ "org.gnome.Shell.Extensions.GSConnect.desktop" ];
+        "x-scheme-handler/tel" = [ "org.gnome.Shell.Extensions.GSConnect.desktop" ];
+        
+        # Multiple apps are separated by spaces inside the list brackets
+        "x-scheme-handler/tg" = [ "org.telegram.desktop.desktop" "userapp-AyuGram Desktop-20GG82.desktop" ];
+        
+        "image/*" = [ "org.gnome.Loupe.desktop" ];
+        "application/pdf" = [ "okularApplication_pdf.desktop" ];
+        "x-scheme-handler/http" = [ "firefox.desktop" ];
+        "x-scheme-handler/https" = [ "firefox.desktop" ];
+        "text/html" = [ "firefox.desktop" ];
+        
+        "application/x-ipynb+json" = [ "code.desktop" ];
+        "application/json" = [ "code.desktop" "firefox.desktop" ];
+        "text/css" = [ "code.desktop" ];
+        
+        "x-scheme-handler/tonsite" = [ "userapp-AyuGram Desktop-Q3JF82.desktop" ];
+        "text/markdown" = [ "org.gnome.gitlab.somas.Apostrophe.desktop" ];
+        "text/plain" = [ "code.desktop" "codium.desktop" ];
+        "application/x-shellscript" = [ "codium.desktop" ];
+        
+        "x-scheme-handler/mailto" = [ "userapp-Thunderbird-4U4NG3.desktop" ];
+        "x-scheme-handler/mid" = [ "userapp-Thunderbird-4U4NG3.desktop" ];
+      };
+    };
+  };
+  
   home.packages = with pkgs; [
     neofetch
     htop
