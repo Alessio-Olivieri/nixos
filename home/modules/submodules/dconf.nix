@@ -171,15 +171,6 @@ with lib.hm.gvariant;
       xkb-options = [ "terminate:ctrl_alt_bksp" ];
     };
 
-    "org/gnome/desktop/interface" = {
-      accent-color = "purple";
-      clock-show-weekday = false;
-      color-scheme = "prefer-dark";
-      enable-animations = true;
-      enable-hot-corners = false;
-      show-battery-percentage = true;
-    };
-
     "org/gnome/desktop/notifications" = {
       application-children = [ "org-gnome-baobab" "gnome-power-panel" "firefox" ];
     };
@@ -670,13 +661,6 @@ with lib.hm.gvariant;
 
     "org/gnome/shell/extensions/libpanel" = {
       layout = [ [ "gnome@main" "quick-settings-audio-panel@rayzeq.github.io/main" ] ];
-    };
-
-    "org/gnome/shell/extensions/nightthemeswitcher/time" = {
-      manual-schedule = true;
-      nightthemeswitcher-ondemand-keybinding = [ "<Shift><Super>t" ];
-      sunrise = 7.0;
-      sunset = 16.0;
     };
 
     "org/gnome/shell/extensions/openbar" = {
