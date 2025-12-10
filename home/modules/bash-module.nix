@@ -9,7 +9,8 @@
             enable = true;
             enableCompletion = true;
             bashrcExtra = ''
-                export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin";
+                # Add pixi to PATH (and your other paths)
+                export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin:$HOME/.pixi/bin";
 
                 y() {
                     local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
@@ -23,11 +24,20 @@
             '';
 
             initExtra = ''
-            if ! pgrep -u "$USER" ssh-agent >/dev/null; then
-                eval "$(ssh-agent -s)" >/dev/null 2>&1
-            fi
-            ssh-add ~/.ssh/github/key </dev/null >/dev/null 2>&1
-            ssh-add ~/.ssh/tensordock/key </dev/null >/dev/null 2>&1
+                if ! pgrep -u "$USER" ssh-agent >/dev/null; then
+                    eval "$(ssh-agent -s)" >/dev/null 2>&1
+                fi
+                ssh-add ~/.ssh/github/key </dev/null >/dev/null 2>&1
+                ssh-add ~/.ssh/tensordock/key </dev/null >/dev/null 2>&1
+
+                # Enable pixi completion if it exists
+                if command -v pixi > /dev/null; then
+                    eval "$(pixi completion --shell bash)"
+                fi
+
+                codebase-to-text() {
+                    nix-shell -p pipx --run "pipx run codebase-to-text $(printf " %q" "$@")"
+                    }
             '';
 
             # set some aliases, feel free to add more or remove some
