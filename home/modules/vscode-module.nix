@@ -8,23 +8,23 @@
     programs.vscode = {
       enable = true;
       package = pkgs.vscodium;
-      mutableExtensionsDir = false;
+      mutableExtensionsDir = true;
       extensions = with pkgs; [
         # arrterian.nix-env-selector
-        vscode-extensions.ms-vscode.cpptools
-        vscode-extensions.ms-vscode.cpptools
-        vscode-extensions.ms-python.debugpy
-        vscode-extensions.ms-python.python
-        vscode-extensions.ms-python.vscode-pylance
-        vscode-extensions.ms-toolsai.jupyter
-        vscode-extensions.ms-toolsai.vscode-jupyter-cell-tags
-        vscode-extensions.ms-toolsai.jupyter-keymap
-        vscode-extensions.ms-toolsai.jupyter-renderers
-        vscode-extensions.ms-toolsai.vscode-jupyter-slideshow
+        
+        open-vsx.kylinideteam.kylin-clangd
+        open-vsx.kylinideteam.cppdebug
+        open-vsx.kylinideteam.kylin-cmake-tools
+        open-vsx.jajera.vsx-remote-ssh
+        open-vsx.jeanp413.open-remote-ssh
+
+
+
         # ms-vscode-remote.remote-containers
         # ms-vscode-remote.remote-ssh
         vscode-extensions.mkhl.direnv
         vscode-extensions.bbenoist.nix
+
         #3timeslazy.vscodium-devpodcontainers
         # open-vsx.jeanp413.open-remote-ssh
         open-vsx.nerditation.open-remote-distrobox
