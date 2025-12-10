@@ -103,6 +103,11 @@
             installation_mode = "force_installed";
             private_browsing = lock-true; 
           };
+          "it-IT@dictionaries.addons.mozilla.org" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/dizionario-italiano/latest.xpi";
+            installation_mode = "force_installed";
+            private_browsing = lock-true; 
+          };
         };
       };
     };
