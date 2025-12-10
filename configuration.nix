@@ -142,6 +142,8 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   programs.kdeconnect.enable = true;
 
   services.tailscale.enable = true;
+  services.flatpak.enable = true;
+
   
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -164,22 +166,22 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   pkgs.kitty
   pkgs.android-tools
   pkgs.direnv
-  (pkgs.kodi.withPackages (kodiPkgs: with kodiPkgs; [
-    inputstream-adaptive
-    inputstream-rtmp
-    inputstream-ffmpegdirect
-    inputstreamhelper
-    raiplay
-    netflix
-    libretro
-    libretro-fuse
-    libretro-gw
-    libretro-nestopia
-    libretro-snes9x
-    libretro-mgba
-    libretro-genplus
-    iagl
-    ]))
+  # (pkgs.kodi.withPackages (kodiPkgs: with kodiPkgs; [
+  #   inputstream-adaptive
+  #   inputstream-rtmp
+  #   inputstream-ffmpegdirect
+  #   inputstreamhelper
+  #   raiplay
+  #   netflix
+  #   libretro
+  #   libretro-fuse
+  #   libretro-gw
+  #   libretro-nestopia
+  #   libretro-snes9x
+  #   libretro-mgba
+  #   libretro-genplus
+  #   iagl
+  #   ]))
   ];
 
 
