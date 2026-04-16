@@ -13,6 +13,7 @@
   options = {
     firefox-module.enable = lib.mkEnableOption "Enables Firefox Nix settings";
   };
+  # in F12 search for "Add-on "{abcbde6d-57a1-45e3-9654-da805cf3568b}" not found so setting status to UNINSTALLED; exact error: Error: Addon not found"
   config = lib.mkIf config.firefox-module.enable {
     programs.firefox = {
       enable = true;
@@ -105,6 +106,11 @@
           };
           "it-IT@dictionaries.addons.mozilla.org" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/dizionario-italiano/latest.xpi";
+            installation_mode = "force_installed";
+            private_browsing = lock-true; 
+          };
+          "{abcbde6d-57a1-45e3-9654-da805cf3568b}" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/doqment/latest.xpi";
             installation_mode = "force_installed";
             private_browsing = lock-true; 
           };

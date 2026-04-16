@@ -13,8 +13,12 @@
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./modules/gnome.nix
+      ./modules/ai-module.nix
     ];
     gnome.enable = true;
+    ai-module = {
+    enable = true;
+  };
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -110,6 +114,7 @@
     # no need to redefine it in your config for now)
     #media-session.enable = true;
   };
+  # Example for /etc/nixos/configuration.nix
 
   hardware.bluetooth = {
     enable = true;
@@ -138,9 +143,14 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  virtualisation.waydroid = {
+    enable = true;
+  };
   # Install some programs.
-  programs.kdeconnect.enable = true;
-
+  programs.kdeconnect = {
+    enable = true;
+    package = pkgs.gnomeExtensions.gsconnect;
+  };
   services.tailscale.enable = true;
   services.flatpak.enable = true;
 
@@ -151,10 +161,12 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = [
+  pkgs.waydroid-helper
   pkgs.wget
   pkgs.git
   pkgs.python3
   pkgs.vlc
+  pkgs.appimage-run
   # dolphin
   # inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
   pkgs.libinput
@@ -166,24 +178,21 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   pkgs.kitty
   pkgs.android-tools
   pkgs.direnv
-  # (pkgs.kodi.withPackages (kodiPkgs: with kodiPkgs; [
-  #   inputstream-adaptive
-  #   inputstream-rtmp
-  #   inputstream-ffmpegdirect
-  #   inputstreamhelper
-  #   raiplay
-  #   netflix
-  #   libretro
-  #   libretro-fuse
-  #   libretro-gw
-  #   libretro-nestopia
-  #   libretro-snes9x
-  #   libretro-mgba
-  #   libretro-genplus
-  #   iagl
-  #   ]))
   ];
 
+  # games
+  programs.steam = {
+  enable = true;
+  remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+  dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+  localNetworkGameTransfers.openFirewall = true; 
+  extraCompatPackages = with pkgs; [
+    proton-ge-bin
+  ];
+};
+
+  hardware.xone.enable = true;
+  # ------------
 
 
   programs.ssh.extraConfig = ''
@@ -213,8 +222,18 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   nixpkgs.config.permittedInsecurePackages = [
               "ventoy-qt5-1.1.05"
             ];
+
+
+  fileSystems."/mnt/shared" = { 
+      device = "/dev/disk/by-uuid/13C004C07DA7D213";
+      fsType = "ntfs"; 
+      options = [ "rw" "uid=1000" "nofail" ];
+    };
     
-  
+  # localsend
+  networking.firewall.allowedUDPPorts = [ 53317 ];
+  networking.firewall.allowedTCPPorts = [ 53317 ];
+
 
   system.stateVersion = "25.05"; # Did you read the comment?
 

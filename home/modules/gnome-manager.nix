@@ -97,6 +97,8 @@ in
       gnomeExtensions.tophat
       gnomeExtensions.headsetcontrol
       gnomeExtensions.quick-settings-audio-panel
+      gnomeExtensions.appindicator #Needed for jdownloader
+      gnomeExtensions.gsconnect
     ];
 
     dconf = {
@@ -116,6 +118,9 @@ in
               pkgs.gnomeExtensions.headsetcontrol.extensionUuid
               pkgs.gnomeExtensions.quick-settings-audio-panel.extensionUuid
               pkgs.gnomeExtensions.night-theme-switcher.extensionUuid 
+              pkgs.gnomeExtensions.appindicator.extensionUuid 
+              pkgs.gnomeExtensions.gsconnect.extensionUuid
+
           ];
         };
         

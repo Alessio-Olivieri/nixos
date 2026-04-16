@@ -17,13 +17,15 @@
         open-vsx.kylinideteam.kylin-cmake-tools
         open-vsx.jajera.vsx-remote-ssh
         open-vsx.jeanp413.open-remote-ssh
+        open-vsx.kelvin.vscode-sshfs
 
 
 
         # ms-vscode-remote.remote-containers
         # ms-vscode-remote.remote-ssh
-        vscode-extensions.mkhl.direnv
-        vscode-extensions.bbenoist.nix
+        # vscode-extensions.mkhl.direnv
+        open-vsx.jnoortheen.nix-ide
+
 
         #3timeslazy.vscodium-devpodcontainers
         # open-vsx.jeanp413.open-remote-ssh

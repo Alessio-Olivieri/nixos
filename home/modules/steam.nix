@@ -4,9 +4,6 @@
         steam-module.enable = lib.mkEnableOption "Enables steam";
     };
 
-    config = lib.mkIf config.steam-module.enabl {
-      programs.steam = {
-        enable=true;
-      };
+    config = lib.mkIf config.steam-module.enable {
     };
 }

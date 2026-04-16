@@ -2,5 +2,22 @@
     "workbench.preferredDarkColorTheme": "Catppuccin Frappé",
     "workbench.preferredLightColorTheme": "Catppuccin Latte",
     "window.autoDetectColorScheme": true,
-    "clangd.path": "/home/lexyo/.config/VSCodium/User/globalStorage/kylinideteam.kylin-clangd/install/21.1.0/clangd_21.1.0/bin/clangd"
+    "clangd.path": "/home/lexyo/.config/VSCodium/User/globalStorage/kylinideteam.kylin-clangd/install/21.1.0/clangd_21.1.0/bin/clangd",
+    "sshfs.configs": [
+        {
+            "name": "sapienza-cluster",
+            "label": "Sapienza Cluster",
+            "host": "151.100.174.45",
+            "newFileMode": "0o777",
+            "extend": [],
+            "username": "olivieri_1973323",
+            "password": true,
+            "root": "/home/olivieri_1973323"
+        }
+    ],
+    "editor.autoIndentOnPaste": true,
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    "security.workspace.trust.untrustedFiles": "open",
+    "security.workspace.trust.enabled": false,
+    "security.workspace.trust.emptyWindow": false
 }

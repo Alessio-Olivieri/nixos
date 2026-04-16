@@ -171,6 +171,15 @@ with lib.hm.gvariant;
       xkb-options = [ "terminate:ctrl_alt_bksp" ];
     };
 
+    "org/gnome/desktop/interface" = {
+      accent-color = "purple";
+#      color-scheme = "default";
+      enable-animations = true;
+      enable-hot-corners = true;
+      icon-theme = "Papirus-Dark";
+      show-battery-percentage = true;
+    };
+
     "org/gnome/desktop/notifications" = {
       application-children = [ "org-gnome-baobab" "gnome-power-panel" "firefox" ];
     };
@@ -269,10 +278,6 @@ with lib.hm.gvariant;
 
     "org/gnome/desktop/notifications/application/org-kde-kdeconnect-daemon" = {
       application-id = "org.kde.kdeconnect.daemon.desktop";
-    };
-
-    "org/gnome/desktop/notifications/application/org-kde-okular" = {
-      application-id = "org.kde.okular.desktop";
     };
 
     "org/gnome/desktop/notifications/application/org-telegram-desktop" = {
@@ -523,10 +528,6 @@ with lib.hm.gvariant;
       ignore-phase2-ca-cert = false;
     };
 
-    "org/gnome/portal/filechooser/brave-browser" = {
-      last-folder-path = "/home/lexyo/Documents";
-    };
-
     "org/gnome/portal/filechooser/code" = {
       last-folder-path = "/etc/nixos";
     };
@@ -537,14 +538,6 @@ with lib.hm.gvariant;
 
     "org/gnome/portal/filechooser/obsidian" = {
       last-folder-path = "/home/lexyo/Nextcloud/ObsidianVault";
-    };
-
-    "org/gnome/portal/filechooser/org/gnome/gitlab/somas/Apostrophe" = {
-      last-folder-path = "/home/lexyo/Nextcloud/Notes";
-    };
-
-    "org/gnome/portal/filechooser/org/gnome/Settings" = {
-      last-folder-path = "/etc/nixos/files/wallpapers/Dragonball";
     };
 
     "org/gnome/portal/filechooser/slack" = {
@@ -573,9 +566,9 @@ with lib.hm.gvariant;
       idle-dim = true;
       power-button-action = "hibernate";
       sleep-inactive-ac-timeout = 1200;
-      sleep-inactive-ac-type = "suspend";
+      sleep-inactive-ac-type = "nothing";
       sleep-inactive-battery-timeout = 900;
-      sleep-inactive-battery-type = "nothing";
+      sleep-inactive-battery-type = "suspend";
     };
 
     "org/gnome/settings-daemon/plugins/sharing/gnome-user-share-webdav" = {

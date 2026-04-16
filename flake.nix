@@ -31,6 +31,7 @@
           inherit specialArgs; # Makes `inputs` available in all NixOS modules.
           modules = [
             ./configuration.nix
+            ./modules/wps-fonts.nix
 
             # The main Home Manager module for NixOS.
             home-manager.nixosModules.home-manager
