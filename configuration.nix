@@ -178,6 +178,7 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   pkgs.kitty
   pkgs.android-tools
   pkgs.direnv
+  pkgs.nodejs
   ];
 
   # games

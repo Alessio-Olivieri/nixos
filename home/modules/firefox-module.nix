@@ -116,6 +116,10 @@
           };
         };
       };
+      home.file.".mozilla/firefox/lexyo/chrome" = {
+      source = ./submodules/chrome;
+        recursive = true;
+      };
     };
   };
 }

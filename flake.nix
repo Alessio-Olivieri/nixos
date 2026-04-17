@@ -31,6 +31,7 @@
           inherit specialArgs; # Makes `inputs` available in all NixOS modules.
           modules = [
             ./configuration.nix
+            ./hardware-configuration.nix
             ./modules/wps-fonts.nix
 
             # The main Home Manager module for NixOS.
@@ -47,17 +48,32 @@
                 extraSpecialArgs = specialArgs;
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                users.lexyo = {
-                  imports = [
-                    # Your personal home-manager configuration.
-                    ./home/home.nix
-                  ];
-                };
+                users.lexyo = { imports = [ ./home/home.nix];};
               };
             }
-            ({ pkgs, ... }: {
-						environment.systemPackages = [ yazi.packages.${pkgs.system}.default ];
-					  })
+            ({ pkgs, ... }: { environment.systemPackages = [ yazi.packages.${pkgs.system}.default ];})
+          ];
+        };
+        msi-laptop = nixpkgs.lib.nixosSystem {
+          inherit specialArgs; 
+          modules =[
+            ./configuration.nix
+            ./hardware-msi.nix    # <- Loads the NEW generated hardware
+            ./modules/wps-fonts.nix
+            ./msi-specific.nix    # <- Loads the GPU/Fan/TPM config
+
+            home-manager.nixosModules.home-manager
+            {
+              nixpkgs.overlays =[ nix-vscode-extensions.overlays.default ];
+              home-manager = {
+                backupFileExtension = "hm-bak";
+                extraSpecialArgs = specialArgs;
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.lexyo = { imports = [ ./home/home.nix ]; };
+              };
+            }
+            ({ pkgs, ... }: { environment.systemPackages =[ yazi.packages.${pkgs.system}.default ]; })
           ];
         };
       };
