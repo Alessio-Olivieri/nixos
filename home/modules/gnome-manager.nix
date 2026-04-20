@@ -94,11 +94,12 @@ in
       gnomeExtensions.boost-volume
       gnomeExtensions.smile-complementary-extension
       gnomeExtensions.just-perfection
-      gnomeExtensions.tophat
+      # gnomeExtensions.tophat
       gnomeExtensions.headsetcontrol
       gnomeExtensions.quick-settings-audio-panel
       gnomeExtensions.appindicator #Needed for jdownloader
       gnomeExtensions.gsconnect
+      gnomeExtensions.blur-my-shell
     ];
 
     dconf = {
@@ -114,12 +115,13 @@ in
               pkgs.gnomeExtensions.boost-volume.extensionUuid
               pkgs.gnomeExtensions.smile-complementary-extension.extensionUuid
               pkgs.gnomeExtensions.just-perfection.extensionUuid
-              pkgs.gnomeExtensions.tophat.extensionUuid
+              # pkgs.gnomeExtensions.tophat.extensionUuid
               pkgs.gnomeExtensions.headsetcontrol.extensionUuid
               pkgs.gnomeExtensions.quick-settings-audio-panel.extensionUuid
               pkgs.gnomeExtensions.night-theme-switcher.extensionUuid 
               pkgs.gnomeExtensions.appindicator.extensionUuid 
               pkgs.gnomeExtensions.gsconnect.extensionUuid
+              pkgs.gnomeExtensions.blur-my-shell.extensionUuid
 
           ];
         };

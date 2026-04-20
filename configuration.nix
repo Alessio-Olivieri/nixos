@@ -11,7 +11,7 @@
     [ 
       ./battery-optimizations.nix
       # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+      # ./hardware-configuration.nix
       ./modules/gnome.nix
       ./modules/ai-module.nix
     ];

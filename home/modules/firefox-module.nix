@@ -116,9 +116,14 @@
           };
         };
       };
-      home.file.".mozilla/firefox/lexyo/chrome" = {
-      source = ./submodules/chrome;
-        recursive = true;
+      profiles = {
+        default = {
+        id = 0;
+        isDefault = true;
+        # Here's the key part: define your userChrome and userContent
+        userChrome = builtins.readFile ./submodules/chrome/userChrome.css;
+            # userContent = builtins.readFile ./path/to/your/userContent.css;
+        };
       };
     };
   };

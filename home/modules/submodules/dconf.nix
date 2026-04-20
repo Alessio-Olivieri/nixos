@@ -136,8 +136,8 @@ with lib.hm.gvariant;
     "org/gnome/desktop/background" = {
       color-shading-type = "solid";
       picture-options = "zoom";
-      picture-uri = "file:///home/lexyo/.local/share/backgrounds/2025-06-05-16-15-21-Background.png";
-      picture-uri-dark = "file:///home/lexyo/.local/share/backgrounds/2025-06-05-16-15-21-Background.png";
+      picture-uri = "/etc/nixos/files/wallpapers/Dragonball/Background.png";
+      picture-uri-dark = "/etc/nixos/files/wallpapers/Dragonball/Background.png";
       primary-color = "#000000000000";
       secondary-color = "#000000000000";
     };
@@ -190,10 +190,6 @@ with lib.hm.gvariant;
 
     "org/gnome/desktop/notifications/application/code" = {
       application-id = "code.desktop";
-    };
-
-    "org/gnome/desktop/notifications/application/com-nextcloud-desktopclient-nextcloud" = {
-      application-id = "com.nextcloud.desktopclient.nextcloud.desktop";
     };
 
     "org/gnome/desktop/notifications/application/discord" = {
@@ -319,7 +315,7 @@ with lib.hm.gvariant;
     "org/gnome/desktop/screensaver" = {
       color-shading-type = "solid";
       picture-options = "zoom";
-      picture-uri = "file:///home/lexyo/.local/share/backgrounds/2025-06-05-16-15-21-Background.png";
+      picture-uri = "/etc/nixos/files/wallpapers/Dragonball/Background.png";
       primary-color = "#000000000000";
       secondary-color = "#000000000000";
     };
@@ -426,7 +422,6 @@ with lib.hm.gvariant;
       hemingway-mode = false;
       hemingway-toast-count = 1;
       input-format = "markdown";
-      open-file-path = "/home/lexyo/Nextcloud/Notes";
       preview-active = false;
       preview-mode = "half-width";
       preview-security = "ask";
@@ -527,23 +522,7 @@ with lib.hm.gvariant;
       ignore-ca-cert = false;
       ignore-phase2-ca-cert = false;
     };
-
-    "org/gnome/portal/filechooser/code" = {
-      last-folder-path = "/etc/nixos";
-    };
-
-    "org/gnome/portal/filechooser/discord" = {
-      last-folder-path = "/home/lexyo/Dev/thesis";
-    };
-
-    "org/gnome/portal/filechooser/obsidian" = {
-      last-folder-path = "/home/lexyo/Nextcloud/ObsidianVault";
-    };
-
-    "org/gnome/portal/filechooser/slack" = {
-      last-folder-path = "/home/lexyo/Pictures/Screenshots";
-    };
-
+    
     "org/gnome/settings-daemon/plugins/color" = {
       night-light-enabled = true;
       night-light-schedule-automatic = false;
@@ -578,8 +557,6 @@ with lib.hm.gvariant;
     "org/gnome/shell" = {
       command-history = [ "kg" "lg" ];
       disable-user-extensions = false;
-      disabled-extensions = [ "auto-move-windows@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "apps-menu@gnome-shell-extensions.gcampax.github.com" "launch-new-instance@gnome-shell-extensions.gcampax.github.com" "light-style@gnome-shell-extensions.gcampax.github.com" "native-window-placement@gnome-shell-extensions.gcampax.github.com" "drive-menu@gnome-shell-extensions.gcampax.github.com" "tilingshell@ferrarodomenico.com" "forge@jmmaranan.com" "blur-my-shell@aunetx" "bluetooth-battery@michalw.github.com" "openbar@neuromorph" "unite@hardpixel.eu" "vertical-overview@RensAlthuis.github.com" "system-monitor@gnome-shell-extensions.gcampax.github.com" "gestureImprovements@gestures" "touchpad-gesture-customization@coooolapps.com" ];
-      enabled-extensions = [ "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "paperwm@paperwm.github.com" "paperwm@paperwm.github.com" "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "paperwm@paperwm.github.com" "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" "nightthemeswitcher@romainvigier.fr" "paperwm@paperwm.github.com" "boostvolume@shaquib.dev" "smile-extension@mijorus.it" "just-perfection-desktop@just-perfection" "tophat@fflewddur.github.io" "HeadsetControl@lauinger-clan.de" "quick-settings-audio-panel@rayzeq.github.io" ];
       favorite-apps = [ "org.gnome.Nautilus.desktop" "code.desktop" "firefox.desktop" ];
       welcome-dialog-last-shown-version = "46.2";
     };
@@ -644,9 +621,9 @@ with lib.hm.gvariant;
       window-picker-icon = false;
       window-preview-caption = true;
       window-preview-close-button = true;
-      workspace = true;
+      workspace = false;
       workspace-background-corner-size = 0;
-      workspace-popup = true;
+      workspace-popup = false;
       workspace-switcher-should-show = false;
       workspace-switcher-size = 18;
       workspaces-in-app-grid = false;
