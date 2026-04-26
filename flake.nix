@@ -31,8 +31,9 @@
           inherit specialArgs; # Makes `inputs` available in all NixOS modules.
           modules = [
             ./configuration.nix
-            ./hardware-configuration.nix
+            ./hardware-vivobook.nix
             ./modules/wps-fonts.nix
+            ./vivobook-battery-optimizations.nix
 
             # The main Home Manager module for NixOS.
             home-manager.nixosModules.home-manager
