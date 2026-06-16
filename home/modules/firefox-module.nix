@@ -38,19 +38,25 @@
             "layout.css.backdrop-filter.enabled" = lock-true;
             "svg.context-properties.content.enabled" = lock-true;
             "widget.gtk.ignore-bogus-leave-notify" = lock-true;
+
+            "sidebar.verticalTabs" = lock-true;
+            "sidebar.verticalTabs.dragToPinPromo.dismissed" = lock-true;
+            "sidebar.animation.expand-on-hover.delay-duration-ms" = {Status="locked"; Value=100;};
+            "sidebar.animation.expand-on-hover.duration-ms" = {Status="locked"; Value=200;};
+            "sidebar.visibility" = {Status="locked"; Value = "expand-on-hover";};
         };
         /* ---- EXTENSIONS ---- */
         # Check about:support for extension/add-on ID strings.
         # Valid strings for installation_mode are "allowed", "blocked",
         # "force_installed" and "normal_installed".
         ExtensionSettings = {
-          "*".installation_mode = "blocked"; # blocks all addons except the ones specified below
+          "*".installation_mode = "allowed"; # blocks all addons except the ones specified below
           #TreeStyleTab
-          "treestyletab@piro.sakura.ne.jp" = {
-            install_url = "https://addons.mozilla.org/firefox/downloads/latest/tree-style-tab/latest.xpi";
-            installation_mode = "force_installed";
-            private_browsing = lock-true;
-          };
+          # "treestyletab@piro.sakura.ne.jp" = {
+          #   install_url = "https://addons.mozilla.org/firefox/downloads/latest/tree-style-tab/latest.xpi";
+          #   installation_mode = "force_installed";
+          #   private_browsing = lock-true;
+          # };
           "uBlock0@raymondhill.net" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
             installation_mode = "force_installed";

@@ -11,16 +11,6 @@
             bashrcExtra = ''
                 # Add pixi to PATH (and your other paths)
                 export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin:$HOME/.pixi/bin";
-
-                y() {
-                    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
-                    yazi "$@" --cwd-file="$tmp"
-                    if [ -f "$tmp" ]; then
-                        local cwd="$(cat "$tmp")"
-                        [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && cd "$cwd"
-                        rm -f "$tmp"
-                    fi
-                }
             '';
 
             initExtra = ''

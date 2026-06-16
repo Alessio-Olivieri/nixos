@@ -11,11 +11,14 @@
     [ 
       ./modules/gnome.nix
       ./modules/ai-module.nix
+      ./modules/lutris.nix
     ];
     gnome.enable = true;
     ai-module = {
     enable = true;
   };
+  lutris-module.enable=true;
+  
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -81,7 +84,7 @@
 
   # Configure keymap in X11
   services.xserver.xkb = {
-    layout = "it,us";             # Italian first, English (US) second
+    layout = "de";             # Italian first, English (US) second
     variant = ",";                 # default variants
     options = "grp:super_space_toggle"; # switch with Super+Space
   };
@@ -90,7 +93,7 @@
 
 
   # Configure console keymap
-  console.keyMap = "it";
+  console.keyMap = "de";
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -171,23 +174,14 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   pkgs.stress-ng
 
   # pkgs.easyeffects # For audio effects on pipewire applications
-  pkgs.xorg.xhost
+  pkgs.xhost
   pkgs.kitty
   pkgs.android-tools
   pkgs.direnv
   pkgs.nodejs
+  pkgs.v4l-utils
+  pkgs.linux-enable-ir-emitter
   ];
-
-  # games
-  programs.steam = {
-  enable = true;
-  remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-  dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-  localNetworkGameTransfers.openFirewall = true; 
-  extraCompatPackages = with pkgs; [
-    proton-ge-bin
-  ];
-};
 
   hardware.xone.enable = true;
   # ------------
@@ -233,7 +227,7 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   networking.firewall.allowedTCPPorts = [ 53317 ];
 
 
-  system.stateVersion = "25.05"; # Did you read the comment?
+  system.stateVersion = "26.05"; # Did you read the comment?
 
   # Watch stuff
   boot.kernel.sysctl."net.ipv4.ip_forward" = true;
@@ -243,5 +237,10 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   externalInterface = "wlp1s0";
   internalInterfaces = [ "enp4s0f3u4" ];
   };
+  # # --- DELL PRECISION 7560 SPECIFIC ---
+  # # If v4l2-ctl --list-devices does NOT show your camera out of the box, 
+  # # uncomment the following line. The 7560's 11th-gen Intel CPU sometimes 
+  # # routes the webcam through the IPU6 processor.
+  # # hardware.ipu6.enable = true;
 
 }

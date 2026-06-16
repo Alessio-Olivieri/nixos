@@ -166,8 +166,8 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/desktop/input-sources" = {
-      mru-sources = [ (mkTuple [ "xkb" "it" ]) ];
-      sources = [ (mkTuple [ "xkb" "it" ]) ];
+      mru-sources = [ (mkTuple [ "xkb" "de" ]) ];
+      sources = [ (mkTuple [ "xkb" "de" ]) ];
       xkb-options = [ "terminate:ctrl_alt_bksp" ];
     };
 

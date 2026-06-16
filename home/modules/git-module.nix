@@ -8,8 +8,10 @@
           # basic configuration of git, please change to your own
             programs.git = {
                 enable = true;
-                userName = "Alessio-Olivieri";
-                userEmail = "lexyo.2002@gmail.com";
+                settings = {
+                    user.name = "Alessio-Olivieri";
+                    user.email = "lexyo.2002@gmail.com";
+                };
             };
     };
 }

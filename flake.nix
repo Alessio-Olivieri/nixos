@@ -2,14 +2,10 @@
   description = "NixOS configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     
-    yazi = {
-      url = "github:sxyazi/yazi";
-    };
-
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -18,7 +14,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, yazi, nix-vscode-extensions, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nix-vscode-extensions, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
@@ -52,7 +48,6 @@
                 users.lexyo = { imports = [ ./home/home.nix];};
               };
             }
-            ({ pkgs, ... }: { environment.systemPackages = [ yazi.packages.${pkgs.system}.default ];})
           ];
         };
         msi-laptop = nixpkgs.lib.nixosSystem {
@@ -74,7 +69,28 @@
                 users.lexyo = { imports = [ ./home/home.nix ]; };
               };
             }
-            ({ pkgs, ... }: { environment.systemPackages =[ yazi.packages.${pkgs.system}.default ]; })
+          ];
+        };
+        precision = nixpkgs.lib.nixosSystem {
+          inherit specialArgs; 
+          modules =[
+            ./configuration.nix
+            ./hardware-configuration.nix    # <- Loads the NEW generated hardware
+            ./precision-nvidia.nix
+            ./precision-camera.nix
+
+
+            home-manager.nixosModules.home-manager
+            {
+              nixpkgs.overlays =[ nix-vscode-extensions.overlays.default ];
+              home-manager = {
+                backupFileExtension = "hm-bak";
+                extraSpecialArgs = specialArgs;
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.lexyo = { imports = [ ./home/home.nix ]; };
+              };
+            }
           ];
         };
       };

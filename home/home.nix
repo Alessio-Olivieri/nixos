@@ -29,7 +29,6 @@ in
     ./modules/git-module.nix
     ./modules/bash-module.nix
     ./modules/kitty-module.nix
-    ./modules/yazi-module.nix
     ./modules/firefox-module.nix
     ./modules/thunderbird-module.nix
     ./modules/steam.nix
@@ -42,10 +41,9 @@ in
   bash-module.enable = true;
   git-module.enable = true;
   kitty-module.enable = true;
-  yazi-module.enable=true;
   firefox-module.enable=true;
   thunderbird-module.enable=true;
-  steam-module.enable=true;
+
 
   services.syncthing = {
     enable = true;
@@ -60,7 +58,7 @@ in
   #   recursive = true;   # link recursively
   #   executable = true;  # make all files executable
   # };
-  home.stateVersion = "25.05";
+  home.stateVersion = "26.05";
   programs.home-manager.enable = true;
 
   programs.starship.enable = true;
@@ -115,9 +113,7 @@ in
   };
   
   home.packages = with pkgs; [
-    stremio
     gnome-tweaks
-    beeper
 
     libreoffice-qt
     hunspell
@@ -127,9 +123,7 @@ in
     authenticator
 
 
-    neofetch
     htop
-    wpsoffice
     xnviewmp
     variety
 
@@ -172,15 +166,14 @@ in
     slack
 
     obs-studio
-    onlyoffice-bin
     gimp-with-plugins
 
     libgcc
     
-    protonvpn-gui
+    proton-vpn
 
     cpufetch
-    youtube-music
+    pear-desktop
     ghostty
     filezilla
     obsidian
@@ -190,8 +183,6 @@ in
     android-tools
     tmux
     openfortivpn
-    apostrophe
-    zettlr
     hotspot #For visualizing perf.data
     chromium
     ];
