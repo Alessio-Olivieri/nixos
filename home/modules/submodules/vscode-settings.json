@@ -20,5 +20,6 @@
     "security.workspace.trust.untrustedFiles": "open",
     "security.workspace.trust.enabled": false,
     "security.workspace.trust.emptyWindow": false,
-    "editor.fontFamily":"JetBrainsMono Nerd Font"
+    "editor.fontFamily": "JetBrainsMono Nerd Font",
+    "git.autofetch": true
 }
