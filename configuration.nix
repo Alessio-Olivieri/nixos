@@ -12,6 +12,7 @@
       ./modules/gnome.nix
       ./modules/ai-module.nix
       ./modules/lutris.nix
+      ./modules/virtualbox.nix
     ];
     gnome.enable = true;
     ai-module = {
@@ -31,7 +32,11 @@
 		options = "--delete-older-than 3d";
 	};
 
-  zramSwap.enable = true;  
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 30; # Use up to 30% of RAM for compressed swap
+  };
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -77,10 +82,12 @@
   #   xwayland.enable = true;
   # };
 
-  # environment.sessionVariables = {
-  #   NIXOS_OZONE_WL = "1"; # This variable fixes electron apps in Wayland
-  # };
-
+  environment.sessionVariables = {
+      # Forces Wayland and hardware acceleration for electron/browsers
+      NIXOS_OZONE_WL = "1";
+      # Force Intel VAAPI for video decoding
+      LIBVA_DRIVER_NAME = "iHD"; 
+    };
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -124,12 +131,6 @@
     };
   };
 
-  virtualisation.podman = {
-  enable = true;
-  dockerCompat = true;
-};
-security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
-
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
@@ -143,9 +144,6 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  virtualisation.waydroid = {
-    enable = true;
-  };
   # Install some programs.
   programs.kdeconnect = {
     enable = true;
@@ -179,8 +177,12 @@ security.lsm = lib.mkForce [ ]; # otherwise distrobox doesn't work
   pkgs.android-tools
   pkgs.direnv
   pkgs.nodejs
-  pkgs.v4l-utils
-  pkgs.linux-enable-ir-emitter
+
+  config.boot.kernelPackages.turbostat
+
+  pkgs.nvtopPackages.full
+
+  pkgs.mission-center
   ];
 
   hardware.xone.enable = true;

@@ -4,7 +4,7 @@ let
   # Fetches the hardware repo exactly once. Instantly faster rebuilds, no --impure!
   nixos-hardware = builtins.fetchTarball {
     url="https://github.com/NixOS/nixos-hardware/archive/master.tar.gz";
-    sha256="sha256:1qahqindhlzlrkx22h7zk8jfjdnwldzszhw0m1h5yq39dd1wps9c";
+    sha256="sha256:1qhzdprp5nshf98gd3afm8j0241m9gbaxwcf3ynrmvls9y4wzyyc";
   };
 in
 {
@@ -28,18 +28,44 @@ in
   environment.systemPackages = [
     pkgs.intel-undervolt
     pkgs.msr-tools
+
+    # --- Dell Battery Health Charging ---
+    pkgs.libsmbios 
+        # We extract the extension's native script and put it in the system path
+    (pkgs.writeShellScriptBin "batteryhealthchargingctl" (builtins.readFile "${pkgs.gnomeExtensions.battery-health-charging}/share/gnome-shell/extensions/Battery-Health-Charging@maniacx.github.com/resources/batteryhealthchargingctl"))
   ];
+    systemd.tmpfiles.rules = [
+    "d /usr/sbin 0755 root root -"
+    "L+ /usr/sbin/smbios-battery-ctl - - - - ${pkgs.libsmbios}/sbin/smbios-battery-ctl"
+  ];
+      # Polkit rules for GNOME extensions
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (action.id == "org.freedesktop.policykit.exec" &&
+          (action.lookup("program") == "/usr/sbin/smbios-battery-ctl" ||
+           action.lookup("program") == "${pkgs.libsmbios}/sbin/smbios-battery-ctl" ||
+           action.lookup("program") == "/run/current-system/sw/bin/smbios-battery-ctl") &&
+          subject.local && subject.active) {
+        return polkit.Result.YES;
+      }
+    });
+  '';
 
   services.tlp = {
     enable = true;
     settings = {
+
+      USB_AUTOSUSPEND = 1;
       CPU_BOOST_ON_AC = 1;
       CPU_BOOST_ON_BAT = 0; # Turns off Turbo Boost on Battery
       CPU_HWP_DYN_BOOST_ON_AC = 1;
       CPU_HWP_DYN_BOOST_ON_BAT = 0;
-
-      # Enable aggressive PCIe Active State Power Management
-      PCIE_ASPM_ON_BAT = "powersupersave";
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      CPU_DRIVER_OPMODE_ON_AC = "guided";
+      CPU_DRIVER_OPMODE_ON_BAT = "active";
+      MEM_SLEEP_ON_AC="s2idle";
+      MEM_SLEEP_ON_BAT="s2idle";
       
       # Turn on Wi-Fi power saving mode
       WIFI_PWR_ON_BAT = "on";
@@ -49,6 +75,17 @@ in
 
       # NVMe ASPM power saving
       NVME_PRSNT_ON_BAT = 1;
+            # Force Intel's energy preference to favor battery life
+      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+      CPU_ENERGY_PERF_POLICY_ON_AC = "balance_performance";
+
+      # Limit maximum CPU frequency on battery to save power (optional but highly effective)
+      # 3000 MHz (3.0GHz) is plenty fast for UI responsiveness but prevents voltage spikes
+      CPU_MAX_PERF_ON_BAT = 60; 
+      
+      # Put PCIe devices in extreme low power modes actively
+      PCIE_ASPM_ON_BAT = "powersupersave";
+      RUNTIME_PM_ON_BAT = "auto";
     };
   };
 
@@ -65,11 +102,11 @@ in
       [BATTERY]
       Update_Rate_s: 30
       # Power Limits (ThrottleStop PL1 / PL2) in Watts
-      PL1_Tdp_W: 10
+      PL1_Tdp_W: 5
       PL1_Duration_s: 28
-      PL2_Tdp_W: 15
+      PL2_Tdp_W: 10
       PL2_Duration_S: 0.002
-      Trip_Temp_C: 75
+      Trip_Temp_C: 65
 
       [AC]
       Update_Rate_s: 5
@@ -185,6 +222,8 @@ in
     device = "/dev/disk/by-uuid/a5feba67-fcf2-4840-bb72-683c5f436f96";
     crypttabExtraOpts = [ "tpm2-device=auto" ];
   };
+  # sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/disk/by-uuid/430e2b02-5f47-43f3-9ae5-1e90a4a91952
+  # sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/disk/by-uuid/a5feba67-fcf2-4840-bb72-683c5f436f96
   # sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/nvme0n1p3
 
 # =======================================================================
@@ -199,7 +238,23 @@ in
 #     "pcie_port_pm=force" 
 #     "pcie_aspm=force" 
 #   ];
-    boot.kernelParams = [ "nmi_watchdog=0" ];
+boot.kernelParams = [ 
+  "nmi_watchdog=0"
+  "pcie_aspm=force"
+  "i915.enable_psr=1"
+  "i915.enable_fbc=1"
+  "initcall_blacklist=idma64_platform_driver_init"
+  # "acpi_mask_gpe=0x6E"
+  "nvme.noacpi=1"
+
+  ];
+  boot.extraModprobeConfig = ''
+    # Put the Intel audio chip to sleep after 1 second of no sound to allow PC10
+    options snd_hda_intel power_save=1 power_save_controller=y
+  '';
+  boot.blacklistedKernelModules = [ 
+    "rtsx_pci" "rtsx_pci_sdmmc" "rtsx_pci_ms" #Disable to use Card reader 
+   ]; 
 
 services.udev.extraRules = ''
     # 1. Stops GNOME's Mutter and systemd-logind from polling the NVIDIA GPU and keeping it awake.

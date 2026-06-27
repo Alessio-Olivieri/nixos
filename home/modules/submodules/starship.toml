@@ -3,10 +3,9 @@ $container\
 $username\
 $os\
 $git_branch\
-( at $directory)\
+( at $directory )\
 $cmd_duration\
-( via $python$conda$nodejs$c$rust$java)
-$character\
+( via $python$conda$nodejs$c$rust$java )
 """
 
 add_newline = false

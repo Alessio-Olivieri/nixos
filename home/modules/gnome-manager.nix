@@ -65,6 +65,37 @@ let
       ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme 'default'
     fi
   '';
+
+  batteryHealthChargingPatched = pkgs.gnomeExtensions.battery-health-charging.overrideAttrs (old: {
+    postPatch = (old.postPatch or "") + ''
+      # Replace hardcoded /usr/local/bin path with NixOS system path
+      substituteInPlace lib/driver.js \
+        --replace-fail '/usr/local/bin/batteryhealthchargingctl-''${user}' \
+                       '/run/current-system/sw/bin/batteryhealthchargingctl'
+    '';
+  });
+
+    overlap-shell-theme = pkgs.stdenv.mkDerivation {
+    name = "overlap-shell-theme";
+    src = pkgs.emptyDirectory;
+    installPhase = ''
+      mkdir -p $out/share/themes/OverlapShell/gnome-shell
+      cat > $out/share/themes/OverlapShell/gnome-shell/gnome-shell.css << 'EOF'
+      @import url("resource:///org/gnome/shell/theme/gnome-shell.css");
+
+      /* This is the magic line that lets windows overlap the panel area */
+      #panelBox {
+        height: 0px !important;
+      }
+
+      /* Pull the panel back into view (adjust the 23px if your JustPerfection panel-size is different) */
+      #panel {
+        margin-top: -23px !important; 
+      }
+      EOF
+    '';
+  };
+  
 in
 {
   options = {
@@ -100,6 +131,7 @@ in
       gnomeExtensions.appindicator #Needed for jdownloader
       gnomeExtensions.gsconnect
       gnomeExtensions.blur-my-shell
+      # batteryHealthChargingPatched
     ];
 
     dconf = {
@@ -122,8 +154,18 @@ in
               pkgs.gnomeExtensions.appindicator.extensionUuid 
               pkgs.gnomeExtensions.gsconnect.extensionUuid
               pkgs.gnomeExtensions.blur-my-shell.extensionUuid
-
+              # batteryHealthChargingPatched.extensionUuid
           ];
+        };
+
+            # Stop GNOME from indexing files and draining battery when unplugged
+        "org/freedesktop/Tracker3/Miner/Files" = {
+          index-on-battery = false;
+        };
+        
+        # --- THE MAGIC FIX: TELL THE EXTENSION POLKIT IS ALREADY INSTALLED ---
+        "org/gnome/shell/extensions/Battery-Health-Charging" = {
+          polkit-status = "installed";
         };
         
         # Reset Shell Theme to Default (Adwaita) to fix panel overlaps/missing icons

@@ -81,6 +81,12 @@ in
           Path = "/home/lexyo/.local/share/JDownloader"; 
         };
       };
+      Windows = {
+        name = "Windows";
+        genericName = "Virtual Machine";
+        exec = "quickemu --vm windows-11.conf --display spice";
+        icon = "distributor-logo-windows";
+      };
     };
   #   mimeApps = {
   #     enable = true;
@@ -113,8 +119,6 @@ in
   };
   
   home.packages = with pkgs; [
-    gnome-tweaks
-
     libreoffice-qt
     hunspell
     hunspellDicts.en_US
@@ -185,6 +189,7 @@ in
     openfortivpn
     hotspot #For visualizing perf.data
     chromium
+    codex
     ];
 
 

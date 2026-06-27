@@ -10,6 +10,7 @@
         services.desktopManager.gnome.enable = true;
 
         environment.gnome.excludePackages = (with pkgs; [
+              gnome-software
             # baobab # diskmanager
             # decibels #audioplayer
             # totem #videoplayer
@@ -22,13 +23,12 @@
             # gnome-logs
             epiphany 
             gnome-text-editor
-            gnome-characters
             gnome-clocks
             gnome-console
             # gnome-contacts
             gnome-maps
             gnome-music
-            # gnome-system-monitor
+            gnome-system-monitor
             # gnome-weather
             # gnome-connections
             simple-scan

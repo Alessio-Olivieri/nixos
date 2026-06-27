@@ -1,6 +1,12 @@
 { config, pkgs, inputs, lib, ... }:
 {
 
+environment.systemPackages = [
+  pkgs.v4l-utils
+  pkgs.linux-enable-ir-emitter
+];
+
+
 services.howdy = {
     enable = true;
     settings = {
