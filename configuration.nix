@@ -13,6 +13,7 @@
       ./modules/ai-module.nix
       ./modules/lutris.nix
       ./modules/virtualbox.nix
+      ./modules/battery-background-policy.nix
     ];
     gnome.enable = true;
     ai-module = {
@@ -23,14 +24,19 @@
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.configurationLimit = 15;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.grub.configurationLimit = 15;
 
   nix.gc = {
-		automatic = true;
-		dates = "daily";
-		options = "--delete-older-than 3d";
-	};
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 14d";
+  };
+
+  nix.optimise = {
+    automatic = true;
+    dates = [ "weekly" ];
+  };
 
   zramSwap = {
     enable = true;
@@ -47,6 +53,7 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+  networking.modemmanager.enable = false;
   # Ensure the service is started at boot
   systemd.services.NetworkManager.wantedBy = [ "multi-user.target" ];
 
@@ -102,8 +109,12 @@
   # Configure console keymap
   console.keyMap = "de";
 
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
+  # Enable local/manual printing without automatic network printer discovery.
+  services.printing = {
+    enable = true;
+    browsing = false;
+    browsed.enable = false;
+  };
 
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
