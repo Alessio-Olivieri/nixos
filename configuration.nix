@@ -14,6 +14,7 @@
       ./modules/lutris.nix
       ./modules/virtualbox.nix
       ./modules/battery-background-policy.nix
+      ./modules/delayed-lid-suspend.nix
     ];
     gnome.enable = true;
     ai-module = {

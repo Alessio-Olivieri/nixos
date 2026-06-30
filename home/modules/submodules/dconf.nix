@@ -546,7 +546,7 @@ with lib.hm.gvariant;
       power-button-action = "hibernate";
       sleep-inactive-ac-timeout = 1200;
       sleep-inactive-ac-type = "nothing";
-      sleep-inactive-battery-timeout = 900;
+      sleep-inactive-battery-timeout = 200;
       sleep-inactive-battery-type = "suspend";
     };
 
