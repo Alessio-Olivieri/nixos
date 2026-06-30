@@ -14,17 +14,17 @@
 
     case "$lid_state" in
       *closed*)
-        ${pkgs.systemd}/bin/systemctl restart delayed-lid-suspend.service
+        ${pkgs.systemd}/bin/systemctl restart delayed-lid-hibernate.service
         ;;
       *)
-        ${pkgs.systemd}/bin/systemctl stop delayed-lid-suspend.service
+        ${pkgs.systemd}/bin/systemctl stop delayed-lid-hibernate.service
         ;;
     esac
     '';
   };
 
-  systemd.services.delayed-lid-suspend = {
-    description = "Suspend after the lid stays closed for 20 seconds";
+  systemd.services.delayed-lid-hibernate = {
+    description = "Hibernate after the lid stays closed for 20 seconds";
 
     path = [
       pkgs.coreutils
@@ -41,7 +41,7 @@
       sleep 20
 
       if grep -q closed /proc/acpi/button/lid/LID0/state; then
-        systemctl suspend
+        systemctl hibernate
       fi
     '';
   };

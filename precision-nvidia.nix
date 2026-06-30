@@ -4,7 +4,7 @@ let
   # Fetches the hardware repo exactly once. Instantly faster rebuilds, no --impure!
   nixos-hardware = builtins.fetchTarball {
     url="https://github.com/NixOS/nixos-hardware/archive/master.tar.gz";
-    sha256="sha256:1qhzdprp5nshf98gd3afm8j0241m9gbaxwcf3ynrmvls9y4wzyyc";
+    sha256="sha256:0rxp35i2cij1yaibpgmd1js2fgziryb28ncxq6khr8wy0klr7gvb";
   };
 in
 {
@@ -64,8 +64,6 @@ in
       CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
       CPU_DRIVER_OPMODE_ON_AC = "guided";
       CPU_DRIVER_OPMODE_ON_BAT = "active";
-      MEM_SLEEP_ON_AC="s2idle";
-      MEM_SLEEP_ON_BAT="s2idle";
       
       # Turn on Wi-Fi power saving mode
       WIFI_PWR_ON_BAT = "on";
@@ -83,8 +81,10 @@ in
       # 3000 MHz (3.0GHz) is plenty fast for UI responsiveness but prevents voltage spikes
       CPU_MAX_PERF_ON_BAT = 60; 
       
-      # Put PCIe devices in extreme low power modes actively
+      # Put PCIe devices in low power modes actively, even when suspended on AC.
+      PCIE_ASPM_ON_AC = "powersave";
       PCIE_ASPM_ON_BAT = "powersupersave";
+      RUNTIME_PM_ON_AC = "auto";
       RUNTIME_PM_ON_BAT = "auto";
     };
   };
@@ -102,9 +102,9 @@ in
       [BATTERY]
       Update_Rate_s: 30
       # Power Limits (ThrottleStop PL1 / PL2) in Watts
-      PL1_Tdp_W: 5
+      PL1_Tdp_W: 7
       PL1_Duration_s: 28
-      PL2_Tdp_W: 10
+      PL2_Tdp_W: 15
       PL2_Duration_S: 0.002
       Trip_Temp_C: 65
 
@@ -185,7 +185,7 @@ in
   hardware.nvidia = {
     modesetting.enable = true;
     
-    package = config.boot.kernelPackages.nvidiaPackages.legacy_535;
+    package = config.boot.kernelPackages.nvidiaPackages.production;
     
     # Override ampere.nix. 
     open = false; 
@@ -222,6 +222,7 @@ in
     device = "/dev/disk/by-uuid/a5feba67-fcf2-4840-bb72-683c5f436f96";
     crypttabExtraOpts = [ "tpm2-device=auto" ];
   };
+  boot.resumeDevice = "/dev/mapper/luks-a5feba67-fcf2-4840-bb72-683c5f436f96";
   # sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/disk/by-uuid/430e2b02-5f47-43f3-9ae5-1e90a4a91952
   # sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/disk/by-uuid/a5feba67-fcf2-4840-bb72-683c5f436f96
   # sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/nvme0n1p3
@@ -240,12 +241,10 @@ in
 #   ];
 boot.kernelParams = [ 
   "nmi_watchdog=0"
-  "pcie_aspm=force"
-  "i915.enable_psr=1"
-  "i915.enable_fbc=1"
-  "initcall_blacklist=idma64_platform_driver_init"
+  # "pcie_aspm=force"
+  # "i915.enable_psr=1"
+  # "i915.enable_fbc=1"
   # "acpi_mask_gpe=0x6E"
-  "nvme.noacpi=1"
 
   ];
   boot.extraModprobeConfig = ''
