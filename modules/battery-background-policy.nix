@@ -2,13 +2,23 @@
 
 let
   userName = "lexyo";
-  userUnits = [
-    "syncthing.service"
-    "localsearch-3.service"
+  userUnitNames = [
+    "syncthing"
+    "localsearch-3"
   ];
+  userUnits = map (name: "${name}.service") userUnitNames;
   userUnitArgs = builtins.concatStringsSep " " userUnits;
+  acOnlyUserServices = builtins.listToAttrs (map (name: {
+    inherit name;
+    value = {
+      overrideStrategy = "asDropin";
+      unitConfig.ConditionACPower = true;
+    };
+  }) userUnitNames);
 in
 {
+  systemd.user.services = acOnlyUserServices;
+
   systemd.services.battery-background-policy = {
     description = "Stop background user services while on battery";
     after = [ "systemd-machined.service" ];
@@ -24,18 +34,22 @@ in
     };
 
     script = ''
+      userctl="systemctl --user -M ${userName}@.host"
       ac_online="$(cat /sys/class/power_supply/AC/online 2>/dev/null || echo 1)"
 
-      if ! systemctl --user -M ${userName}@.host is-active dbus-broker.service >/dev/null 2>&1; then
+      if ! $userctl is-active dbus-broker.service >/dev/null 2>&1; then
         exit 0
       fi
 
+      $userctl unmask --runtime ${userUnitArgs} || true
+      $userctl daemon-reload || true
+
       if [ "$ac_online" = "1" ]; then
-        systemctl --user -M ${userName}@.host unmask --runtime ${userUnitArgs} || true
-        systemctl --user -M ${userName}@.host start ${userUnitArgs} || true
+        $userctl reset-failed ${userUnitArgs} || true
+        $userctl start ${userUnitArgs} || true
       else
-        systemctl --user -M ${userName}@.host stop ${userUnitArgs} || true
-        systemctl --user -M ${userName}@.host mask --runtime ${userUnitArgs} || true
+        $userctl stop ${userUnitArgs} || true
+        $userctl reset-failed ${userUnitArgs} || true
       fi
     '';
   };
