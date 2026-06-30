@@ -1,5 +1,28 @@
 { pkgs, lib, config, ... }:
 
+let
+  offloadCfg = config.hardware.nvidia.prime.offload;
+  offloadCmdPath = "/run/current-system/sw/bin/${offloadCfg.offloadCmdMainProgram}";
+  baseLutris = pkgs.lutris.override {
+    extraPkgs = lutrisPkgs: [ lutrisPkgs.vulkan-tools ];
+  };
+  lutrisPackage =
+    if offloadCfg.enableOffloadCmd then
+      pkgs.symlinkJoin {
+        name = "lutris-nvidia-offload";
+        paths = [ baseLutris ];
+        postBuild = ''
+          rm -f $out/bin/lutris
+          cat > $out/bin/lutris <<'EOF'
+          #!${pkgs.runtimeShell}
+          exec ${offloadCmdPath} ${lib.getExe baseLutris} "$@"
+          EOF
+          chmod +x $out/bin/lutris
+        '';
+      }
+    else
+      baseLutris;
+in
 {
     options = {
         lutris-module.enable = lib.mkEnableOption "Enables lutris";
@@ -16,7 +39,7 @@
 
       # 2. Install Game-related Packages
       environment.systemPackages = with pkgs; [
-        lutris
+        lutrisPackage
         
         # Wine and Winetricks are needed as a backend for Lutris
         wineWow64Packages.staging
