@@ -16,7 +16,6 @@ with lib.hm.gvariant;
 
     "it/mijorus/smile" = {
       is-first-run = false;
-      last-run-version = "2.10.1";
     };
 
     "org/gnome/Connections" = {
@@ -27,10 +26,6 @@ with lib.hm.gvariant;
       font-scale = 1.1;
       last-window-maximised = false;
       last-window-size = mkTuple [ 1200 1048 ];
-    };
-
-    "org/gnome/Disks" = {
-      image-dir-uri = "file:///home/lexyo/Documents";
     };
 
     "org/gnome/Extensions" = {
@@ -64,10 +59,6 @@ with lib.hm.gvariant;
       subtitle-encoding = "UTF-8";
     };
 
-    "org/gnome/baobab/ui" = {
-      is-maximized = false;
-      window-size = mkTuple [ 960 1040 ];
-    };
 
     "org/gnome/calculator" = {
       accuracy = 9;
@@ -546,8 +537,8 @@ with lib.hm.gvariant;
       power-button-action = "hibernate";
       sleep-inactive-ac-timeout = 1200;
       sleep-inactive-ac-type = "nothing";
-      sleep-inactive-battery-timeout = 200;
-      sleep-inactive-battery-type = "suspend";
+      sleep-inactive-battery-timeout = 900;
+      sleep-inactive-battery-type = "hibernate";
     };
 
     "org/gnome/settings-daemon/plugins/sharing/gnome-user-share-webdav" = {
@@ -892,19 +883,8 @@ with lib.hm.gvariant;
       use-system-accent = false;
     };
 
-    "org/gnome/shell/keybindings" = {
-      focus-active-notification = [];
-      shift-overview-down = [];
-      shift-overview-up = [];
-      toggle-message-tray = [];
-    };
-
     "org/gnome/shell/weather" = {
       automatic-location = true;
-    };
-
-    "org/gnome/shell/world-clocks" = {
-      locations = [];
     };
 
     "org/gtk/gtk4/settings/color-chooser" = {
