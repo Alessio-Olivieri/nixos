@@ -99,47 +99,38 @@ in
       Sysfs_Power_Path: /sys/class/power_supply/AC*/online
       Autoreload: True
 
+      [AC]
+      Update_Rate_s: 5
+      PL1_Tdp_W: 35
+      PL1_Duration_s: 28
+      PL2_Tdp_W: 45
+      PL2_Duration_S: 2
+      Trip_Temp_C: 90
+
       [BATTERY]
       Update_Rate_s: 30
-      # Power Limits (ThrottleStop PL1 / PL2) in Watts
       PL1_Tdp_W: 7
       PL1_Duration_s: 28
       PL2_Tdp_W: 15
-      PL2_Duration_S: 0.002
+      PL2_Duration_S: 2
       Trip_Temp_C: 65
-
-      [AC]
-      Update_Rate_s: 5
-      # Higher Power Limits for AC
-      PL1_Tdp_W: 40
-      PL1_Duration_s: 28
-      PL2_Tdp_W: 44
-      PL2_Duration_S: 0.002
-      Trip_Temp_C: 85
-
-      [UNDERVOLT.BATTERY]
-      # Mirroring your stable -80mV undervolt
-      CORE: -70
-      CACHE: -70
-      GPU: -40
-      UNCORE: 0
-      ANALOGIO: 0
-
-      [UNDERVOLT.AC]
-      CORE: -70
-      CACHE: -70
-      GPU: -40
-      UNCORE: 0
-      ANALOGIO: 0
-
-      [ICCMAX.BATTERY]
-      # Adjust IccMax limit specifically for battery (in Amps)
-
-
-      [ICCMAX.AC]
-      # Leaving this blank falls back to your hardware's default high IccMax
     '';
   };
+
+      #   [UNDERVOLT.BATTERY]
+      # # # Mirroring your stable -80mV undervolt
+      # # CORE: -70
+      # # CACHE: -70
+      # # GPU: -40
+      # # UNCORE: 0
+      # # ANALOGIO: 0
+
+      # # [UNDERVOLT.AC]
+      # # CORE: -70
+      # # CACHE: -70
+      # # GPU: -40
+      # # UNCORE: 0
+      # # ANALOGIO: 0
   # Ensure the kernel module required to write to CPU registers is loaded
   boot.kernelModules = [ "msr" ];
 
@@ -181,11 +172,11 @@ in
     ];
   };
   services.xserver.videoDrivers = [ "nvidia" ];
-
+  # boot.kernelPackages = pkgs.linuxPackages_zen;
   hardware.nvidia = {
     modesetting.enable = true;
     
-    package = config.boot.kernelPackages.nvidiaPackages.production;
+    package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
     
     # Override ampere.nix. 
     open = false; 
@@ -242,8 +233,8 @@ in
 boot.kernelParams = [ 
   "nmi_watchdog=0"
   # "pcie_aspm=force"
-  # "i915.enable_psr=1"
-  # "i915.enable_fbc=1"
+  "i915.enable_psr=1"
+  "i915.enable_fbc=1"
   # "acpi_mask_gpe=0x6E"
 
   ];
