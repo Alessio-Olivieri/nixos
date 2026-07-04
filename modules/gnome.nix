@@ -23,7 +23,6 @@
             # gnome-logs
             epiphany 
             gnome-text-editor
-            gnome-clocks
             gnome-console
             # gnome-contacts
             gnome-maps
