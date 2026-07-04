@@ -54,6 +54,7 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+  networking.networkmanager.wifi.powersave = true;
   networking.modemmanager.enable = false;
   # Ensure the service is started at boot
   systemd.services.NetworkManager.wantedBy = [ "multi-user.target" ];

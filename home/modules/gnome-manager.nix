@@ -71,7 +71,9 @@ let
       # Replace hardcoded /usr/local/bin path with NixOS system path
       substituteInPlace lib/driver.js \
         --replace-fail '/usr/local/bin/batteryhealthchargingctl-''${user}' \
-                       '/run/current-system/sw/bin/batteryhealthchargingctl'
+                       '/run/current-system/sw/bin/batteryhealthchargingctl' \
+        --replace-fail 'const [status] = await execCheck(argv);' \
+                       'const [status] = [exitCode.SUCCESS];'
     '';
   });
 
@@ -131,8 +133,13 @@ in
       gnomeExtensions.appindicator #Needed for jdownloader
       gnomeExtensions.gsconnect
       gnomeExtensions.blur-my-shell
-      # batteryHealthChargingPatched
+      batteryHealthChargingPatched
     ];
+
+    xdg.dataFile."gnome-shell/extensions/${batteryHealthChargingPatched.extensionUuid}" = {
+      source = "${batteryHealthChargingPatched}/share/gnome-shell/extensions/${batteryHealthChargingPatched.extensionUuid}";
+      force = true;
+    };
 
     dconf = {
       enable = true;
@@ -154,7 +161,7 @@ in
               pkgs.gnomeExtensions.appindicator.extensionUuid 
               pkgs.gnomeExtensions.gsconnect.extensionUuid
               pkgs.gnomeExtensions.blur-my-shell.extensionUuid
-              # batteryHealthChargingPatched.extensionUuid
+              batteryHealthChargingPatched.extensionUuid
           ];
         };
 
@@ -166,6 +173,8 @@ in
         # --- THE MAGIC FIX: TELL THE EXTENSION POLKIT IS ALREADY INSTALLED ---
         "org/gnome/shell/extensions/Battery-Health-Charging" = {
           polkit-status = "installed";
+          configuration-mode = "sysfs";
+          charging-mode = "bal";
         };
         
         # Reset Shell Theme to Default (Adwaita) to fix panel overlaps/missing icons

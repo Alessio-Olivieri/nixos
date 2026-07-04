@@ -6,6 +6,171 @@ let
     url="https://github.com/NixOS/nixos-hardware/archive/master.tar.gz";
     sha256="sha256:0rxp35i2cij1yaibpgmd1js2fgziryb28ncxq6khr8wy0klr7gvb";
   };
+  batteryHealthChargingCtl = pkgs.writeShellScriptBin "batteryhealthchargingctl" (builtins.readFile "${pkgs.gnomeExtensions.battery-health-charging}/share/gnome-shell/extensions/Battery-Health-Charging@maniacx.github.com/resources/batteryhealthchargingctl");
+  stellarisSteamGpu = pkgs.writeShellApplication {
+    name = "stellaris-steam-gpu";
+    runtimeInputs = with pkgs; [ coreutils glib gnugrep procps ];
+    text = ''
+      app_uri="steam://rungameid/281990"
+      steam_bin="''${STEAM_BIN:-/run/current-system/sw/bin/steam}"
+      profile="''${1:-}"
+
+      notify_user() {
+        local title="$1"
+        local body="$2"
+
+        gdbus call \
+          --session \
+          --dest org.freedesktop.Notifications \
+          --object-path /org/freedesktop/Notifications \
+          --method org.freedesktop.Notifications.Notify \
+          "Stellaris GPU Launcher" \
+          0 \
+          "" \
+          "$title" \
+          "$body" \
+          "[]" \
+          "{}" \
+          8000 >/dev/null 2>&1 || true
+      }
+
+      steam_pid() {
+        pgrep -u "$(id -u)" -n -x steam 2>/dev/null || true
+      }
+
+      steam_profile() {
+        local pid="$1"
+        local env_text
+
+        if [[ ! -r "/proc/$pid/environ" ]]; then
+          echo "unknown"
+          return
+        fi
+
+        env_text="$(tr '\0' '\n' < "/proc/$pid/environ" 2>/dev/null || true)"
+
+        if printf '%s\n' "$env_text" | grep -q '^MESA_VK_DEVICE_SELECT=8086:9a60$' \
+          && printf '%s\n' "$env_text" | grep -q '^VK_.*intel_icd'; then
+          echo "integrated"
+          return
+        fi
+
+        if printf '%s\n' "$env_text" | grep -q '^__NV_PRIME_RENDER_OFFLOAD=1$' \
+          || printf '%s\n' "$env_text" | grep -q '^__VK_LAYER_NV_optimus=NVIDIA_only$' \
+          || printf '%s\n' "$env_text" | grep -q '^VK_.*nvidia_icd'; then
+          echo "dedicated"
+          return
+        fi
+
+        echo "unknown"
+      }
+
+      launch_integrated() {
+        exec env \
+          DRI_PRIME=0 \
+          MESA_VK_DEVICE_SELECT=8086:9a60 \
+          __NV_PRIME_RENDER_OFFLOAD=0 \
+          __GLX_VENDOR_LIBRARY_NAME=mesa \
+          __VK_LAYER_NV_optimus=non_NVIDIA_only \
+          VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/intel_icd.x86_64.json:/run/opengl-driver-32/share/vulkan/icd.d/intel_icd.i686.json \
+          VK_ICD_FILENAMES=/run/opengl-driver/share/vulkan/icd.d/intel_icd.x86_64.json:/run/opengl-driver-32/share/vulkan/icd.d/intel_icd.i686.json \
+          "$steam_bin" "$app_uri"
+      }
+
+      launch_dedicated() {
+        if [[ -x /run/current-system/sw/bin/nvidia-offload ]]; then
+          exec env \
+            __VK_LAYER_NV_optimus=NVIDIA_only \
+            VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json:/run/opengl-driver-32/share/vulkan/icd.d/nvidia_icd.json \
+            VK_ICD_FILENAMES=/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json:/run/opengl-driver-32/share/vulkan/icd.d/nvidia_icd.json \
+            /run/current-system/sw/bin/nvidia-offload "$steam_bin" "$app_uri"
+        fi
+
+        exec env \
+          __NV_PRIME_RENDER_OFFLOAD=1 \
+          __GLX_VENDOR_LIBRARY_NAME=nvidia \
+          __VK_LAYER_NV_optimus=NVIDIA_only \
+          VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json:/run/opengl-driver-32/share/vulkan/icd.d/nvidia_icd.json \
+          VK_ICD_FILENAMES=/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json:/run/opengl-driver-32/share/vulkan/icd.d/nvidia_icd.json \
+          "$steam_bin" "$app_uri"
+      }
+
+      case "$profile" in
+        integrated)
+          label="Integrated GPU"
+          ;;
+        dedicated)
+          label="Dedicated GPU"
+          ;;
+        *)
+          notify_user "Stellaris GPU Launcher" "Usage: stellaris-steam-gpu integrated|dedicated"
+          exit 2
+          ;;
+      esac
+
+      pid="$(steam_pid)"
+      if [[ -n "$pid" ]]; then
+        running_profile="$(steam_profile "$pid")"
+        if [[ "$running_profile" == "$profile" ]]; then
+          exec "$steam_bin" "$app_uri"
+        fi
+
+        notify_user \
+          "Steam is already running" \
+          "Steam is already running with GPU profile '$running_profile'. Quit Steam, then open Stellaris ($label) again."
+        exit 1
+      fi
+
+      case "$profile" in
+        integrated)
+          launch_integrated
+          ;;
+        dedicated)
+          launch_dedicated
+          ;;
+      esac
+    '';
+  };
+  stellarisIntegratedDesktop = pkgs.writeTextFile {
+    name = "stellaris-integrated-desktop";
+    destination = "/share/applications/stellaris-integrated.desktop";
+    text = ''
+      [Desktop Entry]
+      Name=Stellaris (Integrated GPU)
+      Comment=Play Stellaris through Steam on the Intel integrated GPU
+      Exec=${lib.getExe stellarisSteamGpu} integrated
+      Icon=steam_icon_281990
+      Terminal=false
+      Type=Application
+      Categories=Game;
+      StartupNotify=false
+      X-GNOME-UsesNotifications=true
+    '';
+  };
+  stellarisDedicatedDesktop = pkgs.writeTextFile {
+    name = "stellaris-dedicated-desktop";
+    destination = "/share/applications/stellaris-dedicated.desktop";
+    text = ''
+      [Desktop Entry]
+      Name=Stellaris (Dedicated GPU)
+      Comment=Play Stellaris through Steam on the NVIDIA dedicated GPU
+      Exec=${lib.getExe stellarisSteamGpu} dedicated
+      Icon=steam_icon_281990
+      Terminal=false
+      Type=Application
+      Categories=Game;
+      StartupNotify=false
+      X-GNOME-UsesNotifications=true
+    '';
+  };
+  stellarisGpuLaunchers = pkgs.symlinkJoin {
+    name = "stellaris-gpu-launchers";
+    paths = [
+      stellarisSteamGpu
+      stellarisIntegratedDesktop
+      stellarisDedicatedDesktop
+    ];
+  };
 in
 {
   networking.hostName = lib.mkForce "precision7560";
@@ -32,7 +197,8 @@ in
     # --- Dell Battery Health Charging ---
     pkgs.libsmbios 
         # We extract the extension's native script and put it in the system path
-    (pkgs.writeShellScriptBin "batteryhealthchargingctl" (builtins.readFile "${pkgs.gnomeExtensions.battery-health-charging}/share/gnome-shell/extensions/Battery-Health-Charging@maniacx.github.com/resources/batteryhealthchargingctl"))
+    batteryHealthChargingCtl
+    stellarisGpuLaunchers
   ];
     systemd.tmpfiles.rules = [
     "d /usr/sbin 0755 root root -"
@@ -41,11 +207,15 @@ in
       # Polkit rules for GNOME extensions
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
+      var program = action.lookup("program");
       if (action.id == "org.freedesktop.policykit.exec" &&
-          (action.lookup("program") == "/usr/sbin/smbios-battery-ctl" ||
-           action.lookup("program") == "${pkgs.libsmbios}/sbin/smbios-battery-ctl" ||
-           action.lookup("program") == "/run/current-system/sw/bin/smbios-battery-ctl") &&
-          subject.local && subject.active) {
+          (program == "/usr/sbin/smbios-battery-ctl" ||
+           program == "${pkgs.libsmbios}/bin/smbios-battery-ctl" ||
+           program == "${pkgs.libsmbios}/sbin/smbios-battery-ctl" ||
+           program == "/run/current-system/sw/bin/smbios-battery-ctl" ||
+           program == "/run/current-system/sw/bin/batteryhealthchargingctl" ||
+           program == "${batteryHealthChargingCtl}/bin/batteryhealthchargingctl") &&
+          subject.user == "lexyo") {
         return polkit.Result.YES;
       }
     });
@@ -56,6 +226,8 @@ in
     settings = {
 
       USB_AUTOSUSPEND = 1;
+      START_CHARGE_THRESH_BAT0 = 75;
+      STOP_CHARGE_THRESH_BAT0 = 80;
       CPU_BOOST_ON_AC = 1;
       CPU_BOOST_ON_BAT = 0; # Turns off Turbo Boost on Battery
       CPU_HWP_DYN_BOOST_ON_AC = 1;
@@ -172,7 +344,7 @@ in
     ];
   };
   services.xserver.videoDrivers = [ "nvidia" ];
-  # boot.kernelPackages = pkgs.linuxPackages_zen;
+
   hardware.nvidia = {
     modesetting.enable = true;
     
@@ -236,11 +408,16 @@ boot.kernelParams = [
   "i915.enable_psr=1"
   "i915.enable_fbc=1"
   # "acpi_mask_gpe=0x6E"
+  # "intel_idle.no_acpi=1"
 
   ];
   boot.extraModprobeConfig = ''
     # Put the Intel audio chip to sleep after 1 second of no sound to allow PC10
     options snd_hda_intel power_save=1 power_save_controller=y
+
+    # Prefer low-power defaults for the Intel AX210 Wi-Fi stack on battery.
+    options iwlwifi power_save=Y power_level=5
+    options iwlmvm power_scheme=3
   '';
   boot.blacklistedKernelModules = [ 
     "rtsx_pci" "rtsx_pci_sdmmc" "rtsx_pci_ms" #Disable to use Card reader 
