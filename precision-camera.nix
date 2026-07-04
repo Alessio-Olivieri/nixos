@@ -46,7 +46,4 @@ services.howdy = {
   security.pam.services.sudo.rules.auth.howdy.order = config.security.pam.services.sudo.rules.auth.unix.order - 10;
   security.pam.services.login.rules.auth.howdy.order = config.security.pam.services.login.rules.auth.unix.order - 10;
   security.pam.services.gdm.rules.auth.howdy.order = config.security.pam.services.gdm.rules.auth.unix.order - 10;
-  boot.extraModprobeConfig = ''
-  options uvcvideo nodrop=1
-  '';
 }
