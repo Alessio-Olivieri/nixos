@@ -34,15 +34,6 @@ with lib.hm.gvariant;
       window-width = 955;
     };
 
-    "org/gnome/Geary" = {
-      compose-as-html = true;
-      formatting-toolbar-visible = false;
-      migrated-config = true;
-      window-height = 1048;
-      window-maximize = false;
-      window-width = 1440;
-    };
-
     "org/gnome/Snapshot" = {
       capture-mode = "video";
       is-maximized = false;
@@ -200,6 +191,7 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/desktop/search-providers" = {
+      disabled = [ "com.belmoussaoui.Authenticator.desktop" ];
       sort-order = [ "org.gnome.Contacts.desktop" "org.gnome.Documents.desktop" "org.gnome.Nautilus.desktop" ];
     };
 
