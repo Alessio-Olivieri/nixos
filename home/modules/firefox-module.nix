@@ -38,6 +38,7 @@
             "layout.css.backdrop-filter.enabled" = lock-true;
             "svg.context-properties.content.enabled" = lock-true;
             "widget.gtk.ignore-bogus-leave-notify" = lock-true;
+            "browser.toolbars.bookmarks.visibility" = {Value = "newtab"; Status = "locked";};
 
             "sidebar.verticalTabs" = lock-true;
             "sidebar.verticalTabs.dragToPinPromo.dismissed" = lock-true;
@@ -71,20 +72,20 @@
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/multi-account-containers/latest.xpi";
             installation_mode = "force_installed";    
           };
-          "Tab-Session-Manager@sienori" = {
-            install_url = "https://addons.mozilla.org/firefox/downloads/latest/tab-session-manager/latest.xpi";
-            installation_mode = "force_installed";    
-          };
+          # "Tab-Session-Manager@sienori" = {
+          #   install_url = "https://addons.mozilla.org/firefox/downloads/latest/tab-session-manager/latest.xpi";
+          #   installation_mode = "force_installed";    
+          # };
           "addon@darkreader.org" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
             installation_mode = "force_installed";
             private_browsing = lock-true;    
           };
-          "tst-indent-line@piro.sakura.ne.jp" = {
-            install_url = "https://addons.mozilla.org/firefox/downloads/latest/tst-indent-line/latest.xpi";
-            installation_mode = "force_installed";
-            private_browsing = lock-true;   
-          };
+          # "tst-indent-line@piro.sakura.ne.jp" = {
+          #   install_url = "https://addons.mozilla.org/firefox/downloads/latest/tst-indent-line/latest.xpi";
+          #   installation_mode = "force_installed";
+          #   private_browsing = lock-true;   
+          # };
           "idcac-pub@guus.ninja" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/istilldontcareaboutcookies/latest.xpi";
             installation_mode = "force_installed"; 
