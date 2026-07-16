@@ -20,7 +20,7 @@
                     tab_bar_style = "powerline";
                     tab_powerline_style = "round";
                     notify_on_cmd_finish = "invisible 20";
-                    background_opacity = 0.9;
+                    background_opacity = 1;
                     scrollback_lines = 1000000;
                     copy_on_select = "yes";
                 #     tab_bar_edge = "top";
