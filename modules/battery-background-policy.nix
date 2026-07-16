@@ -2,22 +2,38 @@
 
 let
   userName = "lexyo";
-  userUnitNames = [
+  batteryStoppedUserUnitNames = [
     "syncthing"
     "localsearch-3"
   ];
-  userUnits = map (name: "${name}.service") userUnitNames;
-  userUnitArgs = builtins.concatStringsSep " " userUnits;
+  acStartedUserUnitNames = [
+    "syncthing"
+  ];
+  batteryStoppedUserUnits = map (name: "${name}.service") batteryStoppedUserUnitNames;
+  acStartedUserUnits = map (name: "${name}.service") acStartedUserUnitNames;
+  batteryStoppedUserUnitArgs = builtins.concatStringsSep " " batteryStoppedUserUnits;
+  acStartedUserUnitArgs = builtins.concatStringsSep " " acStartedUserUnits;
   acOnlyUserServices = builtins.listToAttrs (map (name: {
     inherit name;
     value = {
       overrideStrategy = "asDropin";
       unitConfig.ConditionACPower = true;
     };
-  }) userUnitNames);
+  }) batteryStoppedUserUnitNames);
 in
 {
-  systemd.user.services = acOnlyUserServices;
+  systemd.user.services = acOnlyUserServices // {
+    localsearch-3 = {
+      overrideStrategy = "asDropin";
+      unitConfig.ConditionACPower = true;
+      serviceConfig = {
+        CPUQuota = "25%";
+        CPUWeight = 10;
+        IOSchedulingClass = "idle";
+        Nice = 19;
+      };
+    };
+  };
 
   systemd.services.battery-background-policy = {
     description = "Stop background user services while on battery";
@@ -41,15 +57,15 @@ in
         exit 0
       fi
 
-      $userctl unmask --runtime ${userUnitArgs} || true
+      $userctl unmask --runtime ${batteryStoppedUserUnitArgs} || true
       $userctl daemon-reload || true
 
       if [ "$ac_online" = "1" ]; then
-        $userctl reset-failed ${userUnitArgs} || true
-        $userctl start ${userUnitArgs} || true
+        $userctl reset-failed ${batteryStoppedUserUnitArgs} || true
+        $userctl start ${acStartedUserUnitArgs} || true
       else
-        $userctl stop ${userUnitArgs} || true
-        $userctl reset-failed ${userUnitArgs} || true
+        $userctl stop ${batteryStoppedUserUnitArgs} || true
+        $userctl reset-failed ${batteryStoppedUserUnitArgs} || true
       fi
     '';
   };
