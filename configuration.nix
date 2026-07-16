@@ -118,23 +118,41 @@
     browsed.enable = false;
   };
 
-  # Enable sound with pipewire.
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    audio.enable = true;
-    # If you want to use JACK applications, uncomment this
-    # jack.enable = true;
+services.pulseaudio.enable = false;
+security.rtkit.enable = true;
 
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
+services.pipewire = {
+  enable = true;
+  alsa.enable = true;
+  alsa.support32Bit = true;
+  pulse.enable = true;
+  audio.enable = true;
+
+  extraConfig.pipewire."99-echo-cancel" = {
+    "context.modules" = [
+      {
+        name = "libpipewire-module-echo-cancel";
+
+        args = {
+          "library.name" = "aec/libspa-aec-webrtc";
+
+          # Automatically monitor the current default output.
+          "monitor.mode" = true;
+
+          "capture.props" = {
+            "node.name" = "echo_cancel_capture";
+            "node.description" = "Echo Cancellation Capture";
+          };
+
+          "source.props" = {
+            "node.name" = "echo_cancel_source";
+            "node.description" = "Echo-Cancelled Microphone";
+          };
+        };
+      }
+    ];
   };
-  # Example for /etc/nixos/configuration.nix
+};
 
   hardware.bluetooth = {
     enable = true;
