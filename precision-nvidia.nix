@@ -1,19 +1,17 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 let
-  # Fetches the hardware repo exactly once. Instantly faster rebuilds, no --impure!
-  nixos-hardware = builtins.fetchTarball {
-    url="https://github.com/NixOS/nixos-hardware/archive/master.tar.gz";
-    sha256="sha256:0rxp35i2cij1yaibpgmd1js2fgziryb28ncxq6khr8wy0klr7gvb";
-  };
+  cpuTurboRatioLimit = "0x2A2A2A2A2C2C2E2E";
+  stellarisCpuAffinity = "0,2,4,6,8,10,12,14";
   batteryHealthChargingCtl = pkgs.writeShellScriptBin "batteryhealthchargingctl" (builtins.readFile "${pkgs.gnomeExtensions.battery-health-charging}/share/gnome-shell/extensions/Battery-Health-Charging@maniacx.github.com/resources/batteryhealthchargingctl");
   stellarisSteamGpu = pkgs.writeShellApplication {
     name = "stellaris-steam-gpu";
-    runtimeInputs = with pkgs; [ coreutils glib gnugrep procps ];
+    runtimeInputs = with pkgs; [ coreutils glib gnugrep gnused procps util-linux ];
     text = ''
       app_uri="steam://rungameid/281990"
       steam_bin="''${STEAM_BIN:-/run/current-system/sw/bin/steam}"
       profile="''${1:-}"
+      stellaris_cpu_affinity="${stellarisCpuAffinity}"
 
       notify_user() {
         local title="$1"
@@ -65,9 +63,49 @@ let
         echo "unknown"
       }
 
+      apply_stellaris_affinity() {
+        local deadline pid
+
+        deadline=$((SECONDS + 240))
+        while (( SECONDS < deadline )); do
+          pid="$(pgrep -u "$(id -u)" -n -x stellaris 2>/dev/null || true)"
+          if [[ -n "$pid" ]]; then
+            for _ in 1 2 3 4 5; do
+              taskset -apc "$stellaris_cpu_affinity" "$pid" >/dev/null 2>&1 || true
+              sleep 1
+            done
+            return 0
+          fi
+          sleep 1
+        done
+      }
+
+      tune_stellaris_settings() {
+        local settings="''${XDG_DATA_HOME:-$HOME/.local/share}/Paradox Interactive/Stellaris/settings.txt"
+
+        [[ -f "$settings" ]] || return 0
+
+        sed -i \
+          -e 's/^\([[:space:]]*refreshCap=\).*/\10/' \
+          -e 's/^\([[:space:]]*vsync=\).*/\1no/' \
+          -e 's/^\([[:space:]]*fullScreen=\).*/\1yes/' \
+          -e 's/^\([[:space:]]*borderless=\).*/\1no/' \
+          "$settings" 2>/dev/null || true
+      }
+
+      launch_and_tune() {
+        tune_stellaris_settings
+        "$@" &
+        local launcher_pid="$!"
+
+        apply_stellaris_affinity
+        disown "$launcher_pid" 2>/dev/null || true
+      }
+
       launch_integrated() {
-        exec env \
+        launch_and_tune env \
           DRI_PRIME=0 \
+          vblank_mode=0 \
           MESA_VK_DEVICE_SELECT=8086:9a60 \
           __NV_PRIME_RENDER_OFFLOAD=0 \
           __GLX_VENDOR_LIBRARY_NAME=mesa \
@@ -79,14 +117,19 @@ let
 
       launch_dedicated() {
         if [[ -x /run/current-system/sw/bin/nvidia-offload ]]; then
-          exec env \
+          launch_and_tune env \
+            __GL_SYNC_TO_VBLANK=0 \
+            vblank_mode=0 \
             __VK_LAYER_NV_optimus=NVIDIA_only \
             VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json:/run/opengl-driver-32/share/vulkan/icd.d/nvidia_icd.json \
             VK_ICD_FILENAMES=/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json:/run/opengl-driver-32/share/vulkan/icd.d/nvidia_icd.json \
             /run/current-system/sw/bin/nvidia-offload "$steam_bin" "$app_uri"
+          return
         fi
 
-        exec env \
+        launch_and_tune env \
+          __GL_SYNC_TO_VBLANK=0 \
+          vblank_mode=0 \
           __NV_PRIME_RENDER_OFFLOAD=1 \
           __GLX_VENDOR_LIBRARY_NAME=nvidia \
           __VK_LAYER_NV_optimus=NVIDIA_only \
@@ -112,7 +155,8 @@ let
       if [[ -n "$pid" ]]; then
         running_profile="$(steam_profile "$pid")"
         if [[ "$running_profile" == "$profile" ]]; then
-          exec "$steam_bin" "$app_uri"
+          launch_and_tune "$steam_bin" "$app_uri"
+          exit 0
         fi
 
         notify_user \
@@ -147,28 +191,12 @@ let
       X-GNOME-UsesNotifications=true
     '';
   };
-  stellarisDedicatedDesktop = pkgs.writeTextFile {
-    name = "stellaris-dedicated-desktop";
-    destination = "/share/applications/stellaris-dedicated.desktop";
-    text = ''
-      [Desktop Entry]
-      Name=Stellaris (Dedicated GPU)
-      Comment=Play Stellaris through Steam on the NVIDIA dedicated GPU
-      Exec=${lib.getExe stellarisSteamGpu} dedicated
-      Icon=steam_icon_281990
-      Terminal=false
-      Type=Application
-      Categories=Game;
-      StartupNotify=false
-      X-GNOME-UsesNotifications=true
-    '';
-  };
+
   stellarisGpuLaunchers = pkgs.symlinkJoin {
     name = "stellaris-gpu-launchers";
     paths = [
       stellarisSteamGpu
       stellarisIntegratedDesktop
-      stellarisDedicatedDesktop
     ];
   };
 in
@@ -176,11 +204,11 @@ in
   networking.hostName = lib.mkForce "precision7560";
 
   imports =[
-    "${nixos-hardware}/common/cpu/intel"
-    "${nixos-hardware}/common/gpu/intel/tiger-lake"
+    "${inputs.nixos-hardware}/common/cpu/intel"
+    "${inputs.nixos-hardware}/common/gpu/intel/tiger-lake"
     
     # We import turing so we get the base community Nvidia fixes (via its ../. import)
-    "${nixos-hardware}/common/gpu/nvidia/ampere"
+    "${inputs.nixos-hardware}/common/gpu/nvidia/ampere"
     
     # We skip prime.nix because we are explicitly configuring it below.
   ];
@@ -193,6 +221,8 @@ in
   environment.systemPackages = [
     pkgs.intel-undervolt
     pkgs.msr-tools
+    pkgs.s-tui
+    pkgs.stress-ng
 
     # --- Dell Battery Health Charging ---
     pkgs.libsmbios 
@@ -200,6 +230,20 @@ in
     batteryHealthChargingCtl
     stellarisGpuLaunchers
   ];
+
+  home-manager.users.lexyo.xdg.desktopEntries.Stellaris = {
+    name = "Stellaris (GPU)";
+    comment = "Play Stellaris through Steam on the NVIDIA GPU";
+    exec = "${lib.getExe stellarisSteamGpu} dedicated";
+    icon = "steam_icon_281990";
+    terminal = false;
+    categories = [ "Game" ];
+    settings = {
+      StartupNotify = "false";
+      X-GNOME-UsesNotifications = "true";
+    };
+  };
+
     systemd.tmpfiles.rules = [
     "d /usr/sbin 0755 root root -"
     "L+ /usr/sbin/smbios-battery-ctl - - - - ${pkgs.libsmbios}/sbin/smbios-battery-ctl"
@@ -228,12 +272,13 @@ in
       USB_AUTOSUSPEND = 1;
       START_CHARGE_THRESH_BAT0 = 75;
       STOP_CHARGE_THRESH_BAT0 = 80;
-      CPU_BOOST_ON_AC = 1;
+      CPU_BOOST_ON_AC = 1; #TODO
       CPU_BOOST_ON_BAT = 0; # Turns off Turbo Boost on Battery
       CPU_HWP_DYN_BOOST_ON_AC = 1;
       CPU_HWP_DYN_BOOST_ON_BAT = 0;
       CPU_SCALING_GOVERNOR_ON_AC = "performance";
       CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      CPU_MAX_PERF_ON_AC = 100;
       CPU_DRIVER_OPMODE_ON_AC = "guided";
       CPU_DRIVER_OPMODE_ON_BAT = "active";
       
@@ -273,9 +318,9 @@ in
 
       [AC]
       Update_Rate_s: 5
-      PL1_Tdp_W: 35
+      PL1_Tdp_W: 55
       PL1_Duration_s: 28
-      PL2_Tdp_W: 45
+      PL2_Tdp_W: 80
       PL2_Duration_S: 2
       Trip_Temp_C: 90
 
@@ -307,14 +352,9 @@ in
   boot.kernelModules = [ "msr" ];
 
 
-# 8c=24 (15)
-# 7c=24 (15)
-# 6c=25 (22->16)
-# 5c=27 (24->18)
-# 4c=30 (27->1B)
-# 3c=33 (30->1E)
-# 2c=36 (33->21)
-# 1c=38 (35->23)
+  # IA32_TURBO_RATIO_LIMIT (MSR 0x1AD), encoded as 8C..1C bytes.
+  # 1C=46, 2C=46, 3C=44, 4C=44, 5C-8C=42.
+  # Bounded by throttled's AC 55 W PL1 / 80 W PL2 limits; no voltage offsets are applied here.
 
   # Create a systemd service to inject the Turbo Ratios automatically
   systemd.services.apply-turbo-ratios = {
@@ -327,7 +367,7 @@ in
     serviceConfig = {
       Type = "oneshot";
       # -a applies it to all logical processors
-      ExecStart = "${pkgs.msr-tools}/bin/wrmsr -a 0x1AD 0x151516181B1E2123";
+      ExecStart = "${pkgs.msr-tools}/bin/wrmsr -a 0x1AD ${cpuTurboRatioLimit}";
     };
   };
 
@@ -425,7 +465,9 @@ boot.kernelParams = [
 
 services.udev.extraRules = ''
     # 1. Stops GNOME's Mutter and systemd-logind from polling the NVIDIA GPU and keeping it awake.
-    # We use ATTRS{vendor}=="0x10de" to target the hardware directly, preventing boot race conditions.
+    # Apply on change events too, because external monitor hotplug can cause systemd's seat rules
+    # to re-tag the NVIDIA DRM node after the initial add event.
+    #ACTION!="remove", SUBSYSTEM=="drm", KERNEL=="card*", SUBSYSTEMS=="pci", ATTRS{vendor}=="0x10de", ENV{MUTTER_HINTS}="ignore-device", TAG+="mutter-device-ignore", TAG-="seat", TAG-="master-of-seat"
     ACTION=="add", SUBSYSTEM=="drm", KERNEL=="card*", SUBSYSTEMS=="pci", ATTRS{vendor}=="0x10de", ENV{MUTTER_HINTS}="ignore-device", TAG-="seat", TAG-="master-of-seat"
 
     # 2. Force PCI power management "auto" for the NVIDIA GPU
