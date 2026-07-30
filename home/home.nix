@@ -30,6 +30,7 @@ in
     ./modules/bash-module.nix
     ./modules/kitty-module.nix
     ./modules/firefox-module.nix
+    ./modules/obsidian-module.nix
     ./modules/thunderbird-module.nix
     ./modules/steam.nix
     ./modules/hide-waydroid.nix
@@ -42,7 +43,8 @@ in
   git-module.enable = true;
   kitty-module.enable = true;
   firefox-module.enable=true;
-  thunderbird-module.enable=true;
+  obsidian-module.enable = true;
+  thunderbird-module.enable=false;
 
 
   services.syncthing = {
@@ -64,7 +66,21 @@ in
   programs.starship.enable = true;
   xdg.configFile."starship.toml".source = ./modules/submodules/starship.toml;
 
+
+  
   xdg = {
+    mime = {
+    enable = true;
+
+      # defaultApplications = {
+      #   "text/html" = "firefox.desktop";
+      #   "application/xhtml+xml" = "firefox.desktop";
+      #   "x-scheme-handler/http" = "firefox.desktop";
+      #   "x-scheme-handler/https" = "firefox.desktop";
+      #   "x-scheme-handler/about" = "firefox.desktop";
+      #   "x-scheme-handler/unknown" = "firefox.desktop";
+      # };
+    };
     desktopEntries = {
       jdownloader = {
         name = "JDownloader 2";
@@ -84,8 +100,12 @@ in
       Windows = {
         name = "Windows";
         genericName = "Virtual Machine";
-        exec = "quickemu --vm windows-11.conf --display spice";
+        exec = "quickemu --vm /home/lexyo/windows-11.conf --display spice";
+        terminal = false;
         icon = "distributor-logo-windows";
+        settings = {
+          Path = "/home/lexyo";
+        };
       };
     };
   #   mimeApps = {
@@ -204,5 +224,3 @@ in
     #   };
     # };
 }
-
-
