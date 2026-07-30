@@ -1,4 +1,4 @@
-{ inputs, config, pkgs, ... }:
+{ inputs, config, pkgs, pkgsUnstable, ... }:
 let 
   system = "x86_64-linux";
 
@@ -209,7 +209,7 @@ in
     openfortivpn
     hotspot #For visualizing perf.data
     chromium
-    codex
+    pkgsUnstable.codex
     ];
 
 
