@@ -18,21 +18,57 @@ let
   latteName = "catppuccin-latte-lavender-standard";
 
   # Paths
-  mochaGtk4 = "${catppuccin-mocha}/share/themes/${mochaName}/gtk-4.0";
-  latteGtk4 = "${catppuccin-latte}/share/themes/${latteName}/gtk-4.0";
+  mochaTheme = "${catppuccin-mocha}/share/themes/${mochaName}";
+  latteTheme = "${catppuccin-latte}/share/themes/${latteName}";
+  mochaGtk3 = "${mochaTheme}/gtk-3.0";
+  latteGtk3 = "${latteTheme}/gtk-3.0";
+  mochaGtk4 = "${mochaTheme}/gtk-4.0";
+  latteGtk4 = "${latteTheme}/gtk-4.0";
 
   # --- Updated Script ---
   switch-theme = pkgs.writeShellScriptBin "switch-theme" ''
-    MODE=$1
+    set -euo pipefail
+
+    MODE=''${1:?Usage: switch-theme dark|light}
+    GTK3_DIR="$HOME/.config/gtk-3.0"
     GTK4_DIR="$HOME/.config/gtk-4.0"
+    mkdir -p "$GTK3_DIR"
     mkdir -p "$GTK4_DIR"
 
+    prepare_dir() {
+      local dir="$1"
+      chmod -R u+w "$dir/assets" "$dir/gtk.css" "$dir/gtk-dark.css" 2>/dev/null || true
+    }
+
+    keep_writable() {
+      local dir="$1"
+      chmod -R u+w "$dir/assets" "$dir/gtk.css" "$dir/gtk-dark.css" 2>/dev/null || true
+    }
+
     apply_theme() {
-      local src="$1"
+      local gtk3_src="$1"
+      local gtk4_src="$2"
+      local theme_name="$3"
+      local prefer_dark="$4"
+
+      prepare_dir "$GTK3_DIR"
+      rm -rf "$GTK3_DIR/assets" "$GTK3_DIR/gtk.css" "$GTK3_DIR/gtk-dark.css"
+      cp -rL "$gtk3_src/assets" "$GTK3_DIR/assets"
+      cp -L "$gtk3_src/gtk.css" "$GTK3_DIR/gtk.css"
+      cp -L "$gtk3_src/gtk-dark.css" "$GTK3_DIR/gtk-dark.css"
+      cat > "$GTK3_DIR/settings.ini" <<EOF
+[Settings]
+gtk-theme-name=$theme_name
+gtk-application-prefer-dark-theme=$prefer_dark
+EOF
+      keep_writable "$GTK3_DIR"
+
+      prepare_dir "$GTK4_DIR"
       rm -rf "$GTK4_DIR/assets" "$GTK4_DIR/gtk.css" "$GTK4_DIR/gtk-dark.css"
-      cp -rL "$src/assets" "$GTK4_DIR/assets"
-      cp -L "$src/gtk.css" "$GTK4_DIR/gtk.css"
-      cp -L "$src/gtk-dark.css" "$GTK4_DIR/gtk-dark.css"
+      cp -rL "$gtk4_src/assets" "$GTK4_DIR/assets"
+      cp -L "$gtk4_src/gtk.css" "$GTK4_DIR/gtk.css"
+      cp -L "$gtk4_src/gtk-dark.css" "$GTK4_DIR/gtk-dark.css"
+      keep_writable "$GTK4_DIR"
     }
 
     # Force kill apps to make them reload assets
@@ -43,7 +79,7 @@ let
     }
 
     if [ "$MODE" == "dark" ]; then
-      apply_theme "${mochaGtk4}"
+      apply_theme "${mochaGtk3}" "${mochaGtk4}" "${mochaName}" "1"
       
       # Cursor switching disabled to prevent invisible mouse
       # ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface cursor-theme 'Catppuccin-Mocha-Lavender-Cursors'
@@ -51,10 +87,11 @@ let
       restart_apps
       sleep 0.5  # Increased sleep slightly to ensure apps close
       
+      ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface gtk-theme '${mochaName}'
       ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
       
     else
-      apply_theme "${latteGtk4}"
+      apply_theme "${latteGtk3}" "${latteGtk4}" "${latteName}" "0"
       
       # Cursor switching disabled
       # ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface cursor-theme 'Catppuccin-Latte-Lavender-Cursors'
@@ -62,6 +99,7 @@ let
       restart_apps
       sleep 0.5
 
+      ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface gtk-theme '${latteName}'
       ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme 'default'
     fi
   '';
@@ -140,6 +178,9 @@ in
       source = "${batteryHealthChargingPatched}/share/gnome-shell/extensions/${batteryHealthChargingPatched.extensionUuid}";
       force = true;
     };
+
+    xdg.dataFile."themes/${mochaName}".source = mochaTheme;
+    xdg.dataFile."themes/${latteName}".source = latteTheme;
 
     dconf = {
       enable = true;

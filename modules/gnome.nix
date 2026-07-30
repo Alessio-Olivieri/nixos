@@ -8,9 +8,10 @@
     config = lib.mkIf config.gnome.enable {
         services.displayManager.gdm.enable = true;
         services.desktopManager.gnome.enable = true;
+        programs.geary.enable = true;
 
         environment.gnome.excludePackages = (with pkgs; [
-              gnome-software
+            gnome-software
             # baobab # diskmanager
             # decibels #audioplayer
             # totem #videoplayer
@@ -39,7 +40,6 @@
             gedit
             evince
             seahorse
-            geary
             #gnome-font-viewer
             gnome-characters
         ]) ++ (with pkgs.gnome; [
