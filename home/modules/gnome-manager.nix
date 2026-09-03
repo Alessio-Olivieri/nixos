@@ -171,6 +171,7 @@ in
       gnomeExtensions.appindicator #Needed for jdownloader
       gnomeExtensions.gsconnect
       gnomeExtensions.blur-my-shell
+      gnomeExtensions.caffeine
       batteryHealthChargingPatched
     ];
 
@@ -203,6 +204,7 @@ in
               pkgs.gnomeExtensions.gsconnect.extensionUuid
               pkgs.gnomeExtensions.blur-my-shell.extensionUuid
               batteryHealthChargingPatched.extensionUuid
+              gnomeExtensions.caffeine.extensionUuid
           ];
         };
 
