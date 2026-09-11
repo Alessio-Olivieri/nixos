@@ -1,0 +1,19 @@
+[Unit]
+Description=Resume the approved Precision GPU maintenance agent after reboot
+After=default.target
+StartLimitIntervalSec=900
+StartLimitBurst=3
+
+[Service]
+Type=simple
+WorkingDirectory=/home/lexyo/worktrees/precision-gpu-vm-handoff
+Environment=HOME=/home/lexyo
+Environment=CODEX_HOME=/home/lexyo/.codex
+Environment=PATH=/run/current-system/sw/bin:/etc/profiles/per-user/lexyo/bin
+ExecStart=/home/lexyo/worktrees/precision-gpu-vm-handoff/maintenance/continuation
+Restart=on-failure
+RestartSec=30
+TimeoutStartSec=infinity
+
+[Install]
+WantedBy=default.target

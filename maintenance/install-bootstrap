@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly source_helper="/home/lexyo/worktrees/precision-gpu-vm-handoff/maintenance/root-helper"
+readonly root_state_dir="/var/lib/precision-gpu-maintenance"
+readonly sudoers_file="/etc/sudoers.d/precision-gpu-maintenance"
+
+if [[ "$(id -u)" -ne 0 ]]; then
+  printf 'Run this installer through sudo.\n' >&2
+  exit 2
+fi
+if [[ ! -x "$source_helper" ]]; then
+  printf 'Missing executable source helper: %s\n' "$source_helper" >&2
+  exit 2
+fi
+
+original_linger="$(/run/current-system/sw/bin/loginctl show-user lexyo -p Linger --value 2>/dev/null || printf 'no')"
+/run/current-system/sw/bin/install -d -m 0755 -o root -g root "$root_state_dir"
+if [[ ! -f "$root_state_dir/original-linger" ]]; then
+  printf '%s\n' "$original_linger" > "$root_state_dir/original-linger"
+  chmod 0644 "$root_state_dir/original-linger"
+fi
+if [[ ! -f "$root_state_dir/reboot-count" ]]; then
+  printf '0\n' > "$root_state_dir/reboot-count"
+  chmod 0644 "$root_state_dir/reboot-count"
+fi
+/run/current-system/sw/bin/install -m 0755 -o root -g root "$source_helper" "$root_state_dir/root-helper"
+
+temporary="${sudoers_file}.tmp"
+printf '%s\n' 'lexyo ALL=(root) NOPASSWD: /var/lib/precision-gpu-maintenance/root-helper *' > "$temporary"
+chmod 0440 "$temporary"
+/run/current-system/sw/bin/visudo -cf "$temporary"
+mv -f "$temporary" "$sudoers_file"
+/run/current-system/sw/bin/visudo -cf /etc/sudoers
+
+/run/current-system/sw/bin/loginctl enable-linger lexyo
+printf 'Installed the task-scoped root helper, validated sudoers, and enabled temporary user linger.\n'

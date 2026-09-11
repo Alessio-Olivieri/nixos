@@ -1,0 +1,7 @@
+{
+  "uuid": "gpu-indicator@alessio.local",
+  "name": "Intel / NVIDIA Indicator",
+  "description": "Show NVIDIA power state and readable application names without probing the GPU driver.",
+  "shell-version": ["50"],
+  "version": 1
+}

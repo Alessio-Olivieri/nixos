@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly state_dir="/home/lexyo/.local/state/precision-gpu-maintenance"
+readonly worktree="/home/lexyo/worktrees/precision-gpu-vm-handoff"
+readonly codex_bin="$state_dir/codex/bin/codex"
+readonly log_file="$state_dir/continuation.log"
+
+mkdir -p "$state_dir"
+exec 9>"$state_dir/agent.lock"
+if ! flock -n 9; then
+  printf '%s continuation already owns the maintenance lock\n' "$(date --iso-8601=seconds)" >> "$log_file"
+  exit 0
+fi
+
+log() {
+  printf '%s %s\n' "$(date --iso-8601=seconds)" "$*" >> "$log_file"
+}
+
+if [[ ! -f "$state_dir/armed" ]]; then
+  log "not armed; nothing to resume"
+  exit 0
+fi
+
+current_boot="$(</proc/sys/kernel/random/boot_id)"
+armed_boot="$(head -n 1 "$state_dir/armed")"
+if [[ "$current_boot" == "$armed_boot" ]]; then
+  log "armed for the current boot; waiting for reboot"
+  exit 0
+fi
+
+attempt_file="$state_dir/resume-attempt-$current_boot"
+attempt=0
+if [[ -f "$attempt_file" ]]; then
+  attempt="$(<"$attempt_file")"
+fi
+[[ "$attempt" =~ ^[0-9]+$ ]] || attempt=0
+attempt=$((attempt + 1))
+printf '%s\n' "$attempt" > "$attempt_file"
+if (( attempt > 3 )); then
+  log "automatic resume stopped after three failures on boot $current_boot"
+  mv -f "$state_dir/armed" "$state_dir/failed-$current_boot"
+  exit 0
+fi
+
+session_id="$(head -n 1 "$state_dir/coordinator-session-id" 2>/dev/null || true)"
+if [[ ! "$session_id" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]]; then
+  log "invalid or missing dedicated coordinator session id"
+  exit 2
+fi
+if [[ ! -x "$codex_bin" ]]; then
+  log "pinned Codex executable is unavailable"
+  exit 2
+fi
+
+log "resume attempt $attempt on boot $current_boot for session $session_id"
+/run/current-system/sw/bin/nm-online -q --timeout=180
+"$codex_bin" login status >> "$log_file" 2>&1
+
+mode="$(cat "$state_dir/continuation-mode" 2>/dev/null || printf full)"
+prompt="Boot $current_boot is online. Continue job precision-gpu-handoff-20260911 from $state_dir/CHECKPOINT.md in $worktree. You are the sole mutation coordinator after boot. Verify live state before every disruptive action, keep the three-reboot total budget, update durable checkpoints regularly, and perform all remaining implementation and live validation. Write $state_dir/completed only after all requirements and cleanup have passed. If genuinely blocked after exhausting safe in-scope alternatives, restore a usable host, clean up temporary privileges/login/sleep services, write a precise report and then $state_dir/blocked. Do not mark completion merely because a turn ends. Do not stop your own continuation service during cleanup: disable and unlink it, and let it exit after your last response."
+if [[ "$mode" == "verify-only" ]]; then
+  prompt="This is the attended bootstrap validation after boot $current_boot, not the full GPU implementation turn. Read $state_dir/CHECKPOINT.md. Perform only read-only checks: current and booted generation, boot journal cryptsetup timing, network, root helper status, system sleep inhibitor, and GNOME automatic-login session including PaperWM. Confirm authentication with your response. Save the results to $state_dir/boot-validation-$current_boot.md using apply_patch, then finish. Do not reboot, change configuration, start a VM, or restart display-manager. The interactive coordinator will resume the main task."
+fi
+
+max_turns=12
+[[ "$mode" == "verify-only" ]] && max_turns=1
+for ((turn=1; turn<=max_turns; turn++)); do
+  log "starting coordinator turn $turn/$max_turns"
+  set +e
+  "$codex_bin" --search exec resume \
+    --dangerously-bypass-approvals-and-sandbox \
+    --json \
+    -m gpt-6-astra \
+    "$session_id" \
+    "$prompt" \
+    >> "$log_file" 2>&1
+  status=$?
+  set -e
+  if (( status != 0 )); then
+    log "coordinator exited with status $status"
+    exit "$status"
+  fi
+  if [[ "$mode" == "verify-only" || -f "$state_dir/completed" || -f "$state_dir/blocked" ]]; then
+    rm -f "$state_dir/armed"
+    log "coordinator finished with explicit terminal state (or bootstrap probe)"
+    exit 0
+  fi
+  log "turn ended without terminal marker; resuming exact job from checkpoint"
+done
+log "stopped at finite 12-turn limit; inspect the checkpoint before restarting"
+mv -f "$state_dir/armed" "$state_dir/turn-limit-$current_boot"
+exit 0

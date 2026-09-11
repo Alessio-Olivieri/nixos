@@ -1,0 +1,185 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly job_id="precision-gpu-handoff-20260911"
+readonly user_name="lexyo"
+readonly worktree="/home/lexyo/worktrees/precision-gpu-vm-handoff"
+readonly expected_branch="codex/precision-gpu-vm-handoff-20260911"
+readonly state_dir="/home/lexyo/.local/state/precision-gpu-maintenance"
+readonly root_state_dir="/var/lib/precision-gpu-maintenance"
+readonly reboot_budget=3
+
+log() {
+  /run/current-system/sw/bin/logger -t "$job_id" -- "$*"
+  printf '%s\n' "$*"
+}
+
+require_worktree() {
+  local branch
+  branch="$(/run/current-system/sw/bin/git -C "$worktree" branch --show-current)"
+  if [[ "$branch" != "$expected_branch" ]]; then
+    log "Refusing: expected branch $expected_branch, found ${branch:-detached}."
+    exit 2
+  fi
+  if [[ ! -s "$state_dir/CHECKPOINT.md" ]]; then
+    log "Refusing: durable checkpoint is missing."
+    exit 2
+  fi
+}
+
+safe_reboot() {
+  local count current_boot armed_boot temporary
+  exec 9>"$root_state_dir/reboot.lock"
+  /run/current-system/sw/bin/flock -x 9
+
+  if /run/current-system/sw/bin/pgrep -u 1001 -f '[/]qemu-system-.*windows-11' >/dev/null; then
+    log "Refusing host reboot while the Windows guest is running. Shut it down cleanly first."
+    exit 4
+  fi
+
+  count="$(<"$root_state_dir/reboot-count")"
+  [[ "$count" =~ ^[0-9]+$ ]] || count=0
+  if (( count >= reboot_budget )); then
+    log "Refusing reboot: finite budget of $reboot_budget has been exhausted."
+    exit 3
+  fi
+
+  if [[ ! -f "$state_dir/armed" || -L "$state_dir/armed" ]]; then
+    log "Refusing reboot: continuation has not been armed."
+    exit 2
+  fi
+  current_boot="$(</proc/sys/kernel/random/boot_id)"
+  armed_boot="$(head -n 1 "$state_dir/armed")"
+  if [[ "$armed_boot" != "$current_boot" ]]; then
+    log "Refusing reboot: continuation marker does not match this boot."
+    exit 2
+  fi
+
+  count=$((count + 1))
+  temporary="$root_state_dir/.reboot-count.$$"
+  printf '%s\n' "$count" >"$temporary"
+  chmod 0644 "$temporary"
+  mv -f "$temporary" "$root_state_dir/reboot-count"
+  log "Authorized reboot $count/$reboot_budget; checkpoint and continuation marker verified."
+  /run/current-system/sw/bin/sync
+  exec /run/current-system/sw/bin/systemctl reboot
+}
+
+gpu_to_linux() {
+  local dev driver
+  if /run/current-system/sw/bin/pgrep -f 'qemu-system-.*(windows|win11)' >/dev/null 2>&1; then
+    log "Refusing GPU recovery while the Windows QEMU process is running."
+    exit 4
+  fi
+
+  /run/current-system/sw/bin/modprobe --all nvidia nvidia_modeset nvidia_drm nvidia_uvm || true
+  /run/current-system/sw/bin/modprobe snd_hda_intel || true
+  for dev in 0000:01:00.0 0000:01:00.1; do
+    [[ -e "/sys/bus/pci/devices/$dev" ]] || continue
+    driver="$(basename "$(readlink "/sys/bus/pci/devices/$dev/driver" 2>/dev/null || true)")"
+    if [[ "$driver" == "vfio-pci" ]]; then
+      printf '%s' "$dev" > /sys/bus/pci/drivers/vfio-pci/unbind
+    fi
+    printf '\n' > "/sys/bus/pci/devices/$dev/driver_override"
+    if [[ ! -e "/sys/bus/pci/devices/$dev/driver" ]]; then
+      printf '%s' "$dev" > /sys/bus/pci/drivers_probe
+    fi
+    printf 'auto' > "/sys/bus/pci/devices/$dev/power/control"
+  done
+  /run/current-system/sw/bin/udevadm settle
+  log "Requested NVIDIA graphics and audio return to their Linux drivers."
+}
+
+case "${1:-}" in
+  set-tested-fallback)
+    # Generation 145 completed the attended encrypted-boot/autologin/agent test.
+    test -f /boot/loader/entries/nixos-generation-145.conf
+    exec /run/current-system/sw/bin/bootctl set-default nixos-generation-145.conf
+    ;;
+  rebuild-switch|rebuild-boot|rebuild-test)
+    require_worktree
+    action="${1#rebuild-}"
+    exec /run/current-system/sw/bin/nixos-rebuild "$action" --flake "$worktree#precision" --show-trace
+    ;;
+  set-oneshot)
+    entry="${2:-}"
+    if [[ ! "$entry" =~ ^nixos-generation-[0-9]+\.conf$ ]]; then
+      log "Refusing invalid systemd-boot entry: $entry"
+      exit 2
+    fi
+    if [[ ! -f "/boot/loader/entries/$entry" ]]; then
+      log "Refusing missing systemd-boot entry: $entry"
+      exit 2
+    fi
+    exec /run/current-system/sw/bin/bootctl set-oneshot "$entry"
+    ;;
+  reboot)
+    safe_reboot
+    ;;
+  systemctl)
+    action="${2:-}"
+    unit="${3:-}"
+    case "$action" in start|stop|restart|try-restart|status) ;; *) exit 2 ;; esac
+    case "$unit" in
+      ollama.service|open-webui.service|libvirtd.service|virtqemud.service|gpu-indicator.service|display-manager.service)
+        ;;
+      *) log "Refusing non-maintenance unit: $unit"; exit 2 ;;
+    esac
+    exec /run/current-system/sw/bin/systemctl "$action" "$unit"
+    ;;
+  boot-audit)
+    /run/current-system/sw/bin/bootctl status --no-pager
+    /run/current-system/sw/bin/bootctl list --no-pager
+    for device in /dev/nvme0n1p2 /dev/nvme0n1p3; do
+      printf '\nTPM enrollment for %s\n' "$device"
+      /run/current-system/sw/bin/systemd-cryptenroll "$device" || true
+    done
+    ;;
+  crypt-audit)
+    for device in /dev/nvme0n1p2 /dev/nvme0n1p3; do
+      printf '\nLUKS metadata for %s\n' "$device"
+      /run/current-system/sw/bin/cryptsetup luksDump --dump-json-metadata "$device"
+    done
+    ;;
+  recovery-test)
+    # Fixed known-good generation: activation rollback without rewriting the
+    # boot default. A subsequent rebuild-switch reapplies the maintenance state.
+    require_worktree
+    exec /nix/store/31ga385n4kpqdj9qkqkivpky13yxg7z6-nixos-system-precision7560-26.05.20260611.a037402/bin/switch-to-configuration test
+    ;;
+  gpu-to-linux)
+    gpu_to_linux
+    ;;
+  cleanup)
+    rm -f /etc/sudoers.d/precision-gpu-maintenance
+    if [[ -f "$root_state_dir/original-linger" ]] && [[ "$(<"$root_state_dir/original-linger")" == "no" ]]; then
+      /run/current-system/sw/bin/loginctl disable-linger "$user_name" || true
+    fi
+    log "Temporary maintenance sudo rule and linger setting removed."
+    rm -f "$root_state_dir/root-helper"
+    ;;
+  finalize)
+    require_worktree
+    if /run/current-system/sw/bin/rg -q 'maintenance/bootstrap.nix' "$worktree/flake.nix"; then
+      log "Refusing finalization while the temporary bootstrap is imported."
+      exit 2
+    fi
+    /run/current-system/sw/bin/nixos-rebuild switch --flake "$worktree#precision" --show-trace
+    /run/current-system/sw/bin/loginctl disable-linger "$user_name"
+    # Clear the temporary EFI default override; use the new loader.conf default.
+    /run/current-system/sw/bin/bootctl set-default ''
+    rm -f /etc/sudoers.d/precision-gpu-maintenance
+    rm -f "$root_state_dir/root-helper"
+    log "Final configuration activated; temporary maintenance privilege and linger removed."
+    ;;
+  status)
+    printf 'job=%s\n' "$job_id"
+    printf 'reboots=%s/%s\n' "$(<"$root_state_dir/reboot-count")" "$reboot_budget"
+    printf 'boot_id=%s\n' "$(</proc/sys/kernel/random/boot_id)"
+    printf 'branch=%s\n' "$(/run/current-system/sw/bin/git -C "$worktree" branch --show-current)"
+    ;;
+  *)
+    printf 'Usage: %s {rebuild-test|rebuild-boot|rebuild-switch|recovery-test|set-oneshot ENTRY|reboot|systemctl ACTION UNIT|boot-audit|crypt-audit|gpu-to-linux|status|cleanup}\n' "$0" >&2
+    exit 2
+    ;;
+esac
