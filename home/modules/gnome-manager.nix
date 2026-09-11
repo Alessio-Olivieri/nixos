@@ -204,7 +204,7 @@ in
               pkgs.gnomeExtensions.gsconnect.extensionUuid
               pkgs.gnomeExtensions.blur-my-shell.extensionUuid
               batteryHealthChargingPatched.extensionUuid
-              gnomeExtensions.caffeine.extensionUuid
+              pkgs.gnomeExtensions.caffeine.extensionUuid
           ];
         };
 
