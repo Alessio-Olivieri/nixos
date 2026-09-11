@@ -388,7 +388,7 @@ in
   hardware.nvidia = {
     modesetting.enable = true;
     
-    package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
     
     # Override ampere.nix. 
     open = false; 
