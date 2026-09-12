@@ -2,7 +2,14 @@
 stdenvNoCC.mkDerivation {
   pname = "precision-gpu-indicator";
   version = "0.1.0";
-  src = ./.;
+  # Local test runs must not change the package hash in path/impure builds.
+  src = lib.cleanSourceWith {
+    src = ./.;
+    filter = path: type:
+      lib.cleanSourceFilter path type
+      && baseNameOf path != "__pycache__"
+      && !(lib.hasSuffix ".pyc" path);
+  };
   dontBuild = true;
   doCheck = true;
   nativeCheckInputs = [ python3 ];

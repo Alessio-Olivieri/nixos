@@ -1,0 +1,5 @@
+# Unified-diff context lines intentionally contain one leading space.
+maintenance/mutter-gpu-add-monitor.patch -whitespace
+maintenance/mutter-scanout-only.patch -whitespace
+maintenance/mutter-scanout-cpu-copy.patch -whitespace
+maintenance/mutter-scanout-lifecycle.patch -whitespace

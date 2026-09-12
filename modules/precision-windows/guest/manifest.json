@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "lookingGlass": {
+    "release": "B7-826-236efcb1",
+    "archiveUrl": "https://looking-glass.io/artifact/B7-826-236efcb1/idd",
+    "archiveSha256": "34daa6ddb403c1f503fb2ace94360159818fda1795fc5c2be5cec1f4391d5d57",
+    "installerSha256": "9084eacbfa2c7011ab5b0f866be669169ba54b11d686d02049d49ad48090799b",
+    "driverVersion": "1.27.7.771",
+    "publisherThumbprint": "57476AACDE410C05A63E9FEC8B97938605B9D8F5"
+  },
+  "nvidia": {
+    "deviceIdPrefix": "PCI\\VEN_10DE&DEV_24B7",
+    "testedDriverVersion": "32.0.15.8092",
+    "policy": "Preserve the existing signed Windows driver; never silently install or downgrade it."
+  },
+  "displayTaskName": "Precision Windows Gaming Display",
+  "displayDirectory": "C:\\ProgramData\\PrecisionWindowsDisplay",
+  "assumptions": [
+    "Existing licensed Windows installation and its QEMU Guest Agent are preserved external state.",
+    "Gaming must already be running; provisioning never starts a VM, changes mode or reboots.",
+    "NVIDIA HDMI/mDP cannot host Linux displays during Gaming passthrough."
+  ]
+}

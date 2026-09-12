@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import resource
+import runpy
 import signal
 import socket
 import subprocess
@@ -51,6 +52,106 @@ def gpu(action):
     print(result.stdout, end="", flush=True)
     if result.returncode:
         raise RuntimeError((result.stderr + result.stdout).strip())
+    return result.stdout
+
+
+def host_display(action, snapshot=None):
+    result = subprocess.run([CONFIG['host_display'], action], text=True,
+                            input=json.dumps(snapshot) if snapshot is not None else None,
+                            capture_output=True, timeout=15)
+    if result.returncode:
+        raise RuntimeError(result.stderr.strip() or 'Linux monitor handoff failed')
+    return json.loads(result.stdout)
+
+
+def non_compositor_owners(owners, shell_pid, logind_pid=None):
+    # This exemption is ONLY for the preflight before disabling HDMI. The root
+    # helper still requires zero owners, including GNOME, before any unbind.
+    allowed = {shell_pid, 1}
+    if logind_pid:
+        allowed.add(logind_pid)
+    # logind and PID1 can hold duplicates of GNOME's DRM lease. They too MUST
+    # disappear from the final zero-owner scan; no driver is unbound around them.
+    return [app for app in owners if len(app.get('pids', [])) != 1 or app['pids'][0] not in allowed
+            or app.get('pid_count', len(app.get('pids', []))) != 1
+            or app.get('kind') != 'application']
+
+
+def detach_host_hdmi():
+    snapshot = host_display('snapshot')
+    logind_pid = int(subprocess.check_output(['/run/current-system/sw/bin/systemctl', 'show',
+                     '--property=MainPID', '--value', 'systemd-logind.service'], text=True).strip() or '0')
+    busy = non_compositor_owners(json.loads(gpu('inspect'))['owners'], snapshot['shellPid'], logind_pid)
+    if busy:
+        raise RuntimeError('NVIDIA is in use: ' + '; '.join(
+            f"{app['name']} (PID {','.join(map(str, app['pids']))})" for app in busy))
+    connected = {spec[0] for logical in snapshot['logical'] for spec in logical[5]}
+    snapshot['layoutDetached'] = False
+    if not connected.intersection(snapshot['nvidiaHdmi']):
+        # Even without active HDMI, GPU return must preserve this exact session.
+        return snapshot
+    # Durable recovery snapshot before any temporary monitor change.
+    (STATE / 'linux-displays-before-gaming.json').write_text(json.dumps(snapshot))
+    try:
+        host_display('detach', snapshot)
+        snapshot['layoutDetached'] = True
+        deadline = time.monotonic() + 15
+        while (busy := json.loads(gpu('inspect'))['owners']):
+            if time.monotonic() >= deadline:
+                raise RuntimeError('Gaming refused; NVIDIA is still held by ' + '; '.join(
+                    f"{app['name']} (PID {','.join(map(str, app['pids']))})" for app in busy))
+            time.sleep(0.5)
+    except Exception:
+        try:
+            host_display('restore', snapshot)
+        except Exception as error:
+            notify('Could not restore the previous Linux monitor layout: ' + str(error), True)
+        raise
+    return snapshot
+
+
+def request_guest_shutdown(qemu):
+    """A guest can exit between poll() and the QMP connection attempt."""
+    if qemu.poll() is not None:
+        return False
+    try:
+        rpc(RUNTIME / 'qmp.sock', 'system_powerdown', qmp=True)
+    except Exception:
+        if qemu.poll() is not None:
+            return False
+        raise
+    return True
+
+
+def recover_host_display(snapshot):
+    current = host_display('snapshot')
+    if any(not snapshot.get(key) or snapshot[key] != current.get(key)
+           for key in ('displayOwner', 'displayBusId', 'shellPid')):
+        raise RuntimeError('GNOME exited or was replaced during GPU handoff; the desktop session was not preserved')
+    if snapshot.get('layoutDetached'):
+        host_display('restore', snapshot)
+
+
+def finish_status(status, qemu, transferred, snapshot):
+    """Record display recovery independently of a successful CUDA recovery."""
+    if qemu is not None:
+        status['qemu_exit'] = qemu.returncode
+    if snapshot is not None:
+        try:
+            recover_host_display(snapshot)
+            status['display_recovery'] = 'passed'
+        except Exception as error:
+            status.update(state='display-recovery-failed', display_recovery='failed',
+                          error=str(error))
+            return ('Windows stopped, but Linux display recovery failed: ' + str(error) +
+                    '. Do not retry Gaming until this is resolved.', True)
+    status['state'] = 'guest-failed' if qemu is not None and qemu.returncode else 'stopped'
+    if status['state'] == 'guest-failed':
+        message = f"Windows exited with error {qemu.returncode}. See 'journalctl --user -u precision-windows'."
+        if transferred:
+            message += ' NVIDIA has been returned to Linux.'
+        return message, True
+    return ('Windows stopped. NVIDIA is available to Linux.' if transferred else 'Windows stopped.'), False
 
 
 def qemu_arguments(mode):
@@ -82,6 +183,9 @@ def qemu_arguments(mode):
             "-tpmdev", "emulator,id=tpm0,chardev=chrtpm", "-device", "tpm-tis,tpmdev=tpm0",
             "-qmp", f"unix:{RUNTIME}/qmp.sock,server=on,wait=off", "-serial", "none"]
     args += ["-device", "qemu-xhci,id=spicepass"]
+    # Match the calculator model, never a transient USB bus/address or a whole
+    # host controller. QEMU watches for insertion/reinsertion while Windows runs.
+    args += ["-device", "usb-host,id=ti-nspire,bus=spicepass.0,vendorid=0x0451,productid=0xe022"]
     for index in range(1, 4):
         args += ["-chardev", f"spicevmc,id=usbredir{index},name=usbredir",
                  "-device", f"usb-redir,chardev=usbredir{index},id=usbredirdev{index},bus=spicepass.0"]
@@ -126,6 +230,14 @@ def calculators():
 def calculator_action(selection):
     # Invoked by the installation's single controller, with an exact per-device
     # choice. No host controller passthrough, extra sudo, or second SPICE client.
+    if selection == 'auto':
+        devices = rpc(RUNTIME / 'qmp.sock', 'qom-list', {'path': '/machine/peripheral'}, qmp=True)
+        if not any(device['name'] == 'ti-nspire' for device in devices):
+            rpc(RUNTIME / 'qmp.sock', 'device_add', {
+                'driver': 'usb-host', 'id': 'ti-nspire', 'bus': 'spicepass.0',
+                'vendorid': 0x0451, 'productid': 0xe022,
+            }, qmp=True)
+        return
     if selection == 'disconnect':
         rpc(RUNTIME / 'qmp.sock', 'device_del', {'id': 'ti-nspire'}, qmp=True)
         return
@@ -142,12 +254,10 @@ def calculator_action(selection):
 
 
 def choose_calculator():
-    rows = []
-    for key in calculators():
-        rows += [key, f'Connect TI-Nspire CX II (USB {key})']
+    rows = ['auto', 'Enable automatic TI-Nspire CX II connection']
     rows += ['disconnect', 'Disconnect TI-Nspire from Windows']
     result = subprocess.run([CONFIG['chooser'], '--list', '--title=Windows — TI-Nspire USB',
-                             '--text=Select the calculator to connect or disconnect. Windows must already be running.',
+                             '--text=TI-Nspire connects automatically by default. Disconnect pauses forwarding until enabled again or Windows restarts.',
                              '--column=Device', '--column=Action', '--hide-column=1', '--print-column=1',
                              '--width=620', '--height=280', *rows], capture_output=True, text=True)
     if result.returncode == 0 and result.stdout.strip():
@@ -180,9 +290,16 @@ def process_identity(pid):
 
 def run(mode):
     if mode == "gaming":
+        if not CONFIG.get('gaming_enabled', False):
+            raise RuntimeError('Windows Gaming is disabled: the NVIDIA return path is not validated for this configuration. Windows Light remains available; no display or GPU changes were made.')
         soft, _ = resource.getrlimit(resource.RLIMIT_MEMLOCK)
         if soft != resource.RLIM_INFINITY and soft < 18 * 1024**3:
             raise RuntimeError("Windows Gaming requires at least 18 GiB of locked-memory allowance. Rebuild the Precision configuration and start it through the Gaming launcher; NVIDIA has not been detached.")
+        runpy.run_path('@lib@/compositor_guard.py')['verify'](CONFIG)
+        if (STATE / 'status.json').exists():
+            previous = json.loads((STATE / 'status.json').read_text())
+            if previous.get('state') in {'gpu-recovery-failed', 'display-recovery-failed'}:
+                raise RuntimeError('A previous Gaming recovery failed. Inspect and repair it before another launch; no automatic retry.')
     STATE.mkdir(parents=True, exist_ok=True, mode=0o700)
     RUNTIME.mkdir(parents=True, exist_ok=True, mode=0o700)
     lock = (STATE / "installation.lock").open("w")
@@ -209,6 +326,7 @@ def run(mode):
         temporary.replace(STATE / "status.json")
     save()
     transferred = False
+    host_snapshot = None
     qemu = tpm = viewer = None
     shutdown_requested = False
     deadline = None
@@ -219,6 +337,7 @@ def run(mode):
     signal.signal(signal.SIGINT, request)
     try:
         if mode == "gaming":
+            host_snapshot = detach_host_hdmi()
             gpu("prepare")
             transferred = True
         tpm = subprocess.Popen([CONFIG["swtpm"], "socket", "--ctrl", f"type=unixio,path={RUNTIME}/swtpm.sock", "--terminate", "--tpmstate", f"dir={ASSETS}", "--tpm2"])
@@ -266,11 +385,15 @@ def run(mode):
                     pass
                 if viewer is not None and viewer.poll() is not None:
                     viewer = None
-                    request()
+                    if qemu.poll() is None and status.get('state') != 'shutting-down':
+                        request()
                 if shutdown_requested:
                     shutdown_requested = False
+                    if qemu.poll() is not None:
+                        break
                     try:
-                        rpc(RUNTIME / "qmp.sock", "system_powerdown", qmp=True)
+                        if not request_guest_shutdown(qemu):
+                            break
                         status["state"] = "shutting-down"
                         deadline = time.monotonic() + 180
                         notify("Clean Windows shutdown requested; waiting for the guest to stop.")
@@ -284,6 +407,7 @@ def run(mode):
                     save()
                     notify("Windows has not shut down after 3 minutes. It is still running and locked. Run 'precision-windows console' to reopen it and shut down inside Windows. NVIDIA stays with the guest until it exits.", True)
         status.update(state="stopped", qemu_exit=qemu.returncode)
+        status.pop('error', None)
     finally:
         # A controller exception never detaches hardware from a live VM.
         if qemu is not None and qemu.poll() is None:
@@ -291,7 +415,7 @@ def run(mode):
             save()
             notify("The Windows controller encountered an error. Waiting for Windows to stop before releasing its disk or NVIDIA.", True)
             try:
-                rpc(RUNTIME / "qmp.sock", "system_powerdown", qmp=True)
+                request_guest_shutdown(qemu)
             except Exception:
                 pass
             qemu.wait()
@@ -320,18 +444,16 @@ def run(mode):
             save()
             try:
                 gpu("release")
+                status['gpu_recovery'] = 'passed'
             except Exception as error:
                 status.update(state="gpu-recovery-failed", error=str(error))
                 save()
                 notify("Windows stopped, but NVIDIA recovery needs attention: " + str(error), True)
                 raise
-        status["state"] = "guest-failed" if qemu is not None and qemu.returncode else "stopped"
+        message, critical = finish_status(status, qemu, transferred, host_snapshot)
         save()
         (RUNTIME / "control.sock").unlink(missing_ok=True)
-        if status["state"] == "guest-failed":
-            notify(f"Windows exited with error {qemu.returncode}. See 'journalctl --user -u precision-windows'. NVIDIA has been returned to Linux." if transferred else f"Windows exited with error {qemu.returncode}. See 'journalctl --user -u precision-windows'.", True)
-        else:
-            notify("Windows stopped. NVIDIA is available to Linux." if transferred else "Windows stopped.")
+        notify(message, critical)
 
 
 def command(action):
@@ -343,7 +465,7 @@ def command(action):
             path = STATE / "status.json"
             saved = json.loads(path.read_text()) if path.exists() else {"state": "not-started"}
             if action == "status":
-                if saved.get("state") not in {"stopped", "not-started", "gpu-recovery-failed", "guest-failed"}:
+                if saved.get("state") not in {"stopped", "not-started", "gpu-recovery-failed", "display-recovery-failed", "guest-failed"}:
                     identity = saved.get("process_identity")
                     if not identity or process_identity(saved.get("pid")) != identity:
                         saved = {"state": "controller-unavailable", "last_state": saved}
@@ -351,6 +473,8 @@ def command(action):
                 return
             if saved.get("state") in {"stopped", "not-started", "guest-failed"}:
                 raise RuntimeError("Windows is stopped. Start Windows — Light or Windows — Gaming from the application menu; 'console' only reconnects to a running VM.") from None
+            if saved.get('state') == 'display-recovery-failed':
+                raise RuntimeError('Windows is stopped, but Linux display recovery failed. Do not retry Gaming; inspect precision-windows status and the session journal.') from None
             raise RuntimeError("The Windows controller is unavailable. Check 'precision-windows status' and 'journalctl --user -u precision-windows'; do not start another copy while QEMU is running.") from None
         connection.sendall(action.encode())
         print(connection.recv(16384).decode(), end="")
@@ -361,6 +485,8 @@ def main():
     parser.add_argument("action", choices=["gaming", "light", "status", "shutdown", "view", "console", "usb", "run"])
     parser.add_argument("mode", nargs="?", choices=["gaming", "light"])
     args = parser.parse_args()
+    if args.action == 'gaming' and not CONFIG.get('gaming_enabled', False):
+        raise RuntimeError('Windows Gaming is disabled while the NVIDIA return path is repaired. Windows Light remains available.')
     if args.action in {"gaming", "light"}:
         result = subprocess.run(["systemd-run", "--user", "--collect", "--unit=precision-windows", "--service-type=exec",
                                  *(["--property=LimitMEMLOCK=20G"] if args.action == 'gaming' else []),

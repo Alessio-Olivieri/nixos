@@ -22,6 +22,14 @@ def drivers():
     return {bdf: collector.basename(collector.read_link(SYS / bdf / "driver")) for bdf in DEVICES}
 
 
+def active_displays():
+    # Passive sysfs state, not a DRM/NVML probe: a Linux HDMI scanout is real
+    # work and must not be misreported as failed runtime power management.
+    return [path.parent.name for path in (SYS / '0000:01:00.0').glob('drm/card*/card*-*/enabled')
+            if collector.read_text(path) == 'enabled'
+            and collector.read_text(path.parent / 'status') == 'connected']
+
+
 def device_targets():
     targets, vfio = set(), set()
     for bdf in DEVICES:
@@ -60,6 +68,10 @@ def validate():
 
 
 def prepare():
+    if not CONFIG.get('gaming_enabled', False):
+        raise RuntimeError('GPU handoff is disabled: the NVIDIA return path is not validated for this configuration. No GPU changes were made.')
+    from compositor_guard import verify
+    verify(CONFIG)
     validate()
     for bdf in DEVICES:
         group = SYS / bdf / "iommu_group" / "devices"
@@ -143,6 +155,11 @@ def restore(run_probe=True):
         subprocess.run([CONFIG["cuda_probe"]], timeout=40, check=True)
         deadline = time.monotonic() + 60
         while time.monotonic() < deadline:
+            displays = active_displays()
+            if displays:
+                print(json.dumps({'state': 'linux', 'cuda': 'passed', 'power': 'awake',
+                                  'reason': 'active-display', 'displays': displays}))
+                return
             if all(collector.read_text(SYS / bdf / "power/runtime_status") == "suspended" for bdf in DEVICES):
                 print(json.dumps({"state": "linux", "cuda": "passed", "power": "suspended"}))
                 return

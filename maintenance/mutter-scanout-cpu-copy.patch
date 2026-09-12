@@ -1,0 +1,30 @@
+From: Precision GPU maintenance
+Subject: [UNVALIDATED CANDIDATE] Skip GPU blit into scanout-only buffers
+
+The previous physical test aborted in Mesa iris submission after importing a
+NVIDIA dumb buffer into Intel for a GPU blit. PRIMARY alone still attempts that
+path and its asynchronous failure cannot use the synchronous CPU fallback.
+Use Mutter's existing explicit CPU-copy flag for this opt-in device only.
+This does not change Intel compositing, host applications' rendering, or any
+GPU lifetime/handoff logic. Physical output/performance remain unvalidated.
+
+--- a/src/backends/native/meta-renderer-native.c
++++ b/src/backends/native/meta-renderer-native.c
+@@ -2077,11 +2077,15 @@ create_renderer_gpu_data_gbm (MetaRendererNative *renderer_native,
+   if (meta_kms_device_get_flags (meta_gpu_kms_get_kms_device (gpu_kms)) &
+       META_KMS_DEVICE_FLAG_SCANOUT_ONLY)
+     {
+-      /* Avoid even a speculative secondary GBM import/allocation. The primary
+-       * GPU copies to a dumb scanout buffer, with the existing CPU fallback.
++      /* Do not submit Intel GPU work against a NVIDIA-allocated buffer. An
++       * import may succeed but submission can fail asynchronously, beyond
++       * the synchronous GPU-blit fallback. Read pixels into the dumb buffer.
+        */
+       renderer_gpu_data->secondary.copy_mode =
+         META_SHARED_FRAMEBUFFER_COPY_MODE_PRIMARY;
++      renderer_gpu_data->secondary.copy_mode_primary_force_cpu = TRUE;
++      g_message ("Using CPU copy for scanout-only device '%s'",
++                 meta_gpu_kms_get_file_path (gpu_kms));
+       return renderer_gpu_data;
+     }
+ 

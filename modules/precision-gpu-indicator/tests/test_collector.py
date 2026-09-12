@@ -37,12 +37,14 @@ class CollectorTests(unittest.TestCase):
         for index, target in enumerate(targets):
             (entry / "fd" / str(index)).symlink_to(target)
 
-    def test_suspended_skips_process_collection(self):
+    def test_suspended_scans_passive_process_handles_without_waking_gpu(self):
         (self.device / "power/runtime_status").write_text("suspended\n")
-        with patch.object(collector, "scan_processes", side_effect=AssertionError("must not scan")):
-            result = self.collect()
+        self.process(12, "/nix/store/hash-gnome/bin/.gnome-shell-wrapped", ["/dev/nvidia0"])
+        result = self.collect()
         self.assertEqual(result["state"], "intel")
-        self.assertFalse(result["visibility"]["scanned"])
+        self.assertEqual(result["applications"][0]["name"], "GNOME Shell")
+        self.assertTrue(result["visibility"]["scanned"])
+        self.assertIn("still hold", result["detail"])
 
     def test_nix_wrapped_names_and_multiple_pids_are_grouped(self):
         self.process(12, "/nix/store/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-steam-1/bin/.steam-wrapped", ["/dev/nvidia0"])

@@ -1,0 +1,37 @@
+From: Precision GPU maintenance
+Subject: [LOCAL CANDIDATE] Rebuild monitors after secondary GPU addition
+
+Observed on Mutter 50.1: adding a GPU populates its outputs but leaves them
+without MetaMonitor objects until the monitor manager reads current state.
+A subsequent ApplyMonitorsConfig reaches is_connector_configured_for_lease
+with a NULL monitor. The retained core confirms RDI=0 at
+meta_monitor_is_for_lease+7.
+
+Reload after successful hot-add, once the GPU and renderer have been added.
+Also treat an as-yet unassociated connector as not configured for leasing.
+This does not implement full GPU removal/re-add or release Xwayland handles.
+
+--- a/src/backends/native/meta-drm-lease.c
++++ b/src/backends/native/meta-drm-lease.c
+@@ -200,6 +200,8 @@ is_connector_configured_for_lease (MetaKmsConnector *connector)
+     return FALSE;
+ 
+   monitor = meta_output_get_monitor (META_OUTPUT (output_kms));
++  if (!monitor)
++    return FALSE;
+   return meta_monitor_is_for_lease (monitor);
+ }
+ 
+--- a/src/backends/native/meta-backend-native.c
++++ b/src/backends/native/meta-backend-native.c
+@@ -656,7 +656,10 @@ on_udev_device_added (MetaUdev          *udev,
+           g_warning ("Failed to hotplug secondary gpu '%s': %s",
+                      device_path, error->message);
+         }
++      return;
+     }
++
++  meta_monitor_manager_reload (meta_backend_get_monitor_manager (backend));
+ }
+ 
+ static gboolean

@@ -48,6 +48,67 @@
       };
     in
     {
+      checks.${system} = {
+        precision-mutter-lifecycle = self.packages.${system}.precision-mutter-lifecycle-vm-test;
+        precision-gpu-indicator = pkgs.callPackage ./modules/precision-gpu-indicator/package.nix {};
+        precision-windows-safety = let
+          source = nixpkgs.lib.cleanSourceWith {
+            src = ./modules/precision-windows;
+            filter = path: type:
+              nixpkgs.lib.cleanSourceFilter path type
+              && baseNameOf path != "__pycache__"
+              && !(nixpkgs.lib.hasSuffix ".pyc" path);
+          };
+        in pkgs.runCommand "precision-windows-safety-tests" {} ''
+          ${pkgs.python3}/bin/python3 -B -m unittest discover -s ${source}/tests -p 'test_*.py'
+          ${pkgs.gjs}/bin/gjs -m ${source}/tests/test_display_guard.js
+          touch $out
+        '';
+      };
+
+      packages.${system} = {
+        precision-gaming-lifecycle-candidate =
+          (self.nixosConfigurations.precision.extendModules {
+            modules = [ ./maintenance/lifecycle-session-candidate-module.nix
+              { services.precision-windows.gamingEnabled = true; } ];
+          }).config.system.build.toplevel;
+        precision-lifecycle-session-candidate =
+          (self.nixosConfigurations.precision.extendModules {
+            modules = [ ./maintenance/lifecycle-session-candidate-module.nix ];
+          }).config.system.build.toplevel;
+        precision-mutter-cpu-vm-test =
+          import ./maintenance/mutter-lifecycle-vm-test.nix {
+            inherit pkgs;
+            mutter = self.packages.${system}.precision-mutter-scanout-cpu-candidate;
+          };
+        precision-mutter-lifecycle-vm-test =
+          import ./maintenance/mutter-lifecycle-vm-test.nix {
+            inherit pkgs;
+            mutter = self.packages.${system}.precision-mutter-lifecycle-candidate;
+          };
+        precision-mutter-lifecycle-candidate =
+          import ./maintenance/mutter-lifecycle-candidate.nix { inherit pkgs; };
+        precision-scanout-cpu-session-candidate =
+          (self.nixosConfigurations.precision.extendModules {
+            modules = [ ./maintenance/scanout-cpu-session-candidate-module.nix ];
+          }).config.system.build.toplevel;
+        precision-mutter-scanout-cpu-candidate =
+          import ./maintenance/mutter-scanout-cpu-candidate.nix { inherit pkgs; };
+        precision-mutter-scanout-candidate =
+          import ./maintenance/mutter-scanout-candidate.nix { inherit pkgs; };
+        precision-scanout-session-candidate =
+          (self.nixosConfigurations.precision.extendModules {
+            modules = [ ./maintenance/scanout-session-candidate-module.nix ];
+          }).config.system.build.toplevel;
+
+        # Historical explicit test build, separate from the tested CPU-copy
+        # desktop baseline now used by the normal host output.
+        precision-hdmi-session-test =
+          (self.nixosConfigurations.precision.extendModules {
+            modules = [ ./maintenance/hdmi-session-test-module.nix ];
+          }).config.system.build.toplevel;
+      };
+
       nixosConfigurations = {
         nixos = nixpkgs.lib.nixosSystem {
           inherit specialArgs;

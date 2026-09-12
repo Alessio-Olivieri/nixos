@@ -206,11 +206,6 @@ def collect(bdf="0000:01:00.0", nvidia_node="/dev/nvidia0", interval=5,
     if driver not in {"nvidia", "vfio-pci"}:
         result["detail"] = "NVIDIA is unbound or its Linux driver is unavailable."
         return result
-    if driver == "nvidia" and functions and all(state == "suspended" for state in functions.values()):
-        result["state"] = "intel"
-        result["detail"] = "NVIDIA is runtime-suspended."
-        return result  # In particular, do not scan processes or invoke any GPU query.
-
     targets, vfio_targets = device_targets(device, nvidia_node)
     if driver != "vfio-pci":
         vfio_targets = set()
@@ -227,6 +222,13 @@ def collect(bdf="0000:01:00.0", nvidia_node="/dev/nvidia0", interval=5,
                             else "Reserved for passthrough; no VM owner identified.")
         if functions and all(state == "suspended" for state in functions.values()):
             result["detail"] += " NVIDIA is runtime-suspended."
+    elif functions and all(state == "suspended" for state in functions.values()):
+        # Procfs scanning is passive and does not wake the GPU. Keep showing
+        # Intel while suspended, but retain readable open-handle owners so the
+        # Gaming gate can explain why VFIO is still unsafe.
+        result["state"] = "intel"
+        result["detail"] = ("NVIDIA is runtime-suspended; applications still hold device handles."
+                             if apps else "NVIDIA is runtime-suspended.")
     elif apps or "active" in functions.values():
         result["state"] = "nvidia"
         if runtime == "suspended":

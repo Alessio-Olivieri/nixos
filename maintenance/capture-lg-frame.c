@@ -1,6 +1,6 @@
 /* Diagnostic consumer of the pinned LGMP frame stream, not the QXL console.
  * Build with the LGMP and LGProtocol headers/sources from the pinned LG source.
- * Reads one BGRA frame, releases its lease, and writes a PPM for inspection.
+ * Reads one BGRA/packed-BGR frame, releases its lease, and writes a PPM.
  */
 #include <lgmp/client.h>
 #include <LGProtocol/KVMFR.h>
@@ -33,11 +33,14 @@ int main(int argc, char **argv) {
         if (status == LGMP_ERR_QUEUE_EMPTY) { usleep(10000); continue; }
         if (status != LGMP_OK) { fprintf(stderr, "LGMP status %d\n", status); break; }
         KVMFRFrame *frame = message.mem;
+        /* The pinned IDD's CRGB24Effect packs consecutive B,G,R bytes into
+         * FRAME_TYPE_BGR_32 rows, with pitch including alignment padding. */
+        const unsigned pixelBytes = frame->type == FRAME_TYPE_BGR_32 ? 3 : 4;
         const size_t bytes = (size_t)frame->pitch * frame->dataHeight;
         const size_t offset = (unsigned char *)frame - memory + frame->offset;
-        if (frame->type != FRAME_TYPE_BGRA || !frame->frameWidth || !frame->frameHeight ||
+        if ((frame->type != FRAME_TYPE_BGRA && frame->type != FRAME_TYPE_BGR_32) || !frame->frameWidth || !frame->frameHeight ||
             frame->frameWidth > 16384 || frame->frameHeight > frame->dataHeight ||
-            frame->pitch < frame->frameWidth * 4 || offset + 4 + bytes > size) {
+            frame->pitch < frame->frameWidth * pixelBytes || offset + 4 + bytes > size) {
             lgmpClientMessageDone(queue); usleep(10000); continue;
         }
         KVMFRFrameBuffer *buffer = (KVMFRFrameBuffer *)(memory + offset);
@@ -50,12 +53,12 @@ int main(int argc, char **argv) {
         fprintf(output, "P6\n%u %u\n255\n", frame->frameWidth, frame->frameHeight);
         for (uint32_t y = 0; y < frame->frameHeight; ++y)
             for (uint32_t x = 0; x < frame->frameWidth; ++x) {
-                unsigned char *pixel = buffer->data + (size_t)y * frame->pitch + x * 4;
+                unsigned char *pixel = buffer->data + (size_t)y * frame->pitch + x * pixelBytes;
                 unsigned char rgb[3] = {pixel[2], pixel[1], pixel[0]};
                 fwrite(rgb, 3, 1, output);
             }
         fclose(output);
-        printf("Captured LGMP frame %u: %ux%u, BGRA, client %u\n", frame->frameSerial, frame->frameWidth, frame->frameHeight, clientID);
+        printf("Captured LGMP frame %u: %ux%u, %s, client %u\n", frame->frameSerial, frame->frameWidth, frame->frameHeight, pixelBytes == 3 ? "packed BGR" : "BGRA", clientID);
         lgmpClientMessageDone(queue);
         result = 0;
         break;

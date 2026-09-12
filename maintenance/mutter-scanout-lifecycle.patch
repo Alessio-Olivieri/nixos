@@ -1,0 +1,583 @@
+diff --git a/src/backends/native/meta-backend-native.c b/src/backends/native/meta-backend-native.c
+index ff1ca95..42edac4 100644
+--- a/src/backends/native/meta-backend-native.c
++++ b/src/backends/native/meta-backend-native.c
+@@ -54,6 +54,7 @@
+ #include "backends/native/meta-drm-lease.h"
+ #include "backends/native/meta-kms.h"
+ #include "backends/native/meta-kms-device.h"
++#include "backends/native/meta-kms-private.h"
+ #include "backends/native/meta-monitor-manager-native.h"
+ #include "backends/native/meta-render-device-gbm.h"
+ #include "backends/native/meta-renderer-native.h"
+@@ -659,6 +660,22 @@ on_udev_device_added (MetaUdev          *udev,
+ 
+       if (!g_strcmp0 (device_path, meta_gpu_kms_get_file_path (gpu_kms)))
+         {
++          MetaKmsDevice *kms_device = meta_gpu_kms_get_kms_device (gpu_kms);
++
++          if ((meta_kms_device_get_flags (kms_device) &
++               META_KMS_DEVICE_FLAG_SCANOUT_ONLY) &&
++              g_udev_device_get_property_as_boolean (device,
++                                                     "MUTTER_DEVICE_SCANOUT_ONLY"))
++            {
++              MetaKms *kms = meta_backend_native_get_kms (native);
++              MetaKmsResourceChanges changes;
++
++              changes = meta_kms_update_states_sync (kms);
++              if (changes != META_KMS_RESOURCE_CHANGE_NONE)
++                meta_kms_emit_resources_changed (kms, changes);
++              return;
++            }
++
+           g_warning ("Failed to hotplug secondary gpu '%s': %s",
+                      device_path, "device already present");
+           return;
+diff --git a/src/backends/native/meta-crtc-kms.c b/src/backends/native/meta-crtc-kms.c
+index f65ca56..1cf1ac6 100644
+--- a/src/backends/native/meta-crtc-kms.c
++++ b/src/backends/native/meta-crtc-kms.c
+@@ -396,8 +396,8 @@ meta_crtc_kms_set_config (MetaCrtc             *crtc,
+   MetaCrtcKms *crtc_kms = META_CRTC_KMS (crtc);
+   CrtcKmsAssignment *kms_assignment = backend_private;
+ 
+-  crtc_kms->assigned_primary_plane = kms_assignment->primary_plane;
+-  crtc_kms->assigned_cursor_plane = kms_assignment->cursor_plane;
++  g_set_object (&crtc_kms->assigned_primary_plane, kms_assignment->primary_plane);
++  g_set_object (&crtc_kms->assigned_cursor_plane, kms_assignment->cursor_plane);
+ }
+ 
+ void
+@@ -405,8 +405,8 @@ meta_crtc_kms_assign_planes (MetaCrtcKms  *crtc_kms,
+                              MetaKmsPlane *primary_plane,
+                              MetaKmsPlane *cursor_plane)
+ {
+-  crtc_kms->assigned_primary_plane = primary_plane;
+-  crtc_kms->assigned_cursor_plane = cursor_plane;
++  g_set_object (&crtc_kms->assigned_primary_plane, primary_plane);
++  g_set_object (&crtc_kms->assigned_cursor_plane, cursor_plane);
+ }
+ 
+ static void
+@@ -417,8 +417,8 @@ meta_crtc_kms_unset_config (MetaCrtc *crtc)
+   if (meta_crtc_kms_is_leased (crtc))
+     return;
+ 
+-  crtc_kms->assigned_primary_plane = NULL;
+-  crtc_kms->assigned_cursor_plane = NULL;
++  g_clear_object (&crtc_kms->assigned_primary_plane);
++  g_clear_object (&crtc_kms->assigned_cursor_plane);
+ }
+ 
+ static gboolean
+@@ -551,7 +551,8 @@ meta_crtc_kms_new (MetaGpuKms  *gpu_kms,
+                            "gpu", gpu,
+                            NULL);
+ 
+-  crtc_kms->kms_crtc = kms_crtc;
++  /* The KMS resource list can disappear before main-thread monitor objects. */
++  crtc_kms->kms_crtc = g_object_ref (kms_crtc);
+ 
+   g_object_set_qdata (G_OBJECT (kms_crtc), kms_crtc_crtc_kms_quark, crtc_kms);
+ 
+@@ -563,12 +564,29 @@ meta_crtc_kms_init (MetaCrtcKms *crtc_kms)
+ {
+ }
+ 
++static void
++meta_crtc_kms_finalize (GObject *object)
++{
++  MetaCrtcKms *crtc_kms = META_CRTC_KMS (object);
++
++  if (meta_crtc_kms_from_kms_crtc (crtc_kms->kms_crtc) == crtc_kms)
++    g_object_set_qdata (G_OBJECT (crtc_kms->kms_crtc),
++                        kms_crtc_crtc_kms_quark, NULL);
++  g_clear_object (&crtc_kms->kms_crtc);
++  g_clear_object (&crtc_kms->assigned_primary_plane);
++  g_clear_object (&crtc_kms->assigned_cursor_plane);
++  G_OBJECT_CLASS (meta_crtc_kms_parent_class)->finalize (object);
++}
++
+ static void
+ meta_crtc_kms_class_init (MetaCrtcKmsClass *klass)
+ {
++  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+   MetaCrtcClass *crtc_class = META_CRTC_CLASS (klass);
+   MetaCrtcNativeClass *crtc_native_class = META_CRTC_NATIVE_CLASS (klass);
+ 
++  object_class->finalize = meta_crtc_kms_finalize;
++
+   crtc_class->get_gamma_lut_size = meta_crtc_kms_get_gamma_lut_size;
+   crtc_class->get_gamma_lut = meta_crtc_kms_get_gamma_lut;
+   crtc_class->set_gamma_lut = meta_crtc_kms_set_gamma_lut;
+diff --git a/src/backends/native/meta-gpu-kms.c b/src/backends/native/meta-gpu-kms.c
+index 8ed6d46..56938ce 100644
+--- a/src/backends/native/meta-gpu-kms.c
++++ b/src/backends/native/meta-gpu-kms.c
+@@ -297,7 +297,7 @@ update_modes (MetaGpuKms *gpu_kms)
+ }
+ 
+ static void
+-init_crtcs (MetaGpuKms *gpu_kms)
++sync_crtcs (MetaGpuKms *gpu_kms)
+ {
+   MetaGpu *gpu = META_GPU (gpu_kms);
+   MetaKmsDevice *kms_device = gpu_kms->kms_device;
+@@ -311,7 +311,13 @@ init_crtcs (MetaGpuKms *gpu_kms)
+       MetaKmsCrtc *kms_crtc = l->data;
+       MetaCrtcKms *crtc_kms;
+ 
+-      crtc_kms = meta_crtc_kms_new (gpu_kms, kms_crtc);
++      /* Kernel IDs can be reused after a driver reload. Match the resource
++       * object, not its numeric ID, and preserve unchanged CRTC wrappers. */
++      crtc_kms = meta_crtc_kms_from_kms_crtc (kms_crtc);
++      if (crtc_kms)
++        g_object_ref (crtc_kms);
++      else
++        crtc_kms = meta_crtc_kms_new (gpu_kms, kms_crtc);
+ 
+       crtcs = g_list_append (crtcs, crtc_kms);
+     }
+@@ -379,6 +385,7 @@ meta_gpu_kms_read_current (MetaGpu  *gpu,
+ {
+   MetaGpuKms *gpu_kms = META_GPU_KMS (gpu);
+ 
++  sync_crtcs (gpu_kms);
+   update_modes (gpu_kms);
+   update_outputs (gpu_kms);
+ 
+@@ -404,8 +411,6 @@ meta_gpu_kms_new (MetaBackendNative  *backend_native,
+ 
+   gpu_kms->kms_device = kms_device;
+ 
+-  init_crtcs (gpu_kms);
+-
+   meta_gpu_kms_read_current (META_GPU (gpu_kms), NULL);
+ 
+   return gpu_kms;
+diff --git a/src/backends/native/meta-kms-connector-private.h b/src/backends/native/meta-kms-connector-private.h
+index 16ecb17..8e6b339 100644
+--- a/src/backends/native/meta-kms-connector-private.h
++++ b/src/backends/native/meta-kms-connector-private.h
+@@ -140,6 +140,8 @@ MetaKmsResourceChanges meta_kms_connector_update_state_in_impl (MetaKmsConnector
+ 
+ void meta_kms_connector_disable_in_impl (MetaKmsConnector *connector);
+ 
++void meta_kms_connector_retire_in_impl (MetaKmsConnector *connector);
++
+ MetaKmsResourceChanges meta_kms_connector_predict_state_in_impl (MetaKmsConnector *connector,
+                                                                MetaKmsUpdate    *update);
+ 
+diff --git a/src/backends/native/meta-kms-connector.c b/src/backends/native/meta-kms-connector.c
+index 1a69a63..8a3d442 100644
+--- a/src/backends/native/meta-kms-connector.c
++++ b/src/backends/native/meta-kms-connector.c
+@@ -1365,6 +1365,27 @@ meta_kms_connector_disable_in_impl (MetaKmsConnector *connector)
+   current_state->current_crtc_id = 0;
+ }
+ 
++void
++meta_kms_connector_retire_in_impl (MetaKmsConnector *connector)
++{
++  MetaKmsImpl *impl = meta_kms_impl_device_get_impl (connector->impl_device);
++
++  meta_assert_in_kms_impl (meta_kms_impl_get_kms (impl));
++
++  /* Main-thread output objects may still reference this old resource. Drop
++   * its implementation-thread work and FD hold before that final reference
++   * can disappear on another thread. Do not touch a returning kernel object. */
++  if (connector->connection_change_timeout)
++    {
++      g_source_destroy (connector->connection_change_timeout);
++      g_clear_pointer (&connector->connection_change_timeout, g_source_unref);
++    }
++  connector->connection = DRM_MODE_DISCONNECTED;
++  connector->pending_connection = DRM_MODE_DISCONNECTED;
++  meta_kms_connector_disable_in_impl (connector);
++  sync_fd_held (connector, connector->impl_device);
++}
++
+ MetaKmsResourceChanges
+ meta_kms_connector_predict_state_in_impl (MetaKmsConnector *connector,
+                                           MetaKmsUpdate    *update)
+diff --git a/src/backends/native/meta-kms-cursor-manager.c b/src/backends/native/meta-kms-cursor-manager.c
+index caec412..872a157 100644
+--- a/src/backends/native/meta-kms-cursor-manager.c
++++ b/src/backends/native/meta-kms-cursor-manager.c
+@@ -109,8 +109,8 @@ crtc_state_impl_new (MetaKmsCursorManagerImpl *cursor_manager_impl,
+   crtc_state_impl = g_new0 (CrtcStateImpl, 1);
+   g_atomic_ref_count_init (&crtc_state_impl->ref_count);
+   crtc_state_impl->cursor_manager_impl = cursor_manager_impl;
+-  crtc_state_impl->crtc = crtc;
+-  crtc_state_impl->cursor_plane = cursor_plane;
++  crtc_state_impl->crtc = g_object_ref (crtc);
++  g_set_object (&crtc_state_impl->cursor_plane, cursor_plane);
+   crtc_state_impl->layout = layout;
+   crtc_state_impl->scale = scale;
+   crtc_state_impl->buffer = buffer;
+@@ -134,6 +134,8 @@ crtc_state_impl_unref (CrtcStateImpl *crtc_state_impl)
+       g_warn_if_fail (!crtc_state_impl->pending_buffer);
+       g_warn_if_fail (!crtc_state_impl->active_buffer);
+       g_warn_if_fail (!crtc_state_impl->presenting_buffer);
++      g_clear_object (&crtc_state_impl->crtc);
++      g_clear_object (&crtc_state_impl->cursor_plane);
+       g_free (crtc_state_impl);
+     }
+ }
+diff --git a/src/backends/native/meta-kms-device-private.h b/src/backends/native/meta-kms-device-private.h
+index 11c6d09..c143233 100644
+--- a/src/backends/native/meta-kms-device-private.h
++++ b/src/backends/native/meta-kms-device-private.h
+@@ -27,6 +27,8 @@ MetaKmsResourceChanges meta_kms_device_update_states_in_impl (MetaKmsDevice *dev
+                                                               uint32_t       crtc_id,
+                                                               uint32_t       connector_id);
+ 
++MetaKmsResourceChanges meta_kms_device_handle_removed_in_impl (MetaKmsDevice *device);
++
+ MetaKmsCrtc * meta_kms_device_find_crtc_in_impl (MetaKmsDevice *device,
+                                                  uint32_t       crtc_id);
+ 
+diff --git a/src/backends/native/meta-kms-device.c b/src/backends/native/meta-kms-device.c
+index 4dec048..e7b7f0f 100644
+--- a/src/backends/native/meta-kms-device.c
++++ b/src/backends/native/meta-kms-device.c
+@@ -256,6 +256,37 @@ meta_kms_device_disable (MetaKmsDevice *device)
+                                NULL);
+ }
+ 
++static void
++sync_resources_in_impl (MetaKmsDevice *device)
++{
++  MetaKmsImplDevice *impl_device = meta_kms_device_get_impl_device (device);
++  GHashTableIter iter;
++  gpointer crtc;
++
++  meta_assert_in_kms_impl (device->kms);
++  meta_assert_is_waiting_for_kms_impl_task (device->kms);
++
++  g_list_free (device->crtcs);
++  device->crtcs = meta_kms_impl_device_copy_crtcs (impl_device);
++
++  g_list_free (device->connectors);
++  device->connectors = meta_kms_impl_device_copy_connectors (impl_device);
++
++  g_list_free (device->planes);
++  device->planes = meta_kms_impl_device_copy_planes (impl_device);
++
++  device->caps = *meta_kms_impl_device_get_caps (impl_device);
++
++  g_mutex_lock (&device->needs_flush_mutex);
++  g_hash_table_iter_init (&iter, device->needs_flush_crtcs);
++  while (g_hash_table_iter_next (&iter, &crtc, NULL))
++    {
++      if (!g_list_find (device->crtcs, crtc))
++        g_hash_table_iter_remove (&iter);
++    }
++  g_mutex_unlock (&device->needs_flush_mutex);
++}
++
+ MetaKmsResourceChanges
+ meta_kms_device_update_states_in_impl (MetaKmsDevice *device,
+                                        uint32_t       crtc_id,
+@@ -269,18 +300,23 @@ meta_kms_device_update_states_in_impl (MetaKmsDevice *device,
+ 
+   changes = meta_kms_impl_device_update_states (impl_device, crtc_id,
+                                                 connector_id);
++  if (changes != META_KMS_RESOURCE_CHANGE_NONE)
++    sync_resources_in_impl (device);
+ 
+-  if (changes == META_KMS_RESOURCE_CHANGE_NONE)
+-    return changes;
++  return changes;
++}
+ 
+-  g_list_free (device->crtcs);
+-  device->crtcs = meta_kms_impl_device_copy_crtcs (impl_device);
++MetaKmsResourceChanges
++meta_kms_device_handle_removed_in_impl (MetaKmsDevice *device)
++{
++  MetaKmsResourceChanges changes;
+ 
+-  g_list_free (device->connectors);
+-  device->connectors = meta_kms_impl_device_copy_connectors (impl_device);
++  meta_assert_in_kms_impl (device->kms);
++  meta_assert_is_waiting_for_kms_impl_task (device->kms);
+ 
+-  g_list_free (device->planes);
+-  device->planes = meta_kms_impl_device_copy_planes (impl_device);
++  changes = meta_kms_impl_device_invalidate_scanout (device->impl_device);
++  if (changes != META_KMS_RESOURCE_CHANGE_NONE)
++    sync_resources_in_impl (device);
+ 
+   return changes;
+ }
+@@ -388,8 +424,12 @@ emit_crtc_needs_flush_in_main (MetaThread *thread,
+                                gpointer    user_data)
+ {
+   MetaKmsCrtc *crtc = user_data;
++  MetaKmsDevice *device = meta_kms_crtc_get_device (crtc);
++
++  if (!g_list_find (meta_kms_device_get_crtcs (device), crtc))
++    return;
+ 
+-  g_signal_emit (meta_kms_crtc_get_device (crtc),
++  g_signal_emit (device,
+                  signals[CRTC_NEEDS_FLUSH], 0, crtc);
+ }
+ 
+@@ -406,7 +446,8 @@ meta_kms_device_set_needs_flush (MetaKmsDevice *device,
+   if (needs_flush)
+     {
+       meta_kms_queue_callback (meta_kms_device_get_kms (device),
+-                               NULL, emit_crtc_needs_flush_in_main, crtc, NULL);
++                               NULL, emit_crtc_needs_flush_in_main,
++                               g_object_ref (crtc), g_object_unref);
+     }
+ }
+ 
+diff --git a/src/backends/native/meta-kms-impl-device.c b/src/backends/native/meta-kms-impl-device.c
+index e8915c1..178f74d 100644
+--- a/src/backends/native/meta-kms-impl-device.c
++++ b/src/backends/native/meta-kms-impl-device.c
+@@ -128,6 +128,7 @@ typedef struct _MetaKmsImplDevicePrivate
+   int sync_file;
+ 
+   gboolean updates_inhibited;
++  gboolean resources_invalid;
+ } MetaKmsImplDevicePrivate;
+ 
+ static void
+@@ -136,6 +137,8 @@ initable_iface_init (GInitableIface *iface);
+ static CrtcFrame * get_crtc_frame (MetaKmsImplDevice *impl_device,
+                                    MetaKmsCrtc       *latch_crtc);
+ 
++static void disarm_all_frame_sources (MetaKmsImplDevice *impl_device);
++
+ G_DEFINE_TYPE_WITH_CODE (MetaKmsImplDevice, meta_kms_impl_device,
+                          G_TYPE_OBJECT,
+                          G_ADD_PRIVATE (MetaKmsImplDevice)
+@@ -619,7 +622,7 @@ init_crtcs (MetaKmsImplDevice *impl_device,
+       if (!drm_crtc)
+         {
+           g_warning ("Failed to get CRTC %u info on '%s': %s",
+-                     crtc_id, priv->path, error->message);
++                     crtc_id, priv->path, g_strerror (errno));
+           continue;
+         }
+ 
+@@ -722,6 +725,11 @@ update_connectors (MetaKmsImplDevice *impl_device,
+                   g_list_length (connectors));
+     }
+ 
++  for (GList *l = priv->connectors; l; l = l->next)
++    {
++      if (!g_list_find (connectors, l->data))
++        meta_kms_connector_retire_in_impl (l->data);
++    }
+   g_list_free_full (priv->connectors, g_object_unref);
+   priv->connectors = g_list_reverse (g_steal_pointer (&connectors));
+ 
+@@ -1125,6 +1133,36 @@ clear_latched_fd_hold (MetaKmsImplDevice *impl_device)
+     }
+ }
+ 
++MetaKmsResourceChanges
++meta_kms_impl_device_invalidate_scanout (MetaKmsImplDevice *impl_device)
++{
++  MetaKmsImplDevicePrivate *priv =
++    meta_kms_impl_device_get_instance_private (impl_device);
++  gboolean was_invalid = priv->resources_invalid;
++  GList *l;
++
++  meta_assert_in_kms_impl (meta_kms_impl_get_kms (priv->impl));
++  g_return_val_if_fail (priv->flags & META_KMS_DEVICE_FLAG_SCANOUT_ONLY,
++                        META_KMS_RESOURCE_CHANGE_NONE);
++
++  /* A remove event invalidates the previous incarnation even if its pathname
++   * already exists again by the time this task runs. Do not reopen it here. */
++  disarm_all_frame_sources (impl_device);
++  g_hash_table_remove_all (priv->crtc_frames);
++  for (l = priv->connectors; l; l = l->next)
++    meta_kms_connector_retire_in_impl (l->data);
++  g_clear_list (&priv->planes, g_object_unref);
++  g_clear_list (&priv->crtcs, g_object_unref);
++  g_clear_list (&priv->connectors, g_object_unref);
++  g_clear_fd (&priv->sync_file, NULL);
++  priv->sync_file_retrieved = FALSE;
++  priv->resources_invalid = TRUE;
++  clear_latched_fd_hold (impl_device);
++
++  return was_invalid ? META_KMS_RESOURCE_CHANGE_NONE :
++                       META_KMS_RESOURCE_CHANGE_FULL;
++}
++
+ MetaKmsResourceChanges
+ meta_kms_impl_device_update_states (MetaKmsImplDevice *impl_device,
+                                     uint32_t           crtc_id,
+@@ -1166,7 +1204,31 @@ meta_kms_impl_device_update_states (MetaKmsImplDevice *impl_device,
+       goto err;
+     }
+ 
+-  changes = update_connectors (impl_device, drm_resources, connector_id);
++  changes = META_KMS_RESOURCE_CHANGE_NONE;
++  if (priv->resources_invalid)
++    {
++      /* A returning scanout-only device has new kernel objects, even if its
++       * pathname and numeric IDs are unchanged. Rebuild all resources before
++       * publishing connectors to the monitor manager. */
++      memset (&priv->caps, 0, sizeof (priv->caps));
++      init_caps (impl_device);
++      init_crtcs (impl_device, drm_resources);
++      init_planes (impl_device);
++      if (g_list_length (priv->crtcs) != drm_resources->count_crtcs ||
++          (priv->crtcs && !priv->planes))
++        {
++          g_warning ("Incomplete returning KMS resources for '%s'", priv->path);
++          meta_thread_uninhibit_realtime_in_impl (thread);
++          drmModeFreeResources (drm_resources);
++          goto err;
++        }
++      priv->resources_invalid = FALSE;
++      connector_id = 0;
++      crtc_id = 0;
++      changes = META_KMS_RESOURCE_CHANGE_FULL;
++    }
++
++  changes |= update_connectors (impl_device, drm_resources, connector_id);
+ 
+   for (l = priv->crtcs; l; l = l->next)
+     {
+@@ -1189,6 +1251,9 @@ meta_kms_impl_device_update_states (MetaKmsImplDevice *impl_device,
+   return changes;
+ 
+ err:
++  if (priv->flags & META_KMS_DEVICE_FLAG_SCANOUT_ONLY)
++    return meta_kms_impl_device_invalidate_scanout (impl_device);
++
+   g_clear_list (&priv->planes, g_object_unref);
+   g_clear_list (&priv->crtcs, g_object_unref);
+   g_clear_list (&priv->connectors, g_object_unref);
+@@ -2545,6 +2610,8 @@ meta_kms_impl_device_finalize (GObject *object)
+ 
+   meta_kms_impl_remove_impl_device (priv->impl, impl_device);
+ 
++  for (GList *l = priv->connectors; l; l = l->next)
++    meta_kms_connector_retire_in_impl (l->data);
+   g_list_free_full (priv->planes, g_object_unref);
+   g_list_free_full (priv->crtcs, g_object_unref);
+   g_list_free_full (priv->connectors, g_object_unref);
+diff --git a/src/backends/native/meta-kms-impl-device.h b/src/backends/native/meta-kms-impl-device.h
+index 9b02a3a..68ec978 100644
+--- a/src/backends/native/meta-kms-impl-device.h
++++ b/src/backends/native/meta-kms-impl-device.h
+@@ -174,6 +174,8 @@ MetaKmsResourceChanges meta_kms_impl_device_update_states (MetaKmsImplDevice *im
+                                                            uint32_t           crtc_id,
+                                                            uint32_t           connector_id);
+ 
++MetaKmsResourceChanges meta_kms_impl_device_invalidate_scanout (MetaKmsImplDevice *impl_device);
++
+ void meta_kms_impl_device_notify_modes_set (MetaKmsImplDevice *impl_device);
+ 
+ MetaKmsPlane * meta_kms_impl_device_add_fake_plane (MetaKmsImplDevice *impl_device,
+diff --git a/src/backends/native/meta-kms.c b/src/backends/native/meta-kms.c
+index 74cf277..68fd85e 100644
+--- a/src/backends/native/meta-kms.c
++++ b/src/backends/native/meta-kms.c
+@@ -323,11 +323,44 @@ on_udev_hotplug (MetaUdev    *udev,
+   meta_kms_update_resources (kms, hotplug_event, META_KMS_RESOURCE_CHANGE_NONE);
+ }
+ 
++static gpointer
++remove_scanout_device_in_impl (MetaThreadImpl  *thread_impl,
++                               gpointer         user_data,
++                               GError         **error)
++{
++  MetaKmsDevice *device = user_data;
++
++  return GUINT_TO_POINTER (meta_kms_device_handle_removed_in_impl (device));
++}
++
+ static void
+ on_udev_device_removed (MetaUdev    *udev,
+                         GUdevDevice *device,
+                         MetaKms     *kms)
+ {
++  const char *path = g_udev_device_get_device_file (device);
++  GList *l;
++
++  for (l = kms->devices; path && l; l = l->next)
++    {
++      MetaKmsDevice *kms_device = l->data;
++
++      if (g_strcmp0 (path, meta_kms_device_get_path (kms_device)) == 0 &&
++          (meta_kms_device_get_flags (kms_device) &
++           META_KMS_DEVICE_FLAG_SCANOUT_ONLY))
++        {
++          MetaKmsResourceChanges changes;
++          gpointer ret;
++
++          ret = meta_kms_run_impl_task_sync (kms, remove_scanout_device_in_impl,
++                                             kms_device, NULL);
++          changes = GPOINTER_TO_UINT (ret);
++          if (changes != META_KMS_RESOURCE_CHANGE_NONE)
++            meta_kms_emit_resources_changed (kms, changes);
++          return;
++        }
++    }
++
+   meta_kms_update_resources (kms, NULL, META_KMS_RESOURCE_CHANGE_NONE);
+ }
+ 
+diff --git a/src/backends/native/meta-output-kms.c b/src/backends/native/meta-output-kms.c
+index 05840eb..9dd2cf2 100644
+--- a/src/backends/native/meta-output-kms.c
++++ b/src/backends/native/meta-output-kms.c
+@@ -50,6 +50,7 @@ struct _MetaOutputKms
+   MetaOutputNative parent;
+ 
+   MetaKmsConnector *kms_connector;
++  GPtrArray *possible_crtcs;
+ };
+ 
+ G_DEFINE_TYPE (MetaOutputKms, meta_output_kms, META_TYPE_OUTPUT_NATIVE)
+@@ -590,7 +591,11 @@ meta_output_kms_new (MetaGpuKms        *gpu_kms,
+                          "info", output_info,
+                          NULL);
+   output_kms = META_OUTPUT_KMS (output);
+-  output_kms->kms_connector = kms_connector;
++  output_kms->kms_connector = g_object_ref (kms_connector);
++  output_kms->possible_crtcs = g_ptr_array_new_with_free_func (g_object_unref);
++  for (unsigned int i = 0; i < output_info->n_possible_crtcs; i++)
++    g_ptr_array_add (output_kms->possible_crtcs,
++                     g_object_ref (output_info->possible_crtcs[i]));
+ 
+   if (connector_state->current_crtc_id)
+     {
+@@ -653,12 +658,27 @@ meta_output_kms_init (MetaOutputKms *output_kms)
+ {
+ }
+ 
++static void
++meta_output_kms_finalize (GObject *object)
++{
++  MetaOutputKms *output_kms = META_OUTPUT_KMS (object);
++
++  if (meta_output_kms_from_kms_connector (output_kms->kms_connector) == output_kms)
++    meta_unlink_kms_connector (output_kms->kms_connector);
++  g_clear_object (&output_kms->kms_connector);
++  g_clear_pointer (&output_kms->possible_crtcs, g_ptr_array_unref);
++  G_OBJECT_CLASS (meta_output_kms_parent_class)->finalize (object);
++}
++
+ static void
+ meta_output_kms_class_init (MetaOutputKmsClass *klass)
+ {
++  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+   MetaOutputNativeClass *output_native_class = META_OUTPUT_NATIVE_CLASS (klass);
+   MetaOutputClass *output_class = META_OUTPUT_CLASS (klass);
+ 
++  object_class->finalize = meta_output_kms_finalize;
++
+   output_class->get_privacy_screen_state =
+     meta_output_kms_get_privacy_screen_state;
+   output_class->create_backlight = meta_output_kms_create_backlight;

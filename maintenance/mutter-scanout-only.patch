@@ -1,0 +1,201 @@
+diff --git a/src/backends/native/meta-backend-native.c b/src/backends/native/meta-backend-native.c
+index 61e9278..ff1ca95 100644
+--- a/src/backends/native/meta-backend-native.c
++++ b/src/backends/native/meta-backend-native.c
+@@ -440,6 +440,7 @@ meta_backend_native_update_stage (MetaBackend *backend)
+ static MetaRenderDevice *
+ create_render_device (MetaBackendNative  *backend_native,
+                       const char         *device_path,
++                      gboolean            scanout_only,
+                       GError            **error)
+ {
+   MetaBackend *backend = META_BACKEND (backend_native);
+@@ -467,6 +468,15 @@ create_render_device (MetaBackendNative  *backend_native,
+   if (!device_file)
+     return NULL;
+ 
++  if (scanout_only)
++    {
++      meta_device_file_tag (device_file, META_DEVICE_FILE_TAG_SCANOUT_ONLY, 1);
++      /* Do not try EGLStream as a fallback: it also initializes NVIDIA EGL. */
++      return META_RENDER_DEVICE (meta_render_device_gbm_new (backend,
++                                                             device_file,
++                                                             error));
++    }
++
+ #ifdef HAVE_EGL_DEVICE
+   if (g_strcmp0 (getenv ("MUTTER_DEBUG_FORCE_EGL_STREAM"), "1") != 0)
+ #endif
+@@ -546,6 +556,7 @@ add_drm_device (MetaBackendNative  *backend_native,
+   g_autoptr (MetaRenderDevice) render_device = NULL;
+   MetaKmsDevice *kms_device;
+   MetaGpuKms *gpu_kms;
++  gboolean scanout_only;
+ 
+   if (meta_is_udev_device_platform_device (device))
+     flags |= META_KMS_DEVICE_FLAG_PLATFORM_DEVICE;
+@@ -561,7 +572,26 @@ add_drm_device (MetaBackendNative  *backend_native,
+ 
+   device_path = g_udev_device_get_device_file (device);
+ 
+-  render_device = create_render_device (backend_native, device_path, error);
++  scanout_only =
++    g_udev_device_get_property_as_boolean (device, "MUTTER_DEVICE_SCANOUT_ONLY") ||
++    (device_path &&
++     g_strcmp0 (g_getenv ("MUTTER_DEBUG_SCANOUT_ONLY_DEVICE"), device_path) == 0);
++  if (scanout_only)
++    {
++      /* A scanout-only device cannot provide the primary EGL context. */
++      if (flags & META_KMS_DEVICE_FLAG_PREFERRED_PRIMARY)
++        {
++          g_set_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
++                       "A preferred primary GPU cannot be scanout-only");
++          return FALSE;
++        }
++      flags |= META_KMS_DEVICE_FLAG_SCANOUT_ONLY;
++      g_message ("Using DRM device '%s' for scanout only (no EGL or leases)",
++                 device_path);
++    }
++
++  render_device = create_render_device (backend_native, device_path,
++                                        scanout_only, error);
+   if (!render_device)
+     return FALSE;
+ 
+@@ -1060,6 +1090,21 @@ meta_backend_native_get_render_device (MetaBackendNative  *backend_native,
+     }
+   else
+     {
+-      return create_render_device (backend_native, device_path, error);
++      GList *l;
++      gboolean scanout_only = FALSE;
++
++      for (l = meta_kms_get_devices (priv->kms); l; l = l->next)
++        {
++          MetaKmsDevice *kms_device = l->data;
++
++          if (g_strcmp0 (meta_kms_device_get_path (kms_device), device_path) == 0)
++            {
++              scanout_only = !!(meta_kms_device_get_flags (kms_device) &
++                                META_KMS_DEVICE_FLAG_SCANOUT_ONLY);
++              break;
++            }
++        }
++      return create_render_device (backend_native, device_path,
++                                    scanout_only, error);
+     }
+ }
+diff --git a/src/backends/native/meta-device-pool.h b/src/backends/native/meta-device-pool.h
+index c5400ec..b68bb29 100644
+--- a/src/backends/native/meta-device-pool.h
++++ b/src/backends/native/meta-device-pool.h
+@@ -32,6 +32,7 @@ typedef enum _MetaDeviceFileFlags
+ typedef enum _MetaDeviceFileTags
+ {
+   META_DEVICE_FILE_TAG_KMS,
++  META_DEVICE_FILE_TAG_SCANOUT_ONLY,
+ 
+   META_DEVICE_FILE_N_TAGS,
+ } MetaDeviceFileTags;
+diff --git a/src/backends/native/meta-drm-lease.c b/src/backends/native/meta-drm-lease.c
+index f7a922e..d40868c 100644
+--- a/src/backends/native/meta-drm-lease.c
++++ b/src/backends/native/meta-drm-lease.c
+@@ -629,7 +629,16 @@ update_devices (MetaDrmLeaseManager  *lease_manager,
+   GList *new_devices;
+   GList *l;
+ 
+-  new_devices = g_list_copy (meta_kms_get_devices (kms));
++  new_devices = NULL;
++  for (l = meta_kms_get_devices (kms); l; l = l->next)
++    {
++      MetaKmsDevice *kms_device = l->data;
++
++      if (meta_kms_device_get_flags (kms_device) &
++          META_KMS_DEVICE_FLAG_SCANOUT_ONLY)
++        continue;
++      new_devices = g_list_append (new_devices, kms_device);
++    }
+ 
+   for (l = new_devices; l; l = l->next)
+     {
+@@ -680,6 +689,10 @@ update_connectors (MetaDrmLeaseManager  *lease_manager,
+     {
+       MetaKmsDevice *kms_device = l->data;
+ 
++      if (meta_kms_device_get_flags (kms_device) &
++          META_KMS_DEVICE_FLAG_SCANOUT_ONLY)
++        continue;
++
+       for (o = meta_kms_device_get_connectors (kms_device); o; o = o->next)
+         {
+           kms_connector = o->data;
+diff --git a/src/backends/native/meta-kms-types.h b/src/backends/native/meta-kms-types.h
+index 599b7e5..c055d26 100644
+--- a/src/backends/native/meta-kms-types.h
++++ b/src/backends/native/meta-kms-types.h
+@@ -64,6 +64,8 @@ typedef enum _MetaKmsDeviceFlag
+   META_KMS_DEVICE_FLAG_FORCE_LEGACY = 1 << 6,
+   META_KMS_DEVICE_FLAG_DISABLE_CLIENT_MODIFIERS = 1 << 7,
+   META_KMS_DEVICE_FLAG_SUPPORTS_COLOR_MODES = 1 << 8,
++  /* Opt-in secondary output device: no EGL contexts or client DRM leases. */
++  META_KMS_DEVICE_FLAG_SCANOUT_ONLY = 1 << 9,
+ } MetaKmsDeviceFlag;
+ 
+ typedef enum _MetaKmsResourceChanges
+diff --git a/src/backends/native/meta-render-device.c b/src/backends/native/meta-render-device.c
+index ec47cec..bfe6ada 100644
+--- a/src/backends/native/meta-render-device.c
++++ b/src/backends/native/meta-render-device.c
+@@ -156,6 +156,17 @@ meta_render_device_initable_init (GInitable     *initable,
+                                   GError       **error)
+ {
+   MetaRenderDevice *render_device = META_RENDER_DEVICE (initable);
++  MetaRenderDevicePrivate *priv =
++    meta_render_device_get_instance_private (render_device);
++
++  /* Some EGL implementations retain driver handles after eglTerminate().
++   * Keep these devices usable for GBM/dumb-buffer scanout, without ever
++   * initializing their EGL implementation in the compositor process.
++   */
++  if (priv->device_file &&
++      meta_device_file_has_tag (priv->device_file,
++                                META_DEVICE_FILE_TAG_SCANOUT_ONLY, 1))
++    return TRUE;
+ 
+   init_egl (render_device);
+ 
+diff --git a/src/backends/native/meta-renderer-native.c b/src/backends/native/meta-renderer-native.c
+index d53a298..fdaac41 100644
+--- a/src/backends/native/meta-renderer-native.c
++++ b/src/backends/native/meta-renderer-native.c
+@@ -205,6 +205,11 @@ meta_gbm_device_from_gpu (MetaGpuKms *gpu_kms)
+   MetaRenderDevice *render_device;
+   MetaRenderDeviceGbm *render_device_gbm;
+ 
++  /* Cursor buffers on scanout-only devices must use dumb allocations too. */
++  if (meta_kms_device_get_flags (meta_gpu_kms_get_kms_device (gpu_kms)) &
++      META_KMS_DEVICE_FLAG_SCANOUT_ONLY)
++    return NULL;
++
+   renderer_gpu_data = meta_renderer_native_get_gpu_data (renderer_native,
+                                                          gpu_kms);
+   render_device = renderer_gpu_data->render_device;
+@@ -2069,6 +2074,17 @@ create_renderer_gpu_data_gbm (MetaRendererNative *renderer_native,
+   renderer_gpu_data->render_device = render_device;
+   renderer_gpu_data->gpu_kms = gpu_kms;
+ 
++  if (meta_kms_device_get_flags (meta_gpu_kms_get_kms_device (gpu_kms)) &
++      META_KMS_DEVICE_FLAG_SCANOUT_ONLY)
++    {
++      /* Avoid even a speculative secondary GBM import/allocation. The primary
++       * GPU copies to a dumb scanout buffer, with the existing CPU fallback.
++       */
++      renderer_gpu_data->secondary.copy_mode =
++        META_SHARED_FRAMEBUFFER_COPY_MODE_PRIMARY;
++      return renderer_gpu_data;
++    }
++
+   init_secondary_gpu_data (renderer_gpu_data);
+   return renderer_gpu_data;
+ }
