@@ -1,5 +1,83 @@
 # Precision GPU maintenance checkpoint
 
+## REBUILD-MANAGED SETUP ACTIVE — generation159, 2026-09-12 19:02
+
+Current/saved159 rp29z4li9gsi65rlmrl5qmkg5cci8lnh. Full build and59 tests PASS;
+kernel/GNOME/GDM/udev unchanged; narrow dry preview then switch exit0. Root83214
+closed. No VM started or reboot/logout; original boot/recovery generations retained.
+New permanent user service precision-windows-guest-sync packaged by Nix and
+triggered on activation and VM launch. Actual activation invocation exited0 with
+'Windows is not running; helper will reconcile on its next launch.'
+
+Guest managed installer first failed safely when Task Scheduler left its legacy
+child; the fixed one-time migration stopped ONLY known7984130182FCE66A watcher.
+Actual new helper91D9319D83771278 and managed installer version
+ABC986CF71C44B5E0A7AAEC8385F4985D9BD48B2788996948B6CE1900C3FC22B installed
+and verified exactly one worker, with preference preserved. Later unchanged-run
+check refused because user had already closed Windows; no automatic VM restart.
+Next launch should report UNCHANGED, but that end-to-end no-op is not yet observed.
+
+Latest Gaming351771 exited0. HDMI was unplugged; sameGNOME339908/bus57473124...
+remained valid, CUDA passed, NVIDIA suspended. Old restore guard falsely reported
+missing HDMI as failure. New narrow rule verifies missing NVIDIA HDMI ONLY and
+every remaining display active/internal primary in same session; actual helper
+returned restored=true/changed=false/topologyChanged=true. Only after checking
+QEMU gone and NVIDIA bound/suspended, corrected its recorded stopped status.
+No GPU owner checks bypassed, no layout mutation. Failure evidence retained above.
+
+Merge these changes into /etc/nixos master; README/WINDOWS-GUIDE document the
+single rebuild command and existing Windows/QGA/drivers/disk/TPM prerequisites.
+Compiled helper executables are generated from repository source, not external
+manual dependencies. User confirmed ordinary display shortcuts; physical guest
+HDMI-unplug fallback still needs confirmation. No full-new-Windows-install claim.
+
+## AUDIO FALLBACK SAVED — generation158
+
+User confirmed normal laptop/HDMI shortcuts work, then reported no audio.
+Actual guest audio: Looking Glass USB Audio and Microphone Code10/error, existing
+High Definition Audio device/endpoints OK; services running. Client344856 selects
+USB Audio, no Linux audio stream. Pinned source explicitly disables HDA/SPICE
+playback when usbAudio=true, so no automatic fallback exists in this build.
+Added spice:usbAudio=no to Gaming launcher (not TI-Nspire);29 controller tests pass.
+Committed/merged ONLY audio change/test/guide into /etc/nixos master15cc773.
+Selector installer and checkpoint still uncommitted in worktree.
+Normal full build4w31y0gk1dbfapfnxwk9kill132razic, protected kernel/GNOME/GDM/udev
+identical; narrow dry-preview PASS; switch exit0. Saved system-158-link/current4w31.
+RootPTY44980 closed; no new privilege or autostart. Existing Gaming344844 untouched
+and still uses OLD viewer344856: user must cleanly close/relaunch Windows to use
+SPICE audio. No audible playback pass yet, no automatic VM cycle or host restart.
+
+## OUTPUT SELECTOR INSTALLED; USER HDMI SWITCH AND PERMISSION FIX
+
+Gaming344844 remains running. New helper compiled/installed inside guest:
+DisplayTopology-7984130182FCE66A.exe, startup task running, broker4780/worker4848.
+Two public desktop/Start shortcuts installed. User clicked HDMI; elevated launch
+worked. Logs validate/apply hdmi with remembered hdmi and NVIDIA physical target.
+Ordinary launch had insufficient preference permissions: .NET FileAccess.Write
+requests more than WriteData. Changed ONLY choice.txt Users permission to Write
+(no delete/parent-directory write/code write), live and installer source. No host
+rebuild, GPU changes, guest restart or automatic output cycle. Executable/scripts
+stay SYSTEM/Admin writable, Users read/execute. Source remains worktree-only,
+uncommitted/unmerged; generation155/master9bae983 unchanged.
+Still verify ordinary click, laptop return, unplug fallback, external input,
+remembered startup, helper reinstallation/shutdown cleanup before full claim.
+
+## HDMI OUTPUT SELECTOR DRAFT — pending running Windows
+
+User approved remembered laptop/physical-HDMI choice, switchable inside Windows,
+no mirroring. install-display.ps1 changed ONLY in isolated worktree, uncommitted,
+not installed or compiled yet. Adds model/connector-matched single-path selection,
+validated temporary topology, rollback, fixed scalar preference and two shortcuts.
+No host GPU handoff changes. User requested speed and no automatic VM cycles.
+Gaming343995 shut down18:34:44 while read-only monitor audit was in flight; audit
+lost its QGA connection and may have left its private temporary guest script.
+Selector install refused before staging because Windows already stopped. Existing
+Windows helper remains unchanged. Current status stopped/QEMUexit0, GPU and display
+recovery passed. Ask user to start Gaming and leave open before guest installation.
+Next: inspect new guest identity, compile/probe without changing output, inspect
+watcher lifetime/security/failure behavior, install only after validation. Still
+needs actual HDMI switch/input/return evidence; do not claim implemented success.
+
 ## USER-APPROVED REPOSITORY INTEGRATION — 2026-09-12
 
 User requests committing and merging the stable changes into /etc/nixos master.

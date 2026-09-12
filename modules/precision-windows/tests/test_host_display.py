@@ -27,6 +27,23 @@ class DisplayConfigurationTests(unittest.TestCase):
         self.assertEqual(result['logical'], [[0, 0, 1.0, 0, True, [['eDP-1', '1920x1080@60', {}]]]])
         self.assertEqual(result['layoutMode'], 1)
 
+    def test_hdmi_unplug_retains_valid_internal_layout(self):
+        self.snapshot['nvidiaHdmi'] = ['HDMI-1']
+        current = deepcopy(self.snapshot)
+        current['monitors'] = current['monitors'][:1]
+        current['logical'] = current['logical'][1:]
+        current['logical'][0][4] = True
+        self.assertTrue(display.safe_unplugged_layout(self.snapshot, current))
+        current['logical'][0][4] = False
+        self.assertFalse(display.safe_unplugged_layout(self.snapshot, current))
+
+    def test_unplug_exception_does_not_accept_missing_internal_panel(self):
+        self.snapshot['nvidiaHdmi'] = ['HDMI-1']
+        current = deepcopy(self.snapshot)
+        current['monitors'] = current['monitors'][1:]
+        current['logical'] = current['logical'][:1]
+        self.assertFalse(display.safe_unplugged_layout(self.snapshot, current))
+
     def test_snapshot_is_not_modified(self):
         before = deepcopy(self.snapshot)
         display.configuration(self.snapshot, {'HDMI-1'})

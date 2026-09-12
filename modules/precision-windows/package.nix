@@ -32,11 +32,14 @@ let
     controller = "/run/current-system/sw/bin/precision-windows";
     gpu_helper = "/run/current-system/sw/bin/precision-windows-gpu";
     host_display = "${hostDisplay}/bin/precision-host-display";
+    guest_display_installer = "${./guest/install-display.ps1}";
   });
 in pkgs.runCommand "precision-windows-1.0" { passthru = { inherit cudaProbe; }; } ''
   mkdir -p $out/bin $out/lib
   cp ${./controller.py} $out/bin/precision-windows
   cp ${./gpu.py} $out/bin/precision-windows-gpu
+  cp ${./guest_sync.py} $out/bin/precision-windows-guest-sync
+  cp ${./guest/qga-runner.py} $out/lib/qga-runner.py
   cp ${../precision-gpu-indicator/collector.py} $out/lib/collector.py
   cp ${./compositor_guard.py} $out/lib/compositor_guard.py
   for script in $out/bin/*; do

@@ -359,6 +359,12 @@ def run(mode):
         viewer = start_viewer(mode)
         status.update(state="running", qemu_pid=qemu.pid)
         save()
+        # Rebuild-managed guest integration; readiness wait happens separately,
+        # never blocking viewer input or clean shutdown handling.
+        sync = subprocess.run(['systemctl', '--user', 'start', '--no-block',
+                               'precision-windows-guest-sync.service'], check=False)
+        if sync.returncode:
+            notify('Windows started, but its display-helper update could not be scheduled.', True)
         with socket.socket(socket.AF_UNIX) as control:
             control.bind(str(RUNTIME / "control.sock"))
             control.listen(4)

@@ -1,4 +1,42 @@
-# Windows Gaming sign-in display fix
+# Windows Gaming output selection and automatic reconciliation
+
+## Current integration
+
+The Nix-owned installer is `modules/precision-windows/guest/install-display.ps1`.
+The packaged `precision-windows-guest-sync` command and corresponding user service
+reconcile it on rebuild activation and each VM launch, without starting a VM.
+QGA readiness is bounded90seconds; errors stop without an automatic retry loop.
+The helper version and executable/startup hashes are recorded in Windows in
+`managed-installation.json`; matching versions do not replace a running watcher.
+Shortcut targets and SYSTEM task identity are checked too. Your `choice.txt`
+preference is preserved. Missing helper files/shortcuts can be recreated from Nix.
+
+Inside Windows, normal desktop/Start shortcuts select **Windows on laptop** or
+**Windows on HDMI**. Exactly one output is active: no mirroring. NVIDIA identity
+and physical HDMI connector type distinguish HDMI from Looking Glass's virtual
+monitor. Missing HDMI falls back to the laptop without overwriting the preference.
+The helper checks every3seconds during Gaming; Light exits without display changes.
+Early firmware boot is not controlled by this helper and can still appear on HDMI.
+
+Only `choice.txt` is writable by ordinary users. Executables, scripts and parent
+directory stay SYSTEM/Administrator-writable, Users read/execute. The preference
+accepts only literal laptop/hdmi, never an executable path or command.
+Helper updates use a cooperative stop event, verify exactly one replacement
+watcher and keep a previous startup/task backup. One-time migration retires only
+the exact pre-reconciliation7984130182FCE66A legacy watcher, not Windows or apps.
+
+Logs: selection.log, selection-probe.log, startup.log, errors.txt. A failed layout
+apply attempts to restore the previous active layout and is not repeated for an
+unchanged request. The Windows display database is not rewritten. This is a
+permanent integration component, not temporary maintenance or automatic login.
+
+Keep Looking Glass open even with HDMI selected for input/audio and clean shutdown.
+Normal shortcut use is user-confirmed; physical HDMI unplug fallback still needs
+a manual check. Installer/reconciliation checks do not constitute a new VM cycle.
+
+The following notes describe the original internal-only helper and explain its
+origin. Its two-minute lifetime and manual-install command are historical; use
+`precision-windows-guest-sync` for an explicit reconcile of the current version.
 
 ## Why this guest-side helper exists
 

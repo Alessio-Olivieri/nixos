@@ -35,6 +35,18 @@ in
   # Those did not repair Mutter's stale GPU-add catalogue in the live test.
   home-manager.users.lexyo.dconf.settings."org/gnome/shell".enabled-extensions = lib.mkAfter [ "gpu-indicator@alessio.local" ];
   environment.systemPackages = [ windows lookingGlass pkgs.virt-viewer ];
+  systemd.user.services.precision-windows-guest-sync = {
+    description = "Reconcile the Nix-owned display helper in the existing Windows guest";
+    wantedBy = [ "default.target" ];
+    restartTriggers = [ windows ];
+    unitConfig.ConditionUser = "lexyo";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${windows}/bin/precision-windows-guest-sync";
+      TimeoutStartSec = 420;
+      Restart = "no";
+    };
+  };
   # VFIO pins the 16 GiB guest RAM. Keep the user's ordinary soft limit,
   # but allow the Windows service to request its bounded 20 GiB allowance.
   systemd.services."user@1001" = {

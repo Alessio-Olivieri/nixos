@@ -34,12 +34,12 @@ def execute(arguments):
         "arg": ["-NoProfile", "-NonInteractive"] + arguments,
         "capture-output": True,
     })
-    for _ in range(300):
+    for _ in range(int(os.environ.get('PRECISION_GUEST_COMMAND_TIMEOUT', '300'))):
         result = rpc(socket, "guest-exec-status", {"pid": process["pid"]})
         if result.get("exited"):
             return result
         time.sleep(1)
-    raise RuntimeError("Guest command is still running after five minutes; inspect before retrying")
+    raise RuntimeError("Guest command exceeded its time budget; inspect before retrying")
 
 
 def encoded(command):

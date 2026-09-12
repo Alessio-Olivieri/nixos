@@ -55,6 +55,24 @@ def nvidia_hdmi(sys=Path('/sys/bus/pci/devices/0000:01:00.0')):
             for p in sys.glob('drm/card*/card*-HDMI-A-*') if (p / 'status').exists()}
 
 
+def safe_unplugged_layout(original, current):
+    """Accept only missing NVIDIA HDMI with every remaining display active."""
+    old = {tuple(m[0]) for m in original['monitors']}
+    present = {tuple(m[0]) for m in current['monitors']}
+    missing = old - present
+    if not missing or present - old:
+        return False
+    if any(spec[0] not in original.get('nvidiaHdmi', []) for spec in missing):
+        return False
+    active = {tuple(spec) for logical in current['logical'] for spec in logical[5]}
+    primaries = [logical for logical in current['logical'] if logical[4]]
+    if active != present or len(primaries) != 1 or not any(
+            spec[0].startswith('eDP-') for spec in primaries[0][5]):
+        return False
+    configuration(current)  # Validate current modes; never apply stale ones.
+    return True
+
+
 def bridge(action, value=None):
     args = ['@gjs@', '-m', '@bridge@', action]
     if value is not None:
@@ -88,6 +106,10 @@ def main():
         if any(not original.get(key) or original.get(key) != current.get(key)
                for key in ('displayOwner', 'displayBusId', 'shellPid')):
             raise RuntimeError('GNOME session changed; refusing to restore a previous session layout')
+        if safe_unplugged_layout(original, current):
+            print(json.dumps({'restored': True, 'changed': False, 'topologyChanged': True,
+                              'reason': 'NVIDIA HDMI unplugged; retained valid current Linux layout'}))
+            return
         # Never apply an old identity/mode to a different newly plugged monitor.
         available = {tuple(spec): {mode[0] for mode in modes}
                      for spec, modes, _ in current['monitors']}

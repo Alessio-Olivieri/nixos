@@ -4,12 +4,12 @@
 active. Two physical Gaming GPU-return cycles preserved the same GNOME session,
 restored both Linux displays and passed host CUDA; the user also reports their
 manual tests working. Automatic TI-Nspire forwarding is now the default in both
-modes. Physical HDMI output selection for Windows remains unfinished.
+modes. Windows now includes remembered laptop/HDMI output shortcuts, without mirroring.
 Current evidence and repair status are in [the report](maintenance/FINAL-REPORT.md).
 
 The two launchers use the existing Windows installation, disk, OVMF variables and TPM. Choose a mode before starting Windows; another launch is refused while it is running.
 
-- **Windows — Gaming** passes NVIDIA to Windows, with Looking Glass on the Intel desktop. Linux HDMI is temporarily released, then restored after Windows actually stops. Physical HDMI output selection for Windows remains unfinished. The exact mapped compositor and GPU-owner safety checks remain mandatory.
+- **Windows — Gaming** passes NVIDIA to Windows. Inside Windows, double-click **Windows on laptop** or **Windows on HDMI**; no administrator prompt. The choice is remembered. If HDMI is absent, Looking Glass is the fallback without forgetting your preference. Linux HDMI returns after Windows stops. Compositor and GPU-owner safety checks remain mandatory.
 - **Windows — Light** opens the normal virtual display. NVIDIA remains available to Linux, including Ollama.
 - **Windows — TI-Nspire USB** lets you pause or resume automatic calculator forwarding for the running Windows session. No selection is needed normally. The calculator was detected with Windows status OK/problem0, and the user confirmed it appeared in their application.
 
@@ -54,9 +54,26 @@ USB forwarding. A viewer already running needs a normal Windows shutdown/relaunc
 to take this setting. Select Speakers (High Definition Audio Device) in Windows
 for Linux speaker/headphone output; audible playback still needs user confirmation.
 
-The Windows startup helper `Precision Windows Gaming Display` fixes the pre-sign-in black screen by temporarily making Looking Glass the active display. It leaves Light alone and does not change your sign-in settings. Windows may briefly show a black frame during startup; the two tested fresh Gaming boots then displayed normally without a manual refresh. See [the display-fix guide](maintenance/WINDOWS-DISPLAY-FIX.md) for its repeatable installation and removal.
+The Windows startup helper follows the saved display choice and leaves Light
+alone. Early firmware boot may still appear on HDMI before Windows drivers load.
+Keep Looking Glass open even in HDMI mode for input/audio; closing it requests
+Windows shutdown. See [the display-fix guide](maintenance/WINDOWS-DISPLAY-FIX.md).
 
-The Linux configuration is declarative Nix. Windows drivers and the startup helper are installed inside the existing guest using repository scripts; they are not a purely declarative Nix-managed Windows system.
+Linux and the Windows helper version are Nix-managed. Rebuild packages the
+installer; `precision-windows-guest-sync.service` reconciles it in a running guest
+or after its next launch. Unchanged versions leave the watcher and preference
+alone. No manual copying, PowerShell installation or driver download is needed.
+
+This is plug-and-play for the **existing Windows installation**, not installation
+onto an empty disk. Its disk, OVMF variables, TPM, license, QEMU Guest Agent and
+signed NVIDIA/Looking Glass drivers remain preserved prerequisites. The compiled
+Windows helper executables are generated from repository source, not irreplaceable
+manually supplied binaries. The saved output choice is mutable user state.
+
+Guest sync never starts/reboots Windows, kills applications or retries endlessly.
+Inspect errors with `journalctl --user -u precision-windows-guest-sync.service`.
+After correcting an error, retry explicitly with
+`systemctl --user start precision-windows-guest-sync.service`.
 
 ## Configuration and recovery
 

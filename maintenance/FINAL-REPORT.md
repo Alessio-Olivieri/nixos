@@ -1,5 +1,34 @@
 # Precision GPU handoff — final maintenance report
 
+## Rebuild-managed integration — September12, latest
+
+The Windows output selector is now packaged by Nix. A bounded user service runs
+on activation and VM launch, waits for QGA and reconciles the protected helper,
+startup task and ordinary-user shortcuts. No manual copying of Windows helper
+executables is required; the executable is compiled from the versioned source.
+Your laptop/HDMI preference survives updates. Existing Windows installation,
+license, disk, firmware variables, TPM and signed drivers remain prerequisites.
+
+Live helper update passed without restarting Windows: the exact legacy watcher
+was retired, one new watcher started and the managed version recorded. The first
+attempt correctly refused a duplicate when Task Scheduler left the old child;
+the migration now handles that known legacy version and newer versions use a
+cooperative stop event. Both ordinary output shortcuts are user-confirmed.
+
+Audio now uses SPICE/HDA, not the failed emulated USB audio device. The next real
+Gaming launch logged SPICE and an active stereo stream to Linux's analog output.
+No numeric latency or sound-quality benchmark is claimed.
+
+The user's later HDMI-unplug/shutdown retained GNOME339908 and passed CUDA with
+NVIDIA suspended, but the strict layout guard falsely classified the absent
+monitor as failure. The new narrow rule accepts only missing NVIDIA HDMI with
+the same session and all remaining displays active, Intel panel primary. Its
+actual live validation returned restored=true/changed=false; no stale layout
+was applied. The recorded stopped state was corrected after this verification.
+59 Windows/controller/sync/display tests pass. No new automatic VM cycle/reboot.
+Physical guest HDMI-unplug fallback still needs user confirmation; the latest
+guest was closed before an unchanged-version reconciliation could be checked.
+
 ## Latest result — 2026-09-12 evening, generation155
 
 The later lifecycle repair supersedes the failures below. Same GNOME324023 with

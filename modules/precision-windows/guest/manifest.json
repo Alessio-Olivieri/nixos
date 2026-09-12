@@ -17,7 +17,7 @@
   "displayDirectory": "C:\\ProgramData\\PrecisionWindowsDisplay",
   "assumptions": [
     "Existing licensed Windows installation and its QEMU Guest Agent are preserved external state.",
-    "Gaming must already be running; provisioning never starts a VM, changes mode or reboots.",
+    "Windows must already be running; automatic helper reconciliation never starts a VM, changes mode or reboots. Light provisioning does not change its display.",
     "NVIDIA HDMI/mDP cannot host Linux displays during Gaming passthrough."
   ]
 }
