@@ -6,7 +6,7 @@ import runpy
 import sys
 import time
 
-controller = runpy.run_path("/home/lexyo/.local/state/precision-gpu-maintenance/windows-package/bin/precision-windows", run_name="guest_maintenance")
+controller = runpy.run_path("/run/current-system/sw/bin/precision-windows", run_name="guest_maintenance")
 rpc = controller["rpc"]
 socket = controller["RUNTIME"] / "agent.sock"
 script = "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8;\n" + Path(sys.argv[1]).read_text()

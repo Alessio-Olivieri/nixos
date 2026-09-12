@@ -90,6 +90,21 @@ gpu_to_linux() {
   log "Requested NVIDIA graphics and audio return to their Linux drivers."
 }
 
+apply_live_vm_limit() {
+  # This already running manager predates the declarative VFIO memlock limit.
+  # systemd re-exec restores its original limit, so bridge the current login
+  # only AFTER rebuild finishes. No logout or user-process restart is needed.
+  local manager_pid
+  if [[ -x /run/current-system/sw/bin/precision-windows ]] &&
+     /run/current-system/sw/bin/grep -q 'LimitMEMLOCK=8M:20G' /etc/systemd/system/user@1001.service.d/overrides.conf; then
+    manager_pid="$(/run/current-system/sw/bin/systemctl show user@1001.service -p MainPID --value)"
+    if [[ "$manager_pid" =~ ^[1-9][0-9]*$ ]]; then
+      /run/current-system/sw/bin/prlimit --pid "$manager_pid" --memlock=8388608:21474836480
+      log "Applied the configured 20 GiB VFIO hard limit to the existing user manager."
+    fi
+  fi
+}
+
 case "${1:-}" in
   set-tested-fallback)
     # Generation 145 completed the attended encrypted-boot/autologin/agent test.
@@ -99,7 +114,10 @@ case "${1:-}" in
   rebuild-switch|rebuild-boot|rebuild-test)
     require_worktree
     action="${1#rebuild-}"
-    exec /run/current-system/sw/bin/nixos-rebuild "$action" --flake "$worktree#precision" --show-trace
+    /run/current-system/sw/bin/nixos-rebuild "$action" --flake "$worktree#precision" --show-trace
+    if [[ "$action" == switch || "$action" == test ]]; then
+      apply_live_vm_limit
+    fi
     ;;
   set-oneshot)
     entry="${2:-}"
@@ -160,11 +178,12 @@ case "${1:-}" in
     ;;
   finalize)
     require_worktree
-    if /run/current-system/sw/bin/rg -q 'maintenance/bootstrap.nix' "$worktree/flake.nix"; then
+    if /run/current-system/sw/bin/grep -q 'maintenance/bootstrap.nix' "$worktree/flake.nix"; then
       log "Refusing finalization while the temporary bootstrap is imported."
       exit 2
     fi
     /run/current-system/sw/bin/nixos-rebuild switch --flake "$worktree#precision" --show-trace
+    apply_live_vm_limit
     /run/current-system/sw/bin/loginctl disable-linger "$user_name"
     # Clear the temporary EFI default override; use the new loader.conf default.
     /run/current-system/sw/bin/bootctl set-default ''

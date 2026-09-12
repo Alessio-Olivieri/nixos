@@ -21,6 +21,14 @@ in
   '';
   home-manager.users.lexyo.dconf.settings."org/gnome/shell".enabled-extensions = lib.mkAfter [ "gpu-indicator@alessio.local" ];
   environment.systemPackages = [ windows lookingGlass pkgs.virt-viewer ];
+  # VFIO pins the 16 GiB guest RAM. Keep the user's ordinary soft limit,
+  # but allow the Windows service to request its bounded 20 GiB allowance.
+  systemd.services."user@1001" = {
+    overrideStrategy = "asDropin";
+    restartIfChanged = false;
+    stopIfChanged = false;
+    serviceConfig.LimitMEMLOCK = "8M:20G";
+  };
   security.sudo.extraRules = [{
     users = [ "lexyo" ];
     runAs = "root";
@@ -44,6 +52,14 @@ in
       comment = "Basic Windows display; NVIDIA stays available to Linux";
       exec = "${windows}/bin/precision-windows light";
       icon = "distributor-logo-windows";
+      terminal = false;
+      categories = [ "System" ];
+    };
+    windows-usb = {
+      name = "Windows — TI-Nspire USB";
+      comment = "Choose a TI-Nspire CX II for the running Windows session";
+      exec = "${windows}/bin/precision-windows usb";
+      icon = "accessories-calculator";
       terminal = false;
       categories = [ "System" ];
     };

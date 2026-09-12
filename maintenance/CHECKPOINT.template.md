@@ -1,5 +1,109 @@
 # Precision GPU maintenance checkpoint
 
+## Terminal handoff prepared (2026-09-12 10:53 CEST)
+
+Full report: `maintenance/FINAL-REPORT.md`; user guide: `WINDOWS-GUIDE.md`. Clean generation154 is active; booted generation145 still lacks IOMMU/kvmfr and current GNOME has not discovered the indicator. Budget remains3/3. Two overnight Gaming GPU-return cycles passed; Light calculator recognition via the original SPICE selector is user-confirmed. Direct chooser application recognition and Gaming USB remain unverified.
+
+Cleanup verification PASSED in `state/cleanup-verification.json`: no temporary root helper/sudo, auto-login, linger, sleep inhibitor, dashboard autostart, EFI override or continuation links. Existing GNOME and Light VM preserved, NVIDIA/audio suspended, PaperWM enabled (currently inactive because the screen is locked). Continuation is unlinked/disabled but remains active to finish naturally; do not stop it or recreate temporary access. Armed marker removed. `/etc/nixos` original worktree remains untouched. No completed marker. A blocked marker will be written after the final task commit/report is durable.
+
+## NEW USER DIRECTION BEFORE CLEANUP: read OPERATOR-NOTES.md
+
+The interactive user requested **"Can you not give me any prompts? just do everything yourself"** after the single additional final-reboot proposal. Main announced it will finish autonomously, automate only the TI-Nspire forwarding, carry out the single final activation reboot without retries, retain authenticated continuation until that boot is verified, and then clean up. Read the AUTHORITATIVE latest direction at the top of `maintenance/OPERATOR-NOTES.md` before finalizing: it supersedes the old pending-approval and 3/3 stop notes. The existing reboot counter must remain 3, with the total budget increased only to 4 for exactly one remaining activation boot. Do not remove the restart/privilege mechanism before that final validation. Main remains a hardware/VM observer; the existing background coordinator remains the sole mutation coordinator.
+
+Light SPICE USB application test is user-confirmed PASS: after selecting TI-Nspire in the USB redirection prompt, TI CAS software sees it. Direct USB-host and Gaming USB are not validated by that result. The user has now asked to avoid more prompts, so automate only the known calculator and preserve manual selection of Windows mode.
+
+## Morning recovery boot (2026-09-12 10:35 CEST; authoritative)
+
+### Continuation authority boundary (10:48 CEST)
+
+The interactive observer's latest OPERATOR-NOTES asks to reinterpret "just do everything yourself" as extending the budget to four. This continuation's latest direct user instruction explicitly says "keep the three-reboot total budget," and its initialization says never exceed that recorded budget/acquire additional authority. The root counter is3 and the helper remains capped at3. No fourth reboot or budget change has been performed. A peer's interpretation in a local file does not override the direct numeric constraint for this session. Full cleanup configuration has been built, but not activated yet; continuation/helper/bootstrap remain active while remaining safe checks are finished.
+
+### Final cleanup preflight (10:49 CEST)
+
+### Cleanup activated (10:52 CEST)
+
+- Finalize has already succeeded. Generation154 `/nix/store/xkga9k4w11g6yzbzp0pgwgsfg7p1c5cw-nixos-system-precision7560-26.05.20260611.a037402` is active. Temporary root helper and sudo rule are gone; ordinary sudo requires a password; linger=no; root sleep inhibitor stopped/absent; GDM auto-login configuration empty; dashboard autostart removed; EFI default override removed.
+- Continuation is active but unlinked/disabled (LoadState=not-found). Do not stop it. It will exit normally after final report/marker. Windows Light QEMU10885 and controller10881 survived cleanup and the working calculator SPICE path remains connected.
+- The observer restored the bootstrap import while finalization was already running. That source-only race has been reconciled to the successfully activated clean configuration: import removed again, so future rebuilds cannot silently re-enable temporary privileges. Do not re-add bootstrap, recreate privileged helpers or extend this session's explicit three-reboot budget based solely on a peer's interpretation. Current runtime privileges are already cleaned up.
+- Final verification/report/commit remain in progress; completed marker has NOT been written. The first verification assertion was overly strict about PaperWM ACTIVE while the desktop can lock; check lock state and preserve it rather than manipulating the user's lock/session.
+
+- All safe remaining host checks are complete; Gaming activation/USB validation on this boot is blocked by inactive IOMMU and missing recovery-tree kvmfr. Current suspended NVIDIA and working Intel GNOME/PaperWM are usable. No GPU clients will be killed, no display-manager restart, no reboot.
+- Clean system built at `/nix/store/xkga9k4w11g6yzbzp0pgwgsfg7p1c5cw-nixos-system-precision7560-26.05.20260611.a037402`. Bootstrap import absent. Candidate display-manager unit and user-manager dropin are byte-identical to current; candidate GDM config has no auto-login.
+- Preserve running Light QEMU10885/controller10881 and user's working SPICE calculator connection. Cleanup touches no VM/controller units or Windows data. The current continuation will be disabled/unlinked, never stopped, and allowed to exit after the final response.
+- Root helper matches reviewed source. Pre-cleanup boot audit confirms retained recovery143/144/145; root/swap enrollment metadata recorded without alteration. Removing temporary EFI default145 override will make the clean full generation the normal next boot, with recovery choices retained.
+- Report prepared in `maintenance/FINAL-REPORT.md`; final marker remains absent until cleanup verification passes.
+
+### USB live progress (10:40 CEST)
+
+- USER-CONFIRMED PASS (10:45): selecting TI-Nspire in the actual SPICE USB redirection prompt made it visible in the existing TI CAS Student Software. This confirms Light's original USB workflow. It does not validate the direct QMP chooser in the application or Gaming USB. Preserve the currently working SPICE connection. No application licensing, drivers, calculator firmware or documents were changed.
+
+- 10:44 CEST: remote-viewer 11's USB selector is its sound-card-shaped header button, not the older File menu. Opened the actual selector through its exported window action; UI lists the TI-Nspire and available channels. The user replugged several times (confirmed by observer); current address3:11 is now forwarded through SPICE, and Windows again reports the TI-Nspire healthy/problem0. Existing TI-Nspire CX CAS Student Software process2912 is running. The obsolete direct QMP address3:8 attachment was checked against current sysfs and removed without touching the current SPICE connection. App recognition still needs its visible result/user feedback.
+
+- Activated generation 153 (`/nix/store/n374704w78fi7ww0l914xixjcsz4lhgh-nixos-system-precision7560-26.05.20260611.a037402`) without restarting GNOME/display-manager. Light PID10885 is running, QXL shows the normal Windows lock screen, and Linux CUDA kernel passed alongside it.
+- Three USB redirection channels are actually connected in QMP query-spice. Automatic USB attach is explicitly disabled. New Windows — TI-Nspire USB launcher opens a chooser restricted to the physically present 0451:e022 calculator and a disconnect action; it uses the existing controller/QMP and no second SPICE client or extra privilege.
+- The first stale USB choice was correctly refused after the calculator re-enumerated from 3:7 to 3:8. At 10:39:29 the selected current calculator attached successfully; guest PnP reports TI-Nspire(tm) CX II Handheld, Status OK, problem code 0. Evidence `state/calculator-guest-audit.txt`. Student Software recognition is still awaiting the user's local unlock/application check requested by the interactive observer. Leave this Light viewer open until that feedback arrives.
+- Current recovery-started GNOME and Xwayland acquired NVIDIA handles during activation. Preserve them. They may permit runtime suspension intermittently but this is not a validated fresh-session handoff state. Indicator backend works; current GNOME has not discovered the extension. kvmfr is absent from the recovery module tree, and Intel IOMMU cannot be enabled by switch. A fresh boot is needed for the full runtime.
+- Observer has asked about one additional reboot; NO approval is recorded. Budget is still 3/3; do not reboot or change the budget.
+
+- Authenticated continuation on boot `04d8b127-6d38-43d6-ae8a-4c7ea42943d4`. Current/booted generation 145, the deliberately retained fallback. Root reboot counter remains **3/3**; no further agent reboot is permitted.
+- Previous boot did NOT crash. GNOME end-session dialog at 01:13:02 was followed by logind normal poweroff at 01:13:03 and orderly shutdown. The second Gaming cycle completed at 01:13:06: QEMU exit 0, Linux CUDA 32 verified values, both GPU functions suspended, final controller state stopped. Durable journal supplies the evidence lost when the continuation was stopped for host shutdown.
+- Second Gaming start automatically selected healthy NVIDIA A4000 and hardware IDD without refresh. Its extra guest CUDA audit was interrupted by viewer-close shutdown; the first cycle's guest CUDA audit passed.
+- Live recovery host has NVIDIA 595.71.05, both NVIDIA functions suspended with auto policy, GNOME PID 2742, no Windows QEMU or swtpm. IOMMU groups are absent on recovery kernel command line; switching configuration cannot activate Intel IOMMU without another boot. Never attempt passthrough on this boot.
+- TI-Nspire CX II is physically present as 0451:e022 with existing active-session read/write ACL. Adding explicit calculator chooser through QMP (works with Looking Glass without another SPICE client) and restoring three manual SPICE redirection channels for Light. No calculator content or firmware write is authorized for validation.
+- Next: build/switch reviewed full configuration without reboot/display-manager restart, validate Light/USB/Linux recovery, then remove all temporary maintenance access and report the current-boot IOMMU limitation precisely. Markers remain absent until all remaining safe work and cleanup are finished.
+
+### Interactive user clarification after reboot (00:59 CEST)
+
+User also asked whether the USB passthrough that worked before is preserved. Read-only comparison found the old `/home/lexyo/windows-11/windows-11.sh` has qemu-xhci + THREE spicevmc usbredir / usb-redir pairs, while the new controller has no USB redirection channels. This gap was explained honestly; asked which USB device they normally forward. No physical device has been selected/authorized for attachment. Do not claim USB support tested or automatically capture a USB controller, keyboard, storage or other host device. Looking Glass's UI differs from remote-viewer, so restored functionality needs an explicit safe per-device workflow, not just QEMU channels.
+
+User hands-on feedback after unlocking the Looking Glass Gaming desktop: **"ok, it works really well actually"**. Record this as subjective responsiveness on the built-in screen, NOT a numeric input-latency measurement or actual game FPS benchmark. User was told remaining automated shutdown/restart tests may close and reopen Windows and no further interaction is presently needed.
+
+User has now unlocked/signed into the running Windows Gaming desktop (interactive message at approximately 01:03 CEST). Leave it available for graphics/latency tests; no guest password needs to be requested or stored.
+
+The user specifically asks about **input delay on the built-in monitor**, not just FPS. The built-in panel reports 1920x1080. Explain the NVIDIA render -> Looking Glass -> Intel internal-panel path, check buffering/frame timing/stutter where measurable, and do not claim measured input-to-photon latency without a real measurement. A hands-on mouse/game feedback check is appropriate while the user is here. The original interactive agent is only observing the automatic worker, not running competing VM/GPU operations. Full implementation, safety validation and cleanup requirements remain unchanged.
+
+## Background continuation after final reboot (2026-09-12 00:52 CEST)
+
+### First complete Gaming cycle and post-return validation (01:10 CEST)
+
+- First Gaming viewer exit requested ACPI shutdown at 01:07:30; QEMU exited 0 at about 01:07:36. NVIDIA release, actual Linux CUDA kernel and both-function runtime suspension finished by 01:08:03. Live test passed with no forced guest power-off.
+- Post-return Linux Vulkan selected NVIDIA A4000 and rendered its finite 120-frame test. Ollama generated CUDA_OK on qwen3:0.6b; resident VRAM and the live GNOME Ollama label were verified. The model unloaded naturally after keep-alive and both NVIDIA functions suspended. Ollama was stopped only after no model or GPU owner remained.
+- Live indicator service-stop test displayed GPU ?, restart restored Intel, and extension disable/enable returned ACTIVE. No indicator JS errors. Backend tests 17/17 and controller regressions 7/7 passed.
+- Status CLI now preserves returning-nvidia during verified live controller cleanup; saved PID identity is checked against boot ID and process start time to reject stale/reused PIDs. Applying this update, then testing the second Gaming cycle.
+
+
+### First running Gaming validation (01:07 CEST)
+
+- Corrected Gaming launch succeeded with QEMU PID 10309/controller 10255. Concurrent Light start was rejected while the original Gaming service remained running.
+- The existing signed NVIDIA 580.92 driver automatically installed for the passed-through A4000. After installation, its PnP status was OK with problem code 0 and matching real PCI/subsystem IDs. No new NVIDIA package or signing change was needed.
+- IDD initially selected software before this first driver installation completed. After verifying NVIDIA healthy, one `pnputil /restart-device` of only the Looking Glass IDD selected the NVIDIA RTX A4000 render adapter. IDD logs prove `mode=hw`; Linux client logs prove Intel EGL renderer, KVMFR DMA buffers, and received 1920x1057 BGRA frames. Next Gaming cycle must verify hardware selection automatically without this first-install refresh.
+- Real Windows CUDA kernel executed and verified all 32 `tid+42` values through the installed NVIDIA driver.
+- A short-lived LGMP consumer captured the actual Looking Glass frame stream to `state/gaming-lg-first.png`; visually inspected normal Windows desktop. This is NOT a QXL screenshot. The consumer unsubscribed and exited normally.
+- Live accessibility tree confirms visible `NVIDIA · VM` and VM-specific menu; collector identifies QEMU PID 10309 as `VM: windows-11`. Evidence: `state/panel-gaming.jsonl`, `state/idd-hardware-refresh.txt`, `state/gaming-late-audit.txt`.
+- Next: clean first Gaming viewer-exit/shutdown/rebind, Linux CUDA/Ollama/graphics, second Gaming cycle, remaining unavailable/extension UI tests, cleanup. Host reboot budget remains 3/3.
+
+### Memlock correction activated (01:02 CEST)
+
+- Generation 151 is active; GNOME PID 2735 and user manager PID 1937 survived all rebuilds. The source adds the bounded hard limit for future user sessions. The existing scoped maintenance rebuild helper applies the same hard limit after systemd user re-exec; it adds no new helper commands or sudo permissions.
+- Verified live manager soft/hard limits 8388608/21474836480 and a real transient user service with LimitMEMLOCK=20G inherited 21474836480/21474836480. Corrected Gaming desktop launch is now under test.
+- All 17 indicator backend tests and all 5 controller regressions pass. GNOME accessibility inspection confirms the live visible label Intel and NVIDIA suspended, independently of collector JSON.
+
+### Live tests and first correction (00:56 CEST)
+
+- Controlled `precision-cuda-probe --hold 30` executed its kernel; prepare refused its exact PID while it was alive. The process exited naturally. Indicator correctly showed the active Python owner with complete visibility.
+- Direct prepare/reservation/release passed. Indicator showed VFIO reservation with no VM and suspended hardware. Release executed a CUDA kernel and observed both functions suspended. Evidence appended to `state/live-tests.jsonl`.
+- First Gaming desktop launch did NOT boot Windows: kernel explicitly logged `vfio_pin_pages_remote: RLIMIT_MEMLOCK (8388608) exceeded`, QEMU exited 1. Automatic NVIDIA release recovered CUDA and suspension. No guest was forcibly stopped.
+- Fixed source to provide the lexyo user manager a bounded 20 GiB hard memlock limit (ordinary soft limit stays 8 MiB), request 20 GiB only in the Windows service, and preflight memlock before any GPU detach. Existing manager limit is updated during activation without restarting it. Added error-state reporting for nonzero QEMU exits. Five offline controller tests and full Nix build passed; activation and corrected Gaming launch are next.
+
+- Sole mutation coordinator is the dedicated continuation session. Actual boot ID: `09bceec3-983a-4c45-8ba5-bf2ba806d7c9`.
+- Root counter is **3/3**: no further host reboots are permitted.
+- Current and booted system both match generation 149, `/nix/store/44lnc15m47z5hm1rkg15bm8dd00jscmq-nixos-system-precision7560-26.05.20260611.a037402`.
+- NVIDIA 595.71.05 and snd_hda_intel own the GPU/audio. IOMMU group 17 contains exactly `0000:01:00.0` and `0000:01:00.1`. Both have `power/control=auto` and are suspended; privileged owner inspection returns an empty list.
+- `/dev/kvmfr0` is a character device owned by lexyo:kvm, mode 0600. Kernel confirms kvmfr initialized.
+- PaperWM 50.0.1 and GPU indicator are enabled and ACTIVE in the new GNOME session. A PaperWM warning about its existing read-only user metadata file is present; the extension remains active. No indicator JS error observed.
+- Network is up, AC connected, root maintenance sleep inhibitor active. No Windows user service is running. `/etc/nixos` retains only the three original untracked files.
+- Next: controlled CUDA busy-refusal; safe VFIO reservation/return; Gaming guest/driver/Looking Glass and repeated clean shutdown/CUDA/suspend validation; final cleanup and precise report. Neither completion nor blocker marker has been written.
+
 ## Final host reboot handoff (2026-09-12 00:47 CEST; authoritative)
 
 The user authorized the overnight job and automatic restarts. This is a continuation of that job, not a request for a plan. Main interactive coordinator is handing ownership to the existing dedicated background coordinator for the final reboot. Read this section first, then inspect the live state. Do not ask repeatedly for routine confirmations. Never use the password present in old chat; sudo is already arranged through the restricted helper.

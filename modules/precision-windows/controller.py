@@ -5,6 +5,7 @@ import fcntl
 import json
 import os
 from pathlib import Path
+import resource
 import signal
 import socket
 import subprocess
@@ -80,6 +81,10 @@ def qemu_arguments(mode):
             "-chardev", f"socket,id=chrtpm,path={RUNTIME}/swtpm.sock",
             "-tpmdev", "emulator,id=tpm0,chardev=chrtpm", "-device", "tpm-tis,tpmdev=tpm0",
             "-qmp", f"unix:{RUNTIME}/qmp.sock,server=on,wait=off", "-serial", "none"]
+    args += ["-device", "qemu-xhci,id=spicepass"]
+    for index in range(1, 4):
+        args += ["-chardev", f"spicevmc,id=usbredir{index},name=usbredir",
+                 "-device", f"usb-redir,chardev=usbredir{index},id=usbredirdev{index},bus=spicepass.0"]
     if mode == "gaming":
         args += ["-object", "memory-backend-file,id=looking-glass,mem-path=/dev/kvmfr0,size=128M,share=yes",
                  "-device", "ivshmem-plain,memdev=looking-glass",
@@ -97,8 +102,56 @@ def start_viewer(mode, force_spice=False):
     if mode == "gaming" and not force_spice:
         args = [CONFIG["looking_glass"], "lgmp:shmDevice=/dev/kvmfr0", f"spice:host={RUNTIME}/spice.sock", "spice:port=0"]
     else:
-        args = [CONFIG["viewer"], "--title", f"Windows — {mode.title()}", f"spice+unix://{RUNTIME}/spice.sock"]
+        args = [CONFIG["viewer"], "--title", f"Windows — {mode.title()}",
+                "--spice-usbredir-auto-redirect-filter=-1,-1,-1,-1,0",
+                "--spice-usbredir-redirect-on-connect=-1,-1,-1,-1,0",
+                f"spice+unix://{RUNTIME}/spice.sock"]
     return subprocess.Popen(args, env=env)
+
+
+def calculators():
+    devices = {}
+    for path in Path('/sys/bus/usb/devices').iterdir():
+        try:
+            if (path / 'idVendor').read_text().strip() != '0451' or (path / 'idProduct').read_text().strip() != 'e022':
+                continue
+            bus = int((path / 'busnum').read_text())
+            address = int((path / 'devnum').read_text())
+            devices[f'{bus}:{address}'] = (bus, address)
+        except (OSError, ValueError):
+            continue
+    return devices
+
+
+def calculator_action(selection):
+    # Invoked by the installation's single controller, with an exact per-device
+    # choice. No host controller passthrough, extra sudo, or second SPICE client.
+    if selection == 'disconnect':
+        rpc(RUNTIME / 'qmp.sock', 'device_del', {'id': 'ti-nspire'}, qmp=True)
+        return
+    devices = calculators()
+    if selection not in devices:
+        raise RuntimeError('The selected TI-Nspire CX II is no longer connected.')
+    bus, address = devices[selection]
+    if not os.access(f'/dev/bus/usb/{bus:03}/{address:03}', os.R_OK | os.W_OK):
+        raise RuntimeError('The desktop session cannot access this calculator. Reconnect it in the active login session.')
+    rpc(RUNTIME / 'qmp.sock', 'device_add', {
+        'driver': 'usb-host', 'id': 'ti-nspire', 'bus': 'spicepass.0',
+        'hostbus': bus, 'hostaddr': address, 'vendorid': 0x0451, 'productid': 0xe022,
+    }, qmp=True)
+
+
+def choose_calculator():
+    rows = []
+    for key in calculators():
+        rows += [key, f'Connect TI-Nspire CX II (USB {key})']
+    rows += ['disconnect', 'Disconnect TI-Nspire from Windows']
+    result = subprocess.run([CONFIG['chooser'], '--list', '--title=Windows — TI-Nspire USB',
+                             '--text=Select the calculator to connect or disconnect. Windows must already be running.',
+                             '--column=Device', '--column=Action', '--hide-column=1', '--print-column=1',
+                             '--width=620', '--height=280', *rows], capture_output=True, text=True)
+    if result.returncode == 0 and result.stdout.strip():
+        command('usb ' + result.stdout.strip())
 
 
 def external_vm_running():
@@ -117,7 +170,19 @@ def external_vm_running():
     return False
 
 
+def process_identity(pid):
+    try:
+        start = (Path('/proc') / str(int(pid)) / 'stat').read_text().rsplit(')', 1)[1].split()[19]
+        return [Path('/proc/sys/kernel/random/boot_id').read_text().strip(), start]
+    except (OSError, ValueError, TypeError, IndexError):
+        return None
+
+
 def run(mode):
+    if mode == "gaming":
+        soft, _ = resource.getrlimit(resource.RLIMIT_MEMLOCK)
+        if soft != resource.RLIM_INFINITY and soft < 18 * 1024**3:
+            raise RuntimeError("Windows Gaming requires at least 18 GiB of locked-memory allowance. Rebuild the Precision configuration and start it through the Gaming launcher; NVIDIA has not been detached.")
     STATE.mkdir(parents=True, exist_ok=True, mode=0o700)
     RUNTIME.mkdir(parents=True, exist_ok=True, mode=0o700)
     lock = (STATE / "installation.lock").open("w")
@@ -137,7 +202,7 @@ def run(mode):
         path = RUNTIME / name
         if path.is_socket():
             path.unlink()
-    status = {"mode": mode, "state": "starting", "pid": os.getpid()}
+    status = {"mode": mode, "state": "starting", "pid": os.getpid(), "process_identity": process_identity(os.getpid())}
     def save():
         temporary = STATE / "status.tmp"
         temporary.write_text(json.dumps(status) + "\n")
@@ -185,6 +250,12 @@ def run(mode):
                         command = connection.recv(1024).decode().strip()
                         if command == "shutdown":
                             request()
+                        elif command.startswith('usb '):
+                            try:
+                                calculator_action(command[4:])
+                                notify('TI-Nspire USB request accepted. Wait for Windows device detection before using it.')
+                            except Exception as error:
+                                notify('TI-Nspire USB: ' + str(error), True)
                         elif command in {"view", "console"} and (viewer is None or viewer.poll() is not None):
                             viewer = start_viewer(mode, command == "console")
                             status["state"] = "running"
@@ -254,10 +325,13 @@ def run(mode):
                 save()
                 notify("Windows stopped, but NVIDIA recovery needs attention: " + str(error), True)
                 raise
-        status["state"] = "stopped"
+        status["state"] = "guest-failed" if qemu is not None and qemu.returncode else "stopped"
         save()
         (RUNTIME / "control.sock").unlink(missing_ok=True)
-        notify("Windows stopped. NVIDIA is available to Linux." if transferred else "Windows stopped.")
+        if status["state"] == "guest-failed":
+            notify(f"Windows exited with error {qemu.returncode}. See 'journalctl --user -u precision-windows'. NVIDIA has been returned to Linux." if transferred else f"Windows exited with error {qemu.returncode}. See 'journalctl --user -u precision-windows'.", True)
+        else:
+            notify("Windows stopped. NVIDIA is available to Linux." if transferred else "Windows stopped.")
 
 
 def command(action):
@@ -269,11 +343,13 @@ def command(action):
             path = STATE / "status.json"
             saved = json.loads(path.read_text()) if path.exists() else {"state": "not-started"}
             if action == "status":
-                if saved.get("state") not in {"stopped", "not-started", "gpu-recovery-failed"}:
-                    saved = {"state": "controller-unavailable", "last_state": saved}
+                if saved.get("state") not in {"stopped", "not-started", "gpu-recovery-failed", "guest-failed"}:
+                    identity = saved.get("process_identity")
+                    if not identity or process_identity(saved.get("pid")) != identity:
+                        saved = {"state": "controller-unavailable", "last_state": saved}
                 print(json.dumps(saved))
                 return
-            if saved.get("state") in {"stopped", "not-started"}:
+            if saved.get("state") in {"stopped", "not-started", "guest-failed"}:
                 raise RuntimeError("Windows is stopped. Start Windows — Light or Windows — Gaming from the application menu; 'console' only reconnects to a running VM.") from None
             raise RuntimeError("The Windows controller is unavailable. Check 'precision-windows status' and 'journalctl --user -u precision-windows'; do not start another copy while QEMU is running.") from None
         connection.sendall(action.encode())
@@ -282,15 +358,18 @@ def command(action):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["gaming", "light", "status", "shutdown", "view", "console", "run"])
+    parser.add_argument("action", choices=["gaming", "light", "status", "shutdown", "view", "console", "usb", "run"])
     parser.add_argument("mode", nargs="?", choices=["gaming", "light"])
     args = parser.parse_args()
     if args.action in {"gaming", "light"}:
         result = subprocess.run(["systemd-run", "--user", "--collect", "--unit=precision-windows", "--service-type=exec",
+                                 *(["--property=LimitMEMLOCK=20G"] if args.action == 'gaming' else []),
                                  "--property=KillMode=process", "--property=TimeoutStopSec=infinity",
                                  "--property=SendSIGKILL=no", CONFIG["controller"], "run", args.action])
         if result.returncode:
             raise RuntimeError("Windows is already running or its service could not start. Use 'precision-windows view' to reopen it.")
+    elif args.action == "usb":
+        choose_calculator()
     elif args.action == "run":
         if not args.mode:
             parser.error("run requires gaming or light")

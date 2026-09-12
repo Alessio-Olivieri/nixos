@@ -7,6 +7,7 @@ let
     # Same QEMU firmware package as the existing Quickemu installation.
     firmware = "${pkgs.qemu}/share/qemu/edk2-x86_64-code.fd";
     viewer = "${pkgs.virt-viewer}/bin/remote-viewer";
+    chooser = "${pkgs.zenity}/bin/zenity";
     looking_glass = "${lookingGlass}/bin/looking-glass-client";
     notify = "${pkgs.libnotify}/bin/notify-send";
     modprobe = "${pkgs.kmod}/bin/modprobe";

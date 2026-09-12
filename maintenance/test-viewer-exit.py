@@ -17,7 +17,7 @@ import time
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--timeout', action='store_true')
 args = p.parse_args()
-c = runpy.run_path('/home/lexyo/.local/state/precision-gpu-maintenance/windows-package/bin/precision-windows', run_name='test_probe')
+c = runpy.run_path('/run/current-system/sw/bin/precision-windows', run_name='test_probe')
 status_path = c['STATE'] / 'status.json'
 status = json.loads(status_path.read_text())
 assert status['state'] == 'running', status

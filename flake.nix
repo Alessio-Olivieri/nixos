@@ -116,7 +116,6 @@
             ./precision-nvidia.nix
             ./precision-camera.nix
             ./precision-windows.nix
-            ./maintenance/bootstrap.nix
 
             home-manager.nixosModules.home-manager
             {
