@@ -35,6 +35,16 @@ in
   # Those did not repair Mutter's stale GPU-add catalogue in the live test.
   home-manager.users.lexyo.dconf.settings."org/gnome/shell".enabled-extensions = lib.mkAfter [ "gpu-indicator@alessio.local" ];
   environment.systemPackages = [ windows lookingGlass pkgs.virt-viewer ];
+  home-manager.users.lexyo.xdg.configFile."looking-glass/client.ini".source =
+    ./modules/precision-windows/looking-glass-client.ini;
+  home-manager.users.lexyo.home.activation.precisionLookingGlassCapture =
+    {
+      after = [ "writeBoundary" ];
+      before = [];
+      data = ''
+        $DRY_RUN_CMD ${pkgs.flatpak}/bin/flatpak permission-set gnome shortcuts-inhibitor looking-glass-client.desktop GRANTED
+      '';
+    };
   systemd.user.services.precision-windows-guest-sync = {
     description = "Reconcile the Nix-owned display helper in the existing Windows guest";
     wantedBy = [ "default.target" ];

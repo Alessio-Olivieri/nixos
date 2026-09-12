@@ -1,5 +1,23 @@
 # Precision GPU maintenance checkpoint
 
+## RIGHT CTRL CAPTURE CONFIGURED — 2026-09-12
+
+User requested capture toggle because this keyboard has no Scroll Lock.
+Added Nix-owned Looking Glass client.ini (Right Ctrl, keyboard grab enabled,
+automatic capture disabled) and a scoped Home Manager shortcut-permission grant.
+Installed identical user config immediately; native client --help actually loaded
+it and reported 97 = KEY_RIGHTCTRL / grabKeyboard=yes. Flatpak permission database
+reports looking-glass-client.desktop GRANTED; remote-viewer DENIED left unchanged.
+60 Python tests PASS; full Nix build m3ywlfzcsn4cwsw6ianv8cpf9p0y68f6 PASS.
+No root activation/reboot/logout/VM cycle. Next viewer reads the new config now;
+next ordinary rebuild adopts it declaratively. Physical pointer confinement and
+release remain a user test. PaperWM swipe blocking and native Windows multi-finger
+gesture forwarding are NOT implemented by this change.
+
+Earlier guest-sync no-op uncertainty is resolved: user journal at 19:09:58 reports
+UNCHANGED for managed helper ABC986CF...22B, preference preserved, successful
+reconciliation on a real subsequent VM launch. No additional VM cycle performed.
+
 ## REBUILD-MANAGED SETUP ACTIVE — generation159, 2026-09-12 19:02
 
 Current/saved159 rp29z4li9gsi65rlmrl5qmkg5cci8lnh. Full build and59 tests PASS;

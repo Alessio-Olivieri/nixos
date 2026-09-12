@@ -45,6 +45,18 @@ The GPU indicator reports Intel when both NVIDIA functions are runtime-suspended
 
 Looking Glass uses the pinned upstream development snapshot B7-826-236efcb1 with its matching signed Windows indirect display/input drivers and Linux kvmfr module. The internal-screen path is Windows NVIDIA rendering, shared memory, then Intel presentation. The user reported good responsiveness during hands-on testing; no numeric input-to-photon latency or game FPS was measured.
 
+### Pointer and keyboard capture (Gaming / Looking Glass)
+
+Click inside Windows, then **tap Right Ctrl** to capture the pointer and keyboard.
+Tap Right Ctrl again to release them to Linux. Before capture, ordinary hover
+input and crossing the window border remain available. Use Left Ctrl for Windows
+Ctrl shortcuts: Right Ctrl is reserved for Looking Glass's capture/menu controls.
+This is not a Windows shutdown command. The SPICE Light/recovery viewer is unchanged.
+Nix owns `~/.config/looking-glass/client.ini` and grants Looking Glass GNOME shortcut
+inhibition permission. Settings take effect when the next Looking Glass viewer starts.
+This does **not** implement PaperWM swipe blocking or native Windows multi-finger
+touchpad gestures; these remain separate from pointer/keyboard capture.
+
 Windows already has the working NVIDIA580.92 driver. Task Manager's Performance tab should show RTX A4000 in Gaming; NVIDIA is intentionally absent in Light. FurMark/OpenGL games belong in Gaming. Actual FurMark rendering and NVIDIA OpenGL4.6 context creation were verified; seeing QXL or Looking Glass as additional display adapters is normal.
 
 Audio uses the existing Windows High Definition Audio device over SPICE to Linux.

@@ -1,4 +1,5 @@
 import contextlib
+import configparser
 import io
 import json
 from pathlib import Path
@@ -12,6 +13,14 @@ from unittest.mock import Mock
 
 
 class OfflineControllerTests(unittest.TestCase):
+    def test_capture_config_uses_right_ctrl_without_automatic_capture(self):
+        settings = configparser.ConfigParser()
+        settings.read(Path(__file__).parents[1] / 'looking-glass-client.ini')
+        self.assertEqual(settings['input']['escapeKey'], 'KEY_RIGHTCTRL')
+        self.assertTrue(settings.getboolean('input', 'grabKeyboard'))
+        self.assertFalse(settings.getboolean('input', 'captureOnStart'))
+        self.assertFalse(settings.getboolean('input', 'captureOnFocus'))
+
     def test_gaming_viewer_uses_existing_spice_audio_not_failed_usb_audio(self):
         function = self.controller['start_viewer']
         with patch.dict(function.__globals__, {'CONFIG': {'looking_glass': 'looking-glass'}}):
