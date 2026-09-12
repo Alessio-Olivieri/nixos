@@ -204,7 +204,9 @@ def start_viewer(mode, force_spice=False):
         env.pop(key, None)
     env["DRI_PRIME"] = "pci-0000_00_02_0"
     if mode == "gaming" and not force_spice:
-        args = [CONFIG["looking_glass"], "lgmp:shmDevice=/dev/kvmfr0", f"spice:host={RUNTIME}/spice.sock", "spice:port=0"]
+        # This pinned client's emulated USB audio fails Windows start (Code 10).
+        # Use the existing healthy HDA device over SPICE instead, in both modes.
+        args = [CONFIG["looking_glass"], "lgmp:shmDevice=/dev/kvmfr0", f"spice:host={RUNTIME}/spice.sock", "spice:port=0", "spice:usbAudio=no"]
     else:
         args = [CONFIG["viewer"], "--title", f"Windows — {mode.title()}",
                 "--spice-usbredir-auto-redirect-filter=-1,-1,-1,-1,0",

@@ -47,6 +47,13 @@ Looking Glass uses the pinned upstream development snapshot B7-826-236efcb1 with
 
 Windows already has the working NVIDIA580.92 driver. Task Manager's Performance tab should show RTX A4000 in Gaming; NVIDIA is intentionally absent in Light. FurMark/OpenGL games belong in Gaming. Actual FurMark rendering and NVIDIA OpenGL4.6 context creation were verified; seeing QXL or Looking Glass as additional display adapters is normal.
 
+Audio uses the existing Windows High Definition Audio device over SPICE to Linux.
+The pinned Looking Glass client's emulated USB audio reported Windows Code10, so
+the launcher explicitly sets `spice:usbAudio=no`. This does not change TI-Nspire
+USB forwarding. A viewer already running needs a normal Windows shutdown/relaunch
+to take this setting. Select Speakers (High Definition Audio Device) in Windows
+for Linux speaker/headphone output; audible playback still needs user confirmation.
+
 The Windows startup helper `Precision Windows Gaming Display` fixes the pre-sign-in black screen by temporarily making Looking Glass the active display. It leaves Light alone and does not change your sign-in settings. Windows may briefly show a black frame during startup; the two tested fresh Gaming boots then displayed normally without a manual refresh. See [the display-fix guide](maintenance/WINDOWS-DISPLAY-FIX.md) for its repeatable installation and removal.
 
 The Linux configuration is declarative Nix. Windows drivers and the startup helper are installed inside the existing guest using repository scripts; they are not a purely declarative Nix-managed Windows system.

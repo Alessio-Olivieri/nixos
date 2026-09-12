@@ -12,6 +12,13 @@ from unittest.mock import Mock
 
 
 class OfflineControllerTests(unittest.TestCase):
+    def test_gaming_viewer_uses_existing_spice_audio_not_failed_usb_audio(self):
+        function = self.controller['start_viewer']
+        with patch.dict(function.__globals__, {'CONFIG': {'looking_glass': 'looking-glass'}}):
+            with patch('subprocess.Popen') as launch:
+                function('gaming')
+        self.assertIn('spice:usbAudio=no', launch.call_args.args[0])
+
     def setUp(self):
         with patch.object(Path, 'read_text', return_value='{}'):
             self.controller = runpy.run_path(str(Path(__file__).parents[1] / 'controller.py'), run_name='controller_test')
