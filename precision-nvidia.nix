@@ -327,10 +327,10 @@ in
 
       [BATTERY]
       Update_Rate_s: 30
-      PL1_Tdp_W: 7
-      PL1_Duration_s: 28
-      PL2_Tdp_W: 15
-      PL2_Duration_S: 2
+      PL1_Tdp_W=15
+      PL1_Duration_s=28
+      PL2_Tdp_W=25
+      PL2_Duration_S=0.002
       Trip_Temp_C: 65
     '';
   };
