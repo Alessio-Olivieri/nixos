@@ -210,6 +210,8 @@ in
     hotspot #For visualizing perf.data
     chromium
     pkgsUnstable.codex
+
+    prismlauncher
     ];
 
 
