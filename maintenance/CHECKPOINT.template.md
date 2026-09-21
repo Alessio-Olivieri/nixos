@@ -1,5 +1,18 @@
 # Precision GPU maintenance checkpoint
 
+## INTEL-FIRST DESKTOP POLICY — 2026-09-21, PENDING DEPLOYMENT
+
+Discord held NVIDIA device handles even though its DRM accounting showed Intel and
+both NVIDIA PCI functions were D3cold. This correctly blocks Gaming handoff, but
+the old indicator wording made that look like active NVIDIA usage. Added staged
+declarative loader policy: session defaults restrict EGL/Vulkan to Intel; custom
+`nvidia-offload` reverses those selectors for deliberate games; and a user Discord
+desktop override applies Intel-only immediately after switch. It preserves
+finegrained runtime PM and all GPU owner gates. User ran the full build command;
+it emitted only existing Home Manager VSCode warnings and no Nix build error, but
+the separately pasted `--print-out-paths` produced a harmless shell error. Need
+switch, relaunch Discord, then verify no NVIDIA FDs and Gaming preflight.
+
 ## RIGHT CTRL CAPTURE CONFIGURED — 2026-09-12
 
 User requested capture toggle because this keyboard has no Scroll Lock.

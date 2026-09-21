@@ -128,7 +128,7 @@ export default class GpuIndicator extends Extension {
         this._line(String(status.detail || ''), true);
         if (apps.length) {
             this._indicator.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-            this._line('Applications holding the GPU', true);
+            this._line('Open NVIDIA connections (not GPU usage)', true);
             for (const app of apps.slice(0, 12)) {
                 const pids = Array.isArray(app.pids) ? app.pids.slice(0, 4).join(', ') : '';
                 const more = Number(app.pid_count) > 4 ? ', …' : '';

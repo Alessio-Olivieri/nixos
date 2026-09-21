@@ -43,6 +43,15 @@ journalctl --user -u precision-windows
 
 The GPU indicator reports Intel when both NVIDIA functions are runtime-suspended, NVIDIA when awake, and sanitized application names when observable. VFIO reservation is distinct from an identified running VM. GPU ? indicates missing/stale data. Device handles indicate ownership, not GPU utilization. The collector does not poll NVML or nvidia-smi.
 
+Normal desktop programs are Intel-first: the desktop session restricts EGL and
+Vulkan discovery to Intel, so opening an Electron app such as Discord must not
+leave a speculative NVIDIA handle that blocks Gaming. Discord also has a
+declarative Intel-only launcher override for the current session. Use
+`nvidia-offload command …` only for a Linux game or other graphics program that
+you deliberately want on NVIDIA; it clears the Intel selection and chooses NVIDIA.
+CUDA services such as Ollama remain explicit NVIDIA users and must still be idle
+before Gaming can detach the GPU.
+
 Looking Glass uses the pinned upstream development snapshot B7-826-236efcb1 with its matching signed Windows indirect display/input drivers and Linux kvmfr module. The internal-screen path is Windows NVIDIA rendering, shared memory, then Intel presentation. The user reported good responsiveness during hands-on testing; no numeric input-to-photon latency or game FPS was measured.
 
 ### Pointer and keyboard capture (Gaming / Looking Glass)

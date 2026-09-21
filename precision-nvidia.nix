@@ -204,6 +204,7 @@ in
   networking.hostName = lib.mkForce "precision7560";
 
   imports =[
+    ./modules/precision-desktop-gpu.nix
     "${inputs.nixos-hardware}/common/cpu/intel"
     "${inputs.nixos-hardware}/common/gpu/intel/tiger-lake"
     
