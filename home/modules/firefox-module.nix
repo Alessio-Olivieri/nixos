@@ -17,6 +17,7 @@
   config = lib.mkIf config.firefox-module.enable {
     programs.firefox = {
       enable = true;
+      nativeMessagingHosts = [ (pkgs.callPackage ../packages/ab-download-manager.nix {}) ];
       policies = {
         DisableTelemetry = true;
         DisableFirefoxStudies = true;
@@ -58,6 +59,10 @@
           #   installation_mode = "force_installed";
           #   private_browsing = lock-true;
           # };
+          "firefox-integration@abdownloadmanager.com" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/ab-download-manager/latest.xpi";
+            installation_mode = "force_installed";
+          };
           "uBlock0@raymondhill.net" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
             installation_mode = "force_installed";

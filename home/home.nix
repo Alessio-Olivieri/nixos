@@ -33,6 +33,7 @@ in
     ./modules/obsidian-module.nix
     ./modules/thunderbird-module.nix
     ./modules/steam.nix
+    ./modules/zellij-module.nix
     ./modules/hide-waydroid.nix
     ./modules/submodules/dconf.nix 
     # ./modules/submodules/gnome-theme-switcher.nix
@@ -45,6 +46,7 @@ in
   firefox-module.enable=true;
   obsidian-module.enable = true;
   thunderbird-module.enable=false;
+  zellij-module.enable=true;
 
 
   services.syncthing = {
@@ -200,6 +202,7 @@ in
     pear-desktop
     ghostty
     filezilla
+    (pkgs.callPackage ./packages/ab-download-manager.nix {})
     obsidian
     localsend
 
