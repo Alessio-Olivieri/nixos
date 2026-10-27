@@ -187,6 +187,7 @@ def qemu_arguments(mode):
     # Match the calculator model, never a transient USB bus/address or a whole
     # host controller. QEMU watches for insertion/reinsertion while Windows runs.
     args += ["-device", "usb-host,id=ti-nspire,bus=spicepass.0,vendorid=0x0451,productid=0xe022"]
+    # DualShock controllers are reconciled individually after QMP is ready.
     for index in range(1, 4):
         args += ["-chardev", f"spicevmc,id=usbredir{index},name=usbredir",
                  "-device", f"usb-redir,chardev=usbredir{index},id=usbredirdev{index},bus=spicepass.0"]
@@ -214,6 +215,55 @@ def start_viewer(mode, force_spice=False):
                 "--spice-usbredir-redirect-on-connect=-1,-1,-1,-1,0",
                 f"spice+unix://{RUNTIME}/spice.sock"]
     return subprocess.Popen(args, env=env)
+
+
+def dualshock_devices():
+    devices = set()
+    for path in Path('/sys/bus/usb/devices').iterdir():
+        try:
+            if (path / 'idVendor').read_text().strip() != '054c' or (path / 'idProduct').read_text().strip() != '09cc':
+                continue
+            bus = int((path / 'busnum').read_text())
+            address = int((path / 'devnum').read_text())
+            if os.access(f'/dev/bus/usb/{bus:03}/{address:03}', os.R_OK | os.W_OK):
+                devices.add((bus, address))
+        except (OSError, ValueError):
+            continue
+    return devices
+
+
+def sync_dualshocks():
+    # Two wildcard usb-host entries can open the same physical device. Use
+    # distinct current addresses and rediscover them after every reconnection.
+    present = dualshock_devices()
+    request = lambda command, args: rpc(RUNTIME / 'qmp.sock', command, args, qmp=True)
+    slots = ('ps4-controller-1', 'ps4-controller-2')
+    nodes = {node['name'] for node in request('qom-list', {'path': '/machine/peripheral'})}
+    assigned = {}
+    removing = False
+    for name in (*slots, 'ps4-controller'):
+        if name not in nodes:
+            continue
+        path = '/machine/peripheral/' + name
+        identity = tuple(request('qom-get', {'path': path, 'property': prop}) for prop in ('hostbus', 'hostaddr'))
+        if name not in slots or identity not in present or identity in assigned.values():
+            request('device_del', {'id': name})
+            removing = True
+        else:
+            assigned[name] = identity
+    # device_del completes asynchronously. Reuse freed slots on the next pass.
+    if removing:
+        return
+    available = iter(sorted(present - set(assigned.values())))
+    for name in slots:
+        if name in assigned:
+            continue
+        identity = next(available, None)
+        if identity is None:
+            break
+        request('device_add', {'driver': 'usb-host', 'id': name, 'bus': 'spicepass.0',
+                               'hostbus': identity[0], 'hostaddr': identity[1],
+                               'vendorid': 0x054c, 'productid': 0x09cc})
 
 
 def calculators():
@@ -370,7 +420,18 @@ def run(mode):
             control.bind(str(RUNTIME / "control.sock"))
             control.listen(4)
             control.settimeout(0.5)
+            next_usb_sync = 0
+            usb_sync_error = None
             while qemu.poll() is None:
+                if status.get('state') == 'running' and time.monotonic() >= next_usb_sync:
+                    try:
+                        sync_dualshocks()
+                        usb_sync_error = None
+                    except Exception as error:
+                        if str(error) != usb_sync_error:
+                            print('DualShock USB: ' + str(error), flush=True)
+                        usb_sync_error = str(error)
+                    next_usb_sync = time.monotonic() + 2
                 try:
                     connection, _ = control.accept()
                     with connection:

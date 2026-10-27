@@ -119,12 +119,45 @@ class OfflineControllerTests(unittest.TestCase):
                 choose()
         command.assert_not_called()
 
-    def test_both_modes_automatically_forward_only_calculator_model(self):
+    def test_both_modes_automatically_forward_only_known_usb_models(self):
         function = self.controller['qemu_arguments']
         with patch.dict(function.__globals__, {'CONFIG': {'qemu': 'qemu', 'firmware': 'firmware'}}):
             for mode in ('light', 'gaming'):
                 devices = [arg for arg in function(mode) if arg.startswith('usb-host,')]
-                self.assertEqual(devices, ['usb-host,id=ti-nspire,bus=spicepass.0,vendorid=0x0451,productid=0xe022'])
+                self.assertEqual(devices, [
+                    'usb-host,id=ti-nspire,bus=spicepass.0,vendorid=0x0451,productid=0xe022',
+                ])
+
+    def test_two_controllers_attach_to_distinct_current_addresses(self):
+        action = self.controller['sync_dualshocks']
+        request = Mock(return_value=[])
+        with patch.dict(action.__globals__, {'dualshock_devices': lambda: {(3, 9), (3, 11)}, 'rpc': request}):
+            action()
+        additions = [call.args[2] for call in request.call_args_list if call.args[1] == 'device_add']
+        self.assertEqual([(x['hostbus'], x['hostaddr']) for x in additions], [(3, 9), (3, 11)])
+        self.assertEqual(len({x['id'] for x in additions}), 2)
+        self.assertTrue(all((x['vendorid'], x['productid']) == (0x054c, 0x09cc) for x in additions))
+
+    def test_controller_reconciliation_preserves_present_assignments(self):
+        action = self.controller['sync_dualshocks']
+        request = Mock(side_effect=[[{'name': 'ps4-controller-1'}, {'name': 'ps4-controller-2'}], 3, 11, 3, 9])
+        with patch.dict(action.__globals__, {'dualshock_devices': lambda: {(3, 9), (3, 11)}, 'rpc': request}):
+            action()
+        self.assertTrue(all(call.args[1] in ('qom-list', 'qom-get') for call in request.call_args_list))
+
+    def test_disconnected_controller_is_removed_before_slot_reuse(self):
+        action = self.controller['sync_dualshocks']
+        request = Mock(side_effect=[[{'name': 'ps4-controller-1'}], 3, 9, {}])
+        with patch.dict(action.__globals__, {'dualshock_devices': lambda: {(1, 5)}, 'rpc': request}):
+            action()
+        self.assertEqual(request.call_args.args[1:3], ('device_del', {'id': 'ps4-controller-1'}))
+
+    def test_no_connected_controller_never_attaches(self):
+        action = self.controller['sync_dualshocks']
+        request = Mock(return_value=[])
+        with patch.dict(action.__globals__, {'dualshock_devices': lambda: set(), 'rpc': request}):
+            action()
+        self.assertEqual(request.call_count, 1)
 
     def test_enable_auto_does_not_duplicate_existing_device(self):
         action = self.controller['calculator_action']

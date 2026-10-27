@@ -31,6 +31,10 @@ in
     ACTION!="remove", SUBSYSTEM=="drm", KERNEL=="card[0-9]*", ENV{ID_PATH}=="pci-0000:01:00.0", TAG-="mutter-device-preferred-primary", TAG-="mutter-device-ignore", ENV{MUTTER_HINTS}="", TAG+="seat", TAG+="master-of-seat"
     SUBSYSTEM=="kvmfr", KERNEL=="kvmfr0", OWNER="lexyo", GROUP="kvm", MODE="0600"
   '';
+  # Run before 73-seat-late.rules applies active-session access permissions.
+  services.udev.packages = [ (pkgs.writeTextDir "lib/udev/rules.d/70-precision-ds4.rules" ''
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="054c", ATTR{idProduct}=="09cc", TAG+="uaccess"
+  '') ];
   # Do not force connector off/detect or synthesize HOTPLUG during activation.
   # Those did not repair Mutter's stale GPU-add catalogue in the live test.
   home-manager.users.lexyo.dconf.settings."org/gnome/shell".enabled-extensions = lib.mkAfter [ "gpu-indicator@alessio.local" ];

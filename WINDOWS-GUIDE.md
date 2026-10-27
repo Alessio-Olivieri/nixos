@@ -16,7 +16,12 @@ The two launchers use the existing Windows installation, disk, OVMF variables an
 The automatic rule matches TI-Nspire CX II USB0451:e022 only, not a particular USB
 port or changing device address. It is present from startup in both modes and
 waits for the calculator if unplugged. QEMU handles subsequent reinsertions.
-Only one matching calculator is forwarded. Other USB devices remain manual via
+The DualShock 4 model USB054c:09cc also forwards automatically in both modes,
+from any USB port. Its USB device permissions use the active desktop session.
+Up to two matching DualShock 4 controllers and one calculator are forwarded.
+The VM controller discovers each gamepad separately and updates its USB address
+after reconnection, without assigning both slots to the same physical gamepad.
+Player ordering can change after reconnecting. Other USB devices remain manual via
 Light's USB selector; do not also select the calculator there. No physical USB
 controller is assigned to Windows. This uses QEMU's documented
 [vendor/product USB matching](https://www.qemu.org/docs/master/system/devices/usb).
