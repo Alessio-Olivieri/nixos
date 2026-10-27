@@ -30,6 +30,15 @@ def active_displays():
             and collector.read_text(path.parent / 'status') == 'connected']
 
 
+def verify_display_device():
+    # CUDA and PCI binding can succeed even when nvidia_drm reports
+    # "Failed to allocate NvKmsKapiDevice". Require its primary DRM node.
+    cards = [p for p in (SYS / '0000:01:00.0' / 'drm').glob('card*')
+             if p.name[4:].isdigit() and (p / 'dev').exists()]
+    if not cards:
+        raise RuntimeError('NVIDIA display recovery failed: no DRM card registered for 0000:01:00.0; inspect the kernel journal. CUDA alone does not verify display recovery')
+
+
 def device_targets():
     targets, vfio = set(), set()
     for bdf in DEVICES:
@@ -151,6 +160,7 @@ def restore(run_probe=True):
         saved.unlink()
     if any(v != DEVICES[k][1] for k, v in drivers().items()):
         raise RuntimeError("NVIDIA did not return to Linux; no additional reset will be attempted")
+    verify_display_device()
     if run_probe:
         subprocess.run([CONFIG["cuda_probe"]], timeout=40, check=True)
         deadline = time.monotonic() + 60

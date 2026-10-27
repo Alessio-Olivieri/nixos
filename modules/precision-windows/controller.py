@@ -352,7 +352,7 @@ def run(mode):
         if (STATE / 'status.json').exists():
             previous = json.loads((STATE / 'status.json').read_text())
             if previous.get('state') in {'gpu-recovery-failed', 'display-recovery-failed'}:
-                raise RuntimeError('A previous Gaming recovery failed. Inspect and repair it before another launch; no automatic retry.')
+                raise RuntimeError('Previous Linux GPU/display recovery failed: ' + str(previous.get('error', previous['state'])) + '\nInspect and repair recovery before another Gaming launch; this record does not imply that Windows crashed.')
     STATE.mkdir(parents=True, exist_ok=True, mode=0o700)
     RUNTIME.mkdir(parents=True, exist_ok=True, mode=0o700)
     lock = (STATE / "installation.lock").open("w")

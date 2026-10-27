@@ -22,6 +22,16 @@ class PassiveDisplayTests(unittest.TestCase):
         self.active = self.gpu['active_displays']
         self.active.__globals__.update(SYS=root)
 
+    def test_missing_display_device_fails_even_with_connectors(self):
+        with self.assertRaisesRegex(RuntimeError, 'no DRM card'):
+            self.gpu['verify_display_device']()
+
+    def test_registered_display_device_passes_without_waking_gpu(self):
+        (self.connector.parent / 'dev').write_text('226:0\n')
+        with patch('subprocess.run') as command:
+            self.gpu['verify_display_device']()
+        command.assert_not_called()
+
     def test_connected_but_disabled_is_not_active(self):
         self.assertEqual(self.active(), [])
 
