@@ -155,13 +155,14 @@ def finish_status(status, qemu, transferred, snapshot):
 
 
 def qemu_arguments(mode):
-    # Preserve the existing Quickemu guest's chipset, CPU topology, storage
-    # controller, NIC model/MAC, OVMF code/variables and swtpm identity.
+    # Preserve the existing Quickemu guest's chipset, storage controller, NIC
+    # model/MAC, OVMF code/variables and swtpm identity.
+    # Expose 15 shared vCPUs in one socket; host CPUs remain unpinned.
     args = [CONFIG["qemu"], "-name", "windows-11,process=windows-11,debug-threads=on",
             "-machine", "q35,hpet=off,smm=on,vmport=off,accel=kvm",
             "-global", "kvm-pit.lost_tick_policy=discard", "-global", "ICH9-LPC.disable_s3=1",
             "-cpu", "host,+hypervisor,+invtsc,l3-cache=on,migratable=no,hv_passthrough",
-            "-smp", "cores=4,threads=2,sockets=1", "-m", "16G" if mode == "gaming" else "8G",
+            "-smp", "cpus=15,cores=15,threads=1,sockets=1", "-m", "16G" if mode == "gaming" else "8G",
             "-rtc", "base=localtime,clock=host,driftfix=slew", "-vga", "none",
             "-device", "qxl-vga,xres=1280,yres=800,ram_size=65536,vram_size=65536,vgamem_mb=64",
             "-display", "none", "-spice", f"disable-ticketing=on,unix=on,addr={RUNTIME}/spice.sock",
