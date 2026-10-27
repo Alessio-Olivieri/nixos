@@ -174,6 +174,17 @@
           modules = [
             ./configuration.nix
             ./hardware-configuration.nix
+            {
+              boot.initrd.luks.devices.data = {
+                device = "/dev/disk/by-partuuid/e2b46e38-c51c-4e6e-82bf-554565b65bd5";
+                crypttabExtraOpts = [ "tpm2-device=auto" "nofail" ];
+              };
+              fileSystems."/mnt/data" = {
+                device = "/dev/mapper/data";
+                fsType = "ext4";
+                options = [ "nofail" ];
+              };
+            }
             ./precision-nvidia.nix
             ./precision-camera.nix
             ./precision-windows.nix
