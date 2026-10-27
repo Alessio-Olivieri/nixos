@@ -187,10 +187,13 @@ def main():
         if sys.argv[1] == "inspect":
             validate()
             print(json.dumps({"drivers": drivers(), "owners": owners()}))
-        elif sys.argv[1] == "prepare":
-            prepare()
         else:
-            restore()
+            from sleep_guard import inhibit_sleep
+            with inhibit_sleep():
+                if sys.argv[1] == "prepare":
+                    prepare()
+                else:
+                    restore()
 
 
 if __name__ == "__main__":

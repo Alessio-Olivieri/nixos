@@ -37,6 +37,34 @@ class OfflineControllerTests(unittest.TestCase):
         self.function = self.controller['command']
         self.function.__globals__.update(STATE=self.root, RUNTIME=self.root)
 
+    def test_gaming_run_holds_sleep_guard_until_run_returns(self):
+        main = self.controller['main']
+        events = []
+        @contextlib.contextmanager
+        def guard():
+            events.append('locked')
+            try:
+                yield
+            finally:
+                events.append('released')
+        def run(mode):
+            self.assertEqual(events, ['locked'])
+            events.append(mode)
+        with patch.dict(main.__globals__, {'run': run}):
+            with patch('sys.argv', ['precision-windows', 'run', 'gaming']):
+                with patch('runpy.run_path', return_value={'inhibit_sleep': guard}):
+                    main()
+        self.assertEqual(events, ['locked', 'gaming', 'released'])
+
+    def test_light_run_does_not_acquire_sleep_guard(self):
+        main = self.controller['main']
+        run = Mock()
+        with patch.dict(main.__globals__, {'run': run}):
+            with patch('sys.argv', ['precision-windows', 'run', 'light']):
+                with patch('runpy.run_path', side_effect=AssertionError('Light inhibited sleep')):
+                    main()
+        run.assert_called_once_with('light')
+
     def test_stale_socket_console_explains_stopped_guest(self):
         (self.root / 'status.json').write_text('{"state":"stopped"}')
         with socket.socket(socket.AF_UNIX) as stale:

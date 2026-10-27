@@ -1,5 +1,6 @@
 { lib, pkgs, lookingGlass ? import ./looking-glass.nix { inherit pkgs; }, gamingEnabled ? false, requiredMutter ? null }:
 let
+  python = pkgs.python3.withPackages (ps: [ ps.dbus-python ]);
   cudaProbe = pkgs.writeScriptBin "precision-cuda-probe" ("#!${pkgs.python3}/bin/python3 -I\n" + lib.removePrefix "#!/usr/bin/env python3\n" (builtins.readFile ./cuda_probe.py));
   hostDisplay = pkgs.runCommand "precision-host-display" {} ''
     mkdir -p $out/bin $out/lib/tests
@@ -42,9 +43,10 @@ in pkgs.runCommand "precision-windows-1.0" { passthru = { inherit cudaProbe; }; 
   cp ${./guest/qga-runner.py} $out/lib/qga-runner.py
   cp ${../precision-gpu-indicator/collector.py} $out/lib/collector.py
   cp ${./compositor_guard.py} $out/lib/compositor_guard.py
+  cp ${./sleep_guard.py} $out/lib/sleep_guard.py
   for script in $out/bin/*; do
     substituteInPlace "$script" \
-      --replace-fail '#!/usr/bin/env python3' '#!${pkgs.python3}/bin/python3 -I' \
+      --replace-fail '#!/usr/bin/env python3' '#!${python}/bin/python3 -I' \
       --replace-fail '@config@' '${cfg}' \
       --replace-fail '@lib@' "$out/lib"
     chmod +x "$script"

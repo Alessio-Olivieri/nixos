@@ -569,7 +569,12 @@ def main():
     elif args.action == "run":
         if not args.mode:
             parser.error("run requires gaming or light")
-        run(args.mode)
+        if args.mode == 'gaming':
+            guard = runpy.run_path('@lib@/sleep_guard.py')['inhibit_sleep']
+            with guard():
+                run(args.mode)
+        else:
+            run(args.mode)
     else:
         command(args.action)
 
