@@ -215,6 +215,7 @@ in
     chromium
     pkgsUnstable.codex
 
+    (pkgsUnstable.callPackage ./packages/geteduroam.nix {})
     prismlauncher
     ];
 
