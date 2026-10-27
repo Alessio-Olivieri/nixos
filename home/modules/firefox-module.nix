@@ -32,6 +32,12 @@
         OverridePostUpdatePage = "";
         DontCheckDefaultBrowser = true;
         Preferences = {
+            # Confirm before closing multiple tabs or using the quit shortcut.
+            "browser.warnOnQuit" = lock-true;
+            "browser.warnOnQuitShortcut" = lock-true;
+            "browser.tabs.warnOnClose" = lock-true;
+            "browser.sessionstore.warnOnQuit" = lock-true;
+
             "toolkit.legacyUserProfileCustomizations.stylesheets" = lock-true;
             "layers.acceleration.force-enabled" = lock-true;
             "gfx.webrender.all" = lock-true;
