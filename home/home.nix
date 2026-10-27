@@ -172,6 +172,7 @@ in
     zstd
     gnupg
     smile
+    anki
 
     nix-output-monitor
 
