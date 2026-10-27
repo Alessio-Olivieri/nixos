@@ -49,36 +49,34 @@ in
         default_mode = "normal";
       };
 
-      # AI-development workspace
-      layouts.codex = ''
-        layout {
-          default_tab_template {
-            children
-            pane size=1 borderless=true {
-              plugin location="zellij:compact-bar"
-            }
-          }
 
-          tab name="Codex" focus=true {
-            pane split_direction="vertical" {
-              pane size="65%" name="Codex"
-                   command="codex"
-                   start_suspended=true
+layouts.codex = ''
+  layout {
+    default_tab_template {
+      children
+      pane size=1 borderless=true {
+        plugin location="zellij:compact-bar"
+      }
+    }
 
-              pane size="35%"
-                   split_direction="horizontal" {
-                pane name="Tests"
-                pane name="Logs"
-              }
-            }
-          }
+    tab name="Codex" focus=true {
+      pane split_direction="vertical" {
+        pane size="65%" name="Codex" command="codex" start_suspended=true
 
-          tab name="Shell" {
-            pane
-          }
+        pane size="35%" split_direction="horizontal" {
+          pane name="Tests"
+          pane name="Logs"
         }
-      '';
+      }
+    }
+
+    tab name="Shell" {
+      pane
+    }
+  }
+'';
     };
+
 
     # Start or reattach to a project workspace.
     programs.bash.initExtra = ''
