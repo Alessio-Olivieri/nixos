@@ -123,13 +123,23 @@ range 0–200. A login1 SetBrightness request of 160 changed `brightness` to 160
 but `actual_brightness` stayed 200. Restored 200. GNOME Power exposes no Screen
 interface, and asusd also reports no usable display backlight.
 
-The optional **native-backlight** boot specialisation adds only
-`acpi_backlight=native` so AMD can try registering its native interface. It
-preserves ACPI and logs; it is an **untested candidate**, not a claimed fix.
-Select that entry only after saving work and agreeing on reboot timing. Then
-check /sys/class/backlight, GNOME's slider, physical keys and actual visual
-brightness, as well as new kernel errors. The ordinary entry remains available.
-Do not reload amdgpu or detach either display device in the live session.
+The native-backlight boot test added `acpi_backlight=native`. It exposed
+amdgpu_bl1 and nvidia_0, and Mutter associated amdgpu_bl1 with eDP-1. Direct
+50% and 25% tests changed requested and actual sysfs readings, but the user
+confirmed **no visible dimming** and reported that the brightness keys had
+worked before this test. The EDP1/BRTN/_Q17/_Q18 ACPI errors continued. This
+test FAILED; its boot specialisation was removed at the user's request.
+Return to the ordinary firmware-selected backlight policy with a coordinated
+reboot. Do not treat changing readback as a brightness fix, reload amdgpu, or
+detach a display device in the live session. No further backlight experiment
+is authorized by the rollback request.
+
+The user approved the rollback reboot. The current command line no longer
+contains acpi_backlight=native, and only nvidia_wmi_ec_backlight is registered
+again. Both AMD desktop GLX and NVIDIA offload GLX work after the rollback;
+asusd is active and image_size remains 0. The user confirmed both screen-brightness keys and keyboard-lighting controls
+work again. Do not promote the failed native interface or infer functional
+brightness from sysfs readings alone.
 
 asusd controls Performance on AC / Quiet on battery by default. Quiet, Balanced
 and Performance are available. Charge limit currently 100%; supported range is
@@ -194,9 +204,21 @@ baseline before another hibernation attempt; no live module unload was attempted
 Set /sys/power/image_size to 0 at runtime and added the same setting via
 systemd-tmpfiles. The kernel documents this as requesting the minimum possible
 snapshot, which may reclaim/swap more memory. This is a **candidate fix pending
-retest**, not proof of hibernation support. zram was not disabled or resized;
+retest at that point**, not proof of hibernation support. zram was not disabled or resized;
 its compressed pages and driver allocations are relevant to snapshot pressure.
 Reference: <https://www.kernel.org/doc/html/latest/admin-guide/pm/sleep-states.html>.
+
+A separate, explicitly approved retry at 13:22 succeeded with image_size=0
+after the clean reboot. systemd-hibernate returned successfully at 13:24. The
+original boot ID, GNOME session, test-process PID/start ticks and random token
+held in its memory survived, and the marker continued updating. The user
+reported that hibernation worked. NVIDIA GLX rendered afterward, keyboard
+lighting stayed Low, and both NVIDIA functions later runtime-suspended.
+Snapshot copying needed 1,230,939 pages versus 2,767,131 available, compared
+with the first attempt's shortage. This verifies one real restore in the test
+boot, under a lighter workload; it does not prove heavy-memory reliability or
+that image_size alone explains the difference. Retest ordinary-boot hibernation
+later with separate timing approval. ACPI brightness errors remain unresolved.
 
 Only s2idle is advertised; do not force unsupported S3/deep sleep.
 Before either test, save work and confirm timing. Test separately:
@@ -228,6 +250,7 @@ with a D-Bus reload and no display-manager restart. Applied the validated normal
 configuration without logout or reboot. asusd is active, its directory setting
 is present, the new shortcut coexists with Control-comma, and the built initrd
 was inspected: crypttab names the verified LUKS UUID and vconsole says KEYMAP=it.
-The running kernel remains 6.18.35; the native-backlight boot was not selected.
-The later image-size adjustment was built and evaluated separately for the
-next coordinated boot/retest.
+The running kernel remains 6.18.35. The user approved a one-shot native-backlight
+boot and a separate hibernation retry; their actual results are recorded above.
+The final configuration removes the failed native-backlight specialisation and
+keeps the minimum-image-size policy that was active during the successful retry.

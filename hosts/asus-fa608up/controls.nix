@@ -46,12 +46,7 @@ in {
     };
   };
 
-  # Test only, selected explicitly in the boot menu. Firmware advertises an
-  # EC backlight which accepts writes but reads back 200/200 on BIOS 321.
-  # Try the AMD native interface without unloading the active display driver.
-  # This does not suppress ACPI errors or alter the ordinary boot's policy.
-  specialisation.native-backlight.configuration = {
-    system.nixos.tags = [ "native-backlight-test" ];
-    boot.kernelParams = [ "acpi_backlight=native" ];
-  };
+  # Keep the firmware-selected backlight policy. The native-backlight test
+  # changed sysfs readings but not visible brightness, and the user reported
+  # that its keys regressed. Do not reintroduce acpi_backlight=native here.
 }
