@@ -82,8 +82,15 @@ writes or unverified Dynamic Boost configuration are applied.
   `linux-enable-ir-emitter`, then set `hardware.asus-fa608up.irCamera` in
   `machine.nix` to a stable `/dev/v4l/by-id/...` path if available. Rebuild, enroll
   with `sudo howdy add`, and retain password access. No `/dev/video2` is assumed.
-- TPM unlocking and hibernation are not inferred. Add verified LUKS enrollment
-  options/resume devices after inspecting the generated disk configuration.
+- Hibernation is configured by the imported `hibernate.nix` for the encrypted
+  LVM layout: volume group `nixos`, logical volumes `root` and `swap`. Create
+  swap at least as large as RAM (20 GiB for this 16 GiB machine). Resume uses
+  `/dev/mapper/nixos-swap`; NVIDIA video-memory backups use `/var/tmp` on the
+  encrypted root. No separate swap encryption or swapfile offset is needed.
+  After installation, save work and test `systemctl hibernate`, then power on
+  and unlock the disk. Hardware resume still needs validation.
+- TPM unlocking requires separate enrollment after inspecting the generated
+  LUKS disk configuration.
 - The old shared NTFS UUID and USB network NAT setup are disabled for this host.
   Add this laptop's actual data disks/network-sharing interfaces separately.
 

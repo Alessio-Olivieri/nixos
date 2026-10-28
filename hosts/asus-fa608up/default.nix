@@ -13,6 +13,7 @@ in {
     ./hardware-configuration.nix
     ./machine.nix
     ./graphics.nix
+    ./hibernate.nix
     ../../modules/precision-gpu-indicator/module.nix
     "${inputs.nixos-hardware}/common/cpu/amd"
     "${inputs.nixos-hardware}/common/gpu/amd"
