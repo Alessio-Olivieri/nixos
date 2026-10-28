@@ -3,6 +3,10 @@
 Flake target: `asus-fa608up`. Italian keyboard in the console, GDM and GNOME.
 The target uses the repository's existing locked inputs; other host targets remain intact.
 
+For this installed laptop, **do not rerun preparation**. See
+[installed-system.md](installed-system.md) for verified controls, results and
+remaining tests, and [windows.md](windows.md) for the Windows installation plan.
+
 ## Prepare on the ASUS
 
 Keep the firmware/MUX in **Hybrid/Standard** mode so both GPUs are visible.

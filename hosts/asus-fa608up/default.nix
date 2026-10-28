@@ -14,6 +14,8 @@ in {
     ./machine.nix
     ./graphics.nix
     ./hibernate.nix
+    ./controls.nix
+    ./windows.nix
     ../../modules/precision-gpu-indicator/module.nix
     "${inputs.nixos-hardware}/common/cpu/amd"
     "${inputs.nixos-hardware}/common/gpu/amd"
