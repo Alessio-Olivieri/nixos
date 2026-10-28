@@ -140,6 +140,11 @@ in
 {
   options = {
     gnome-manager.enable = lib.mkEnableOption "Enables gnome Nix settings";
+    gnome-manager.batteryHealthCharging = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable the battery charge extension when no vendor daemon owns charge limits.";
+    };
   };
 
   config = lib.mkIf config.gnome-manager.enable {
@@ -172,10 +177,9 @@ in
       gnomeExtensions.gsconnect
       gnomeExtensions.blur-my-shell
       gnomeExtensions.caffeine
-      batteryHealthChargingPatched
-    ];
+    ] ++ lib.optional config.gnome-manager.batteryHealthCharging batteryHealthChargingPatched;
 
-    xdg.dataFile."gnome-shell/extensions/${batteryHealthChargingPatched.extensionUuid}" = {
+    xdg.dataFile."gnome-shell/extensions/${batteryHealthChargingPatched.extensionUuid}" = lib.mkIf config.gnome-manager.batteryHealthCharging {
       source = "${batteryHealthChargingPatched}/share/gnome-shell/extensions/${batteryHealthChargingPatched.extensionUuid}";
       force = true;
     };
@@ -203,9 +207,8 @@ in
               pkgs.gnomeExtensions.appindicator.extensionUuid 
               pkgs.gnomeExtensions.gsconnect.extensionUuid
               pkgs.gnomeExtensions.blur-my-shell.extensionUuid
-              batteryHealthChargingPatched.extensionUuid
               pkgs.gnomeExtensions.caffeine.extensionUuid
-          ];
+          ] ++ lib.optional config.gnome-manager.batteryHealthCharging batteryHealthChargingPatched.extensionUuid;
         };
 
             # Stop GNOME from indexing files and draining battery when unplugged

@@ -1,10 +1,15 @@
 { config, lib, pkgs, ... }:
 let
   cfg = config.services.gpu-indicator;
-  indicator = pkgs.callPackage ./package.nix { };
+  indicator = pkgs.callPackage ./package.nix { inherit (cfg) integratedGpuName; };
 in {
   options.services.gpu-indicator = {
-    enable = lib.mkEnableOption "the Intel/NVIDIA GNOME indicator and read-only process collector";
+    enable = lib.mkEnableOption "the hybrid-GPU GNOME indicator and read-only process collector";
+    integratedGpuName = lib.mkOption {
+      type = lib.types.enum [ "Intel" "AMD" ];
+      default = "Intel";
+      description = "Integrated GPU label; the collector's legacy state protocol is unchanged.";
+    };
     device = lib.mkOption {
       type = lib.types.strMatching "[0-9a-fA-F]{4}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}\\.[0-7]";
       default = "0000:01:00.0";
