@@ -1,4 +1,4 @@
-{ lib, stdenvNoCC, python3 }:
+{ lib, stdenvNoCC, python3, integratedGpuName ? "Intel" }:
 stdenvNoCC.mkDerivation {
   pname = "precision-gpu-indicator";
   version = "0.1.0";
@@ -11,6 +11,11 @@ stdenvNoCC.mkDerivation {
       && !(lib.hasSuffix ".pyc" path);
   };
   dontBuild = true;
+  postPatch = ''
+    substituteInPlace extension/extension.js \
+      --replace-fail "label = 'Intel';" "label = '${integratedGpuName}';" \
+      --replace-fail 'Intel desktop · NVIDIA suspended' '${integratedGpuName} desktop · NVIDIA suspended'
+  '';
   doCheck = true;
   nativeCheckInputs = [ python3 ];
   checkPhase = ''

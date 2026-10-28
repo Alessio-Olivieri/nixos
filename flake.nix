@@ -49,6 +49,11 @@
     in
     {
       checks.${system} = {
+        asus-fa608up = import ./hosts/asus-fa608up/check.nix {
+          configuration = self.nixosConfigurations.asus-fa608up;
+          inherit pkgs;
+          lib = nixpkgs.lib;
+        };
         precision-mutter-lifecycle = self.packages.${system}.precision-mutter-lifecycle-vm-test;
         precision-gpu-indicator = pkgs.callPackage ./modules/precision-gpu-indicator/package.nix {};
         precision-windows-safety = let
@@ -110,6 +115,24 @@
       };
 
       nixosConfigurations = {
+        asus-fa608up = nixpkgs.lib.nixosSystem {
+          inherit specialArgs;
+          modules = [
+            ./hosts/asus-fa608up
+            home-manager.nixosModules.home-manager
+            {
+              nixpkgs.overlays = [ nix-vscode-extensions.overlays.default ];
+              home-manager = {
+                backupFileExtension = "hm-bak";
+                extraSpecialArgs = specialArgs;
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.lexyo.imports = [ ./home/home.nix ];
+              };
+            }
+          ];
+        };
+
         nixos = nixpkgs.lib.nixosSystem {
           inherit specialArgs;
 

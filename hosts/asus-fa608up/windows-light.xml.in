@@ -1,0 +1,113 @@
+<!-- REVIEW TEMPLATE ONLY: substitute absolute paths before defining. No GPU passthrough. -->
+<domain xmlns:ns0="http://libosinfo.org/xmlns/libvirt/domain/1.0" type="kvm">
+  <name>asus-windows</name>
+  <metadata>
+    <ns0:libosinfo>
+      <ns0:os id="http://microsoft.com/win/11" />
+    </ns0:libosinfo>
+  </metadata>
+  <memory>8388608</memory>
+  <currentMemory>8388608</currentMemory>
+  <vcpu>4</vcpu>
+  <os firmware="efi">
+    <type arch="x86_64" machine="q35">hvm</type>
+    <firmware>
+      <feature enabled="yes" name="secure-boot" />
+      <feature enabled="yes" name="enrolled-keys" />
+    </firmware>
+    <boot dev="cdrom" />
+    <boot dev="hd" />
+  </os>
+  <features>
+    <acpi />
+    <apic />
+    <hyperv>
+      <relaxed state="on" />
+      <vapic state="on" />
+      <spinlocks state="on" retries="8191" />
+      <vpindex state="on" />
+      <runtime state="on" />
+      <synic state="on" />
+      <stimer state="on" />
+      <frequencies state="on" />
+      <tlbflush state="on" />
+      <ipi state="on" />
+      <avic state="on" />
+    </hyperv>
+    <vmport state="off" />
+  </features>
+  <cpu mode="host-passthrough" />
+  <clock offset="localtime">
+    <timer name="rtc" tickpolicy="catchup" />
+    <timer name="pit" tickpolicy="delay" />
+    <timer name="hpet" present="no" />
+    <timer name="hypervclock" present="yes" />
+  </clock>
+  <pm>
+    <suspend-to-mem enabled="no" />
+    <suspend-to-disk enabled="no" />
+  </pm>
+  <devices>
+    <emulator>/run/libvirt/nix-emulators/qemu-system-x86_64</emulator>
+    <disk type="file" device="disk">
+      <driver name="qemu" type="raw" />
+      <source file="@DISK@" />
+      <target dev="vda" bus="virtio" />
+    </disk>
+    <disk type="file" device="cdrom">
+      <driver name="qemu" type="raw" />
+      <source file="@WINDOWS_ISO@" />
+      <target dev="sda" bus="sata" />
+      <readonly />
+    </disk>
+    <disk type="file" device="cdrom">
+      <driver name="qemu" type="raw" />
+      <source file="@VIRTIO_ISO@" />
+      <target dev="sdb" bus="sata" />
+      <readonly />
+    </disk>
+    <controller type="usb" model="qemu-xhci" ports="15" />
+    <controller type="pci" model="pcie-root" />
+    <controller type="pci" model="pcie-root-port" />
+    <controller type="pci" model="pcie-root-port" />
+    <controller type="pci" model="pcie-root-port" />
+    <controller type="pci" model="pcie-root-port" />
+    <controller type="pci" model="pcie-root-port" />
+    <controller type="pci" model="pcie-root-port" />
+    <controller type="pci" model="pcie-root-port" />
+    <controller type="pci" model="pcie-root-port" />
+    <controller type="pci" model="pcie-root-port" />
+    <controller type="pci" model="pcie-root-port" />
+    <controller type="pci" model="pcie-root-port" />
+    <controller type="pci" model="pcie-root-port" />
+    <controller type="pci" model="pcie-root-port" />
+    <controller type="pci" model="pcie-root-port" />
+    <interface type="network">
+      <source network="default" />
+      <model type="virtio" />
+    </interface>
+    <console type="pty" />
+    <channel type="spicevmc">
+      <target type="virtio" name="com.redhat.spice.0" />
+    </channel>
+    <channel type="unix">
+      <source mode="bind" />
+      <target type="virtio" name="org.qemu.guest_agent.0" />
+    </channel>
+    <input type="tablet" bus="usb" />
+    <tpm model="tpm-crb">
+      <backend type="emulator" version="2.0" />
+    </tpm>
+    <graphics type="spice">
+      <image compression="off" />
+      <listen type="none" />
+    </graphics>
+    <sound model="ich9" />
+    <video>
+      <model type="virtio" />
+    </video>
+    <redirdev bus="usb" type="spicevmc" />
+    <redirdev bus="usb" type="spicevmc" />
+  </devices>
+  <on_reboot>restart</on_reboot>
+</domain>
