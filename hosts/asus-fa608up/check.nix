@@ -19,6 +19,11 @@ let
     }) ];
   };
   c = fixture.config;
+  h = (fixture.extendModules {
+    modules = [ {
+      hardware.asus-fa608up.irCamera = lib.mkOverride 40 "/dev/v4l/by-path/test-asus-ir";
+    } ];
+  }).config;
   source = lib.cleanSourceWith {
     src = ./.;
     filter = path: type: type == "directory"
@@ -35,6 +40,13 @@ assert c.systemd.services.asus-keyboard-native.before == [ "asusd.service" ];
 assert c.home-manager.users.lexyo.systemd.user.services.rog-control-center.Service.BusName == "xyz.ljones.rogcc";
 assert c.home-manager.users.lexyo.dconf.settings."org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/asus-aura".binding == "XF86Launch4";
 assert c.home-manager.users.lexyo.dconf.settings."org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/asus-armoury".binding == "XF86Launch3";
+assert h.services.howdy.enable;
+assert h.services.howdy.settings.video.device_path == "/dev/v4l/by-path/test-asus-ir";
+assert !h.security.pam.howdy.enable && !h.security.pam.services.su.howdy.enable;
+assert h.security.pam.services.login.howdy.control == "sufficient";
+assert h.security.pam.services.sudo.howdy.control == "sufficient";
+assert h.security.pam.services.login.rules.auth.howdy.order < h.security.pam.services.login.rules.auth.unix-early.order;
+assert h.security.pam.services.sudo.rules.auth.howdy.order < h.security.pam.services.sudo.rules.auth.unix.order;
 builtins.deepSeq c.system.build.toplevel.drvPath (pkgs.runCommand "asus-fa608up-profile-check" { } ''
   ${pkgs.python3}/bin/python3 -B -m unittest discover -s ${source} -p 'test_*.py' -v
   touch $out

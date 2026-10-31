@@ -15,6 +15,7 @@ in {
     ./graphics.nix
     ./hibernate.nix
     ./controls.nix
+    ./face-enrollment.nix
     ./windows.nix
     ../../modules/precision-gpu-indicator/module.nix
     "${inputs.nixos-hardware}/common/cpu/amd"
@@ -173,15 +174,37 @@ in {
     # The IR node is machine-specific; never assume Precision's /dev/video2.
     services.howdy = lib.mkIf (cfg.irCamera != null) {
       enable = true;
+      control = "sufficient";
       settings = {
-        core.workaround = "off";
-        video = { device_path = cfg.irCamera; timeout = 2; };
+        core = {
+          workaround = "off";
+          no_confirmation = false;
+          abort_if_ssh = true;
+          abort_if_lid_closed = true;
+        };
+        video = {
+          device_path = cfg.irCamera;
+          timeout = 2;
+          frame_width = 360;
+          frame_height = 360;
+          device_fps = 15;
+        };
       };
     };
+    # Do not inherit the module's global PAM default. GDM password/unlock
+    # already includes login, so these two stacks cover the requested uses.
+    security.pam.howdy.enable = lib.mkIf (cfg.irCamera != null) false;
+    systemd.tmpfiles.rules = lib.mkIf (cfg.irCamera != null) [
+      "d /var/lib/howdy 0700 root root -"
+      "d /var/lib/howdy/models 0700 root root -"
+    ];
     security.pam.services = lib.mkIf (cfg.irCamera != null)
-      (lib.genAttrs [ "sudo" "login" "gdm" ] (name: {
+      (lib.genAttrs [ "sudo" "login" ] (name: {
         howdy = { enable = true; control = "sufficient"; };
-        rules.auth.howdy.order = config.security.pam.services.${name}.rules.auth.unix.order - 10;
+        rules.auth.howdy.order =
+          let rules = config.security.pam.services.${name}.rules.auth;
+          in (if rules ? unix-early && rules.unix-early.enable
+              then rules.unix-early.order else rules.unix.order) - 10;
       }));
   };
 }

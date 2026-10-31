@@ -159,6 +159,47 @@ specific fan/profile. The firmware curves still follow Fn+F5's active platform
 profile. In ROGCC, choose the corresponding Fans tab to edit that custom curve;
 Enabled/Apply controls the override, not whether the fan runs.
 
+## Howdy on the ASUS
+
+Verified the built-in Shinetech 3277:0096 IR capture interface: GREY 360x360,
+15 FPS, USB interface 1.2. RGB and IR share an ambiguous by-id link, so machine.nix
+uses `/dev/v4l/by-path/pci-0000:65:00.4-usb-0:1:1.2-video-index0` instead.
+The IR stream worked and the user confirmed flashing IR illumination. The emitter
+utility confirmed it was already working, so no emitter workaround/service was
+added. A temporary raw stream used for brightness statistics was deleted.
+
+Howdy 3.0.0 is pinned by nixpkgs and includes the native `howdy-gtk` UI. Configure
+face authentication as sufficient before the first Unix password prompt for
+sudo and login, including login's early keyring-related password rule. GDM's
+password/unlock stack includes login. The global PAM Howdy default is disabled,
+so unrelated services do not gain a required face-authentication rule. Password
+fallback remains present. Workaround is off, SSH abort and closed-lid abort are
+on, and the default matching certainty is unchanged. Private model directories
+use root ownership and mode 0700. Precision's module is unchanged.
+
+The initial batch captured 38 models. Capture was stopped, and all models were
+subsequently cleared with `howdy -U lexyo -y clear` at the user's request.
+They are not backed up or committed. Face recognition requires fresh enrollment;
+no unattended batch is left running. The camera and initial enrollment worked,
+and rendered PAM ordering/fallback was checked; post-reset authentication and
+GNOME unlock still require validation after new enrollment.
+
+Use **ASUS Face Enrollment** in the app launcher, or `asus-howdy-enroll`, for the
+visible 50-sample workflow. It asks for administrator access once, opens a live
+IR preview in a paused state, and resumes an existing `asus-angle-*` sample set.
+Press **S** to start/resume, **Space** to stop scheduling new scans, **A** to add
+ten to the target, and **Q** or Escape to close the camera. A scan already in
+progress may complete when pausing. Closing terminates the entire capture
+process group and preserves completed models. Each sample uses Howdy's standard
+add command; the preview explicitly pauses while that command owns the camera.
+The window displays saved/target counts and capture status. It does not save
+preview frames. To choose a different target, use `asus-howdy-enroll --target N`.
+
+Use **Howdy Face Authentication** or `asus-howdy` for the stock beta GUI's Models
+and Video tabs, with one administrator prompt per app launch. Add user `lexyo`
+in that UI after a full reset. Close another camera app before opening a preview.
+The guided workflow is optional; the native UI remains available.
+
 ## Graphics and CUDA
 
 | Probe | Observed result |

@@ -130,3 +130,13 @@ nix eval .#nixosConfigurations.asus-fa608up.config.system.build.toplevel.drvPath
 Reference: [ASUS specifications](https://www.asus.com/it/laptops/for-gaming/tuf-gaming/asus-tuf-gaming-a16-2025/techspec/),
 [NVIDIA open kernel modules](https://download.nvidia.com/XFree86/Linux-x86_64/570.144/README/kernel_open.html),
 [asusctl manual](https://github.com/OpenGamingCollective/asusctl/blob/main/MANUAL.md).
+
+## Face authentication on this installed ASUS
+
+The IR camera is now verified and configured; see the Howdy section in
+[installed-system.md](installed-system.md). Open **ASUS Face Enrollment** or run
+`asus-howdy-enroll` for a paused live preview and a 50-sample target. Press S to
+begin, Space to pause, and Q to close. Administrator authentication is requested
+once for the whole session. The stock GUI is available as **Howdy Face
+Authentication** or `asus-howdy`. Previously captured models were cleared at the
+user's request; enroll again before expecting face authentication to succeed.

@@ -4,6 +4,7 @@
     configured = true;
     amdPciAddress = "0000:65:00.0";
     nvidiaPciAddress = "0000:01:00.0";
-    # irCamera = "/dev/v4l/by-id/REPLACE-WITH-VERIFIED-IR-DEVICE";
+    # Verified GREY 360x360 IR capture interface, distinct from the RGB stream.
+    irCamera = "/dev/v4l/by-path/pci-0000:65:00.4-usb-0:1:1.2-video-index0";
   };
 }
