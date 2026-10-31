@@ -53,7 +53,10 @@ let
     '';
   };
 in {
-  environment.sessionVariables = amd;
+  # Mutter needs both EGL vendors for the NVIDIA-wired HDMI output. Restricting
+  # the entire session to Mesa prevents accelerated cross-GPU display sharing.
+  # Explicit amd-only launchers can still restrict an individual application.
+  environment.sessionVariables = builtins.removeAttrs amd [ "__EGL_VENDOR_LIBRARY_FILENAMES" ];
   # The stock offload helper does not clear inherited EGL/Vulkan restrictions.
   # Keep its option enabled for existing Lutris integration, but prefer this one.
   environment.systemPackages = [ amdRun (lib.hiPrio offload) stellaris ];

@@ -217,6 +217,7 @@ in
 
     (pkgsUnstable.callPackage ./packages/geteduroam.nix {})
     prismlauncher
+    cryptomator
     ];
 
 

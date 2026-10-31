@@ -1,3 +1,4 @@
+# Language auto-detection is omitted: scanning ~/nas triggers the work NAS automount offline.
 format = """\
 $container\
 $username\
@@ -5,7 +6,7 @@ $os\
 $git_branch\
 ( at $directory )\
 $cmd_duration\
-( via $python$conda$nodejs$c$rust$java )
+
 """
 
 add_newline = false

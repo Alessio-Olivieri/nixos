@@ -208,6 +208,7 @@ services.pipewire = {
   pkgs.android-tools
   pkgs.direnv
   pkgs.nodejs
+  pkgs.cifs-utils
 
   config.boot.kernelPackages.turbostat
 

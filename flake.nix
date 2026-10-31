@@ -6,6 +6,11 @@
 
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    mdatp = {
+      url = "github:epetousis/nix-mdatp";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -119,6 +124,8 @@
           inherit specialArgs;
           modules = [
             ./hosts/asus-fa608up
+            inputs.mdatp.nixosModules.mdatp
+            { services.mdatp.enable = true; }
             home-manager.nixosModules.home-manager
             {
               nixpkgs.overlays = [ nix-vscode-extensions.overlays.default ];

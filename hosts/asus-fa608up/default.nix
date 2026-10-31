@@ -74,6 +74,25 @@ in {
 
     # Do not inherit another laptop's Windows partition or USB network topology.
     fileSystems."/mnt/shared".enable = false;
+
+    # Enable NAS automount at boot; connect when the directory is accessed.
+    fileSystems."/home/lexyo/nas" = {
+      device = "//192.168.2.137/Shared";
+      fsType = "cifs";
+      options = [
+        "credentials=/etc/nas-credentials"
+        "uid=1000"
+        "gid=100"
+        "iocharset=utf8"
+        "file_mode=0770"
+        "dir_mode=0770"
+        "nofail"
+        "_netdev"
+        "x-systemd.automount"
+        "x-systemd.mount-timeout=15s"
+        "vers=3.0"
+      ];
+    };
     networking.nat.enable = lib.mkForce false;
 
     nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

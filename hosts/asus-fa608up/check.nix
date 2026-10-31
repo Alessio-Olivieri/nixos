@@ -22,7 +22,7 @@ let
   source = lib.cleanSourceWith {
     src = ./.;
     filter = path: type: type == "directory"
-      || builtins.elem (baseNameOf path) [ "prepare.py" "test_prepare.py" ];
+      || builtins.elem (baseNameOf path) [ "prepare.py" "test_prepare.py" "keyboard-native.py" "test_keyboard_native.py" ];
   };
 in
 assert c.hardware.nvidia.open;
@@ -31,6 +31,10 @@ assert c.services.xserver.xkb.layout == "it" && c.console.keyMap == "it";
 assert c.services.gpu-indicator.integratedGpuName == "AMD";
 assert c.services.asusd.enable && !c.services.tlp.enable && !c.services.power-profiles-daemon.enable;
 assert !c.networking.nat.enable;
+assert c.systemd.services.asus-keyboard-native.before == [ "asusd.service" ];
+assert c.home-manager.users.lexyo.systemd.user.services.rog-control-center.Service.BusName == "xyz.ljones.rogcc";
+assert c.home-manager.users.lexyo.dconf.settings."org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/asus-aura".binding == "XF86Launch4";
+assert c.home-manager.users.lexyo.dconf.settings."org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/asus-armoury".binding == "XF86Launch3";
 builtins.deepSeq c.system.build.toplevel.drvPath (pkgs.runCommand "asus-fa608up-profile-check" { } ''
   ${pkgs.python3}/bin/python3 -B -m unittest discover -s ${source} -p 'test_*.py' -v
   touch $out

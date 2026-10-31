@@ -1,6 +1,6 @@
 # Installed ASUS: controls and validation
 
-Inspected 2026-10-28. NixOS 26.05, kernel 6.18.35, open NVIDIA driver
+Initial inspection 2026-10-28; follow-up 2026-10-31. NixOS 26.05, kernel 6.18.35, open NVIDIA driver
 595.71.05, AMD Mesa 26.1.2, asusctl/asusd 6.3.7. Inputs remain pinned.
 The generated hardware-configuration.nix and machine.nix were preserved byte for
 byte, including the original local edits, and included as-is in the installed
@@ -14,7 +14,7 @@ controls.nix now uses systemd ConfigurationDirectory to create it before the
 service sandbox is established. Configuration remains writable and is saved by
 asusd; rebuilding does not replace colour choices with a read-only config.
 
-The actual hardware exposes ASUS TUF sysfs RGB controls and one keyboard zone.
+The legacy WMI interface exposes ASUS TUF sysfs RGB controls and one keyboard zone.
 The daemon reports Static as its supported basic mode, no basic subzones, and
 off/low/medium/high brightness. Its support database has no FA608UP-specific
 entry, so it uses a conservative TUF fallback. This is a **single-zone RGB**
@@ -43,15 +43,74 @@ verified (Low, Static, 6699cc and disabled boot/sleep effects). Actual reboot
 and suspend behaviour, including any firmware-controlled early flash, must be
 checked separately. Do not infer these from successful writes alone.
 
-GNOME already binds XF86KbdBrightnessUp/Down and XF86KbdLightOnOff. Keep these
-bindings. The kernel maps Aura scancode 0xb3 to KEY_PROG4 / XF86Launch4; added a
-host-only binding opening ROG Control Center, retaining Control-comma and all
-other shortcuts. The user confirmed the keyboard setting; the exact physical
-Aura event/binding still needs an interactive check after activation.
+The original Aura binding opened ROG Control Center. The 2026-10-31 follow-up
+replaces it with keyboard colour cycling (blue, amber, purple, green) through
+asusd. Only Static is exposed by this model's pinned support database, so no
+unverified animation modes are advertised. Aura also enables awake lighting and
+restores Low when brightness is Off. Armoury (KEY_PROG3 / XF86Launch3) now opens
+ROG Control Center using `rog-open`; Aura remains KEY_PROG4 / XF86Launch4.
+Control-comma and the other shared shortcuts are preserved.
+
+The kernel handles the Fan scancode 0xae directly by cycling platform profiles;
+it consumes the event before desktop key mapping. No additional desktop Fan
+binding is installed. Quiet/Balanced/Performance changes the firmware's power
+and fan policy; it does not force a fixed RPM. Live asusd logs showed those
+profile changes during the user's key checks. Keyboard brightness scancodes
+0xc4/0xc5/0xc7 are also consumed directly by the kernel.
+
+ROG Control Center now has an ASUS-only systemd user service, enabled with the
+graphical session and restarted on failure. Its writable config preserves GUI
+preferences while enforcing background startup, background-on-close, and tray
+support. The Armoury launcher first starts the service and waits for its D-Bus
+name, then requests the window. This avoids a hidden first launch when startup
+in background is enabled. During activation, the previous standalone instance
+was closed and replaced by the managed instance.
 
 ROG Control Center now starts. Optional supergfxd/asus-armoury pages report
 missing interfaces. No MUX switching service was added: ordinary AMD desktop
 plus NVIDIA offload remains the working graphics policy.
+
+## 2026-10-31: actual keyboard lighting fix
+
+The user reported that the LEDs became dark while sysfs/asusctl still reported
+Medium brightness. Off/Medium, awake power settings, colours, a daemon restart,
+and immediate WMI RGB apply commands all returned success without visible light.
+These writes alone do **not** prove that the physical keyboard is being driven.
+
+The actual controller is `ITE51368:00 0B05:19B6` on **I2C-HID** (bus `0018`),
+using hid-generic. It is absent from lsusb, but appears under hidraw; its report
+descriptor includes HID Lighting/LampArray Usage Page 0x59. Pinned asusd 6.3.7
+only discovers USB Aura controllers, then falls back to WMI. This matches the
+upstream report: <https://github.com/OpenGamingCollective/asusctl/issues/148>
+and native-mode workaround in
+<https://gitlab.com/asus-linux/asusctl/-/issues/682>.
+
+Sent HID feature report `46 01` (LampArrayControl, AutonomousMode=true) to the
+verified I2C device, then selected blue/Medium through asusctl. The user confirmed
+that the lights turned on, and then confirmed Fn+F2/F3 and Aura worked. No EC
+reset, reboot, driver rebinding, firmware update or experimental kernel was needed.
+
+`keyboard-native.py` now discovers the controller dynamically, checks its exact
+I2C vendor/product identity and LampArray descriptor, and restores native mode.
+The host-only oneshot runs before asusd, when that HID controller appears, and
+via the existing NixOS resume hook. It exposes no raw-HID access to regular
+users and leaves other HID devices untouched. Tests cover changing hidraw
+numbers, excluding USB devices and the touchpad, and absent controllers.
+Cold-boot and suspend/hibernate persistence still require a later physical test;
+the live recovery and post-activation service are the verified results here.
+
+The packaged `asus-shutdown` helper ignores SIGTERM on ordinary daemon restarts
+and was observed timing out with a surviving process. Its manual dry-run reported
+no queued writes, and this kernel exposes no asus-armoury firmware-attribute
+backend. The helper is disabled only on this fixed-hybrid ASUS profile; asusd,
+ROGCC, fans, charge limits and lighting remain enabled. Revisit this choice if
+asus-armoury/deferred GPU firmware control is deliberately enabled in the future.
+The idle leftover process was cleared after verifying no shutdown was underway.
+
+The existing HDMI EGL-vendor correction, Defender input/ASUS enablement,
+Cryptomator, NAS automount/CIFS tools and Starship NAS-scanning fix were preserved.
+Shared desktop packages remain shared; machine-specific mounts, controllers,
+keyboard layouts and GPU settings remain selected by the flake host target.
 
 ## Graphics and CUDA
 
