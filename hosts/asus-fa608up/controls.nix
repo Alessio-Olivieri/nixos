@@ -107,6 +107,7 @@ in {
   # The kernel consumes Fan (0xae) and cycles platform profiles itself.
   # Brightness (0xc4/0xc5/0xc7) is also handled there. Do not double-bind.
   home-manager.users.lexyo = { lib, ... }: {
+    xdg.dataFile."gnome-shell/extensions/asus-profile-osd@alessio.local".source = ./profile-osd;
     systemd.user.services.rog-control-center = {
       Unit = {
         Description = "ROG Control Center background interface";
@@ -123,6 +124,7 @@ in {
       Install.WantedBy = [ "graphical-session.target" ];
     };
     dconf.settings = {
+      "org/gnome/shell".enabled-extensions = lib.mkAfter [ "asus-profile-osd@alessio.local" ];
       "org/gnome/shell/keybindings".show-screenshot-ui =
         [ "Print" "XF86SelectiveScreenshot" "<Shift><Super>s" ];
       "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings =

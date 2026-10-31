@@ -136,6 +136,29 @@ This verifies actual fan response to curve commands, not maximum-load thermal
 stability. At inspection only the Performance CPU custom curve was enabled;
 all other CPU/GPU custom curves were disabled and used firmware control.
 
+## Native profile popup
+
+The ASUS-only `asus-profile-osd@alessio.local` GNOME 50 extension subscribes to
+asusd's actual PlatformProfile PropertiesChanged signal. It displays Quiet,
+Balanced, Performance, Low Power or Custom using GNOME's native OSD manager,
+matching the volume/brightness popup. It shows no percentage bar, suppresses
+duplicate signals, does not show a popup just for logging in, and releases its
+D-Bus subscription when disabled. It does not change fan curves or profiles.
+
+The extension code passed live GJS/D-Bus integration validation using a mocked
+OSD display: two real distinct profile changes produced exactly two display
+calls despite duplicate daemon signals. The initial profile was restored.
+The installed GNOME 50 `osdWindow.js` was inspected to verify its `showAll` API.
+A physical visual check remains pending until the next login: GNOME 50 cannot
+load a newly installed extension through its deprecated ReloadExtension API.
+After logging out/in, press Fn+F5 to check the popup. Fn+F6's screenshot selector
+was separately confirmed working by the user.
+
+For ordinary use, leave custom curves disabled unless deliberately tuning a
+specific fan/profile. The firmware curves still follow Fn+F5's active platform
+profile. In ROGCC, choose the corresponding Fans tab to edit that custom curve;
+Enabled/Apply controls the override, not whether the fan runs.
+
 ## Graphics and CUDA
 
 | Probe | Observed result |

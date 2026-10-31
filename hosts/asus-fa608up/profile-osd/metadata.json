@@ -1,0 +1,7 @@
+{
+  "uuid": "asus-profile-osd@alessio.local",
+  "name": "ASUS Profile Popup",
+  "description": "Show the native GNOME OSD when the ASUS firmware power and fan profile changes.",
+  "shell-version": ["50"],
+  "version": 1
+}
