@@ -112,6 +112,30 @@ Cryptomator, NAS automount/CIFS tools and Starship NAS-scanning fix were preserv
 Shared desktop packages remain shared; machine-specific mounts, controllers,
 keyboard layouts and GPU settings remain selected by the flake host target.
 
+## Fn+F6 and physical fan-curve verification
+
+The screenshot key uses ASUS WMI scancode 0x2a, mapped by Linux to
+KEY_SELECTIVE_SCREENSHOT / XF86SelectiveScreenshot. GNOME only had Print bound
+to its screenshot selector. The ASUS host now binds that native selector to
+Print, XF86SelectiveScreenshot and Super+Shift+S; Precision is unchanged.
+
+The Fan key was verified to change the real platform profile from Performance
+to Quiet, with corresponding asusd curve writes. ROGCC's Fans tabs are curve
+editors, not an active-profile indicator. Their Enabled checkbox controls a
+custom override for the selected fan and profile. Disabled means firmware
+control, not a stopped or disabled fan. AC/battery profile settings are defaults;
+the current profile can be checked with `asusctl profile get`.
+
+Both physical fans responded to a bounded cooling-only curve test: temporarily
+raise the Performance curve's low-temperature PWM floor to 120/255 without
+reducing any original points, sample for eight seconds, then restore the exact
+original curve, enable flag and previous platform profile in a finally block.
+CPU readings rose from 1,100 to 3,700 RPM; GPU readings rose from 500 to 3,000 RPM.
+D-Bus readback verified exact curve/enable-state restoration after each test.
+This verifies actual fan response to curve commands, not maximum-load thermal
+stability. At inspection only the Performance CPU custom curve was enabled;
+all other CPU/GPU custom curves were disabled and used firmware control.
+
 ## Graphics and CUDA
 
 | Probe | Observed result |

@@ -123,6 +123,8 @@ in {
       Install.WantedBy = [ "graphical-session.target" ];
     };
     dconf.settings = {
+      "org/gnome/shell/keybindings".show-screenshot-ui =
+        [ "Print" "XF86SelectiveScreenshot" "<Shift><Super>s" ];
       "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings =
         lib.mkAfter (map (name: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/${name}/") (builtins.attrNames bindings));
     } // lib.mapAttrs' (name: value: lib.nameValuePair
