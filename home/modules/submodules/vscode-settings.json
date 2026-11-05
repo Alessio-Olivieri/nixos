@@ -1,6 +1,6 @@
 {
     "workbench.preferredDarkColorTheme": "Catppuccin Frappé",
-    "workbench.preferredLightColorTheme": "Dark 2026",
+    "workbench.preferredLightColorTheme": "Light Modern",
     "window.autoDetectColorScheme": true,
     "clangd.path": "/home/lexyo/.config/VSCodium/User/globalStorage/kylinideteam.kylin-clangd/install/21.1.0/clangd_21.1.0/bin/clangd",
     "sshfs.configs": [
