@@ -214,10 +214,13 @@ in
     hotspot #For visualizing perf.data
     chromium
     pkgsUnstable.codex
+    pkgsUnstable.github-copilot-cli
+    pkgsUnstable.opencode-desktop
 
     (pkgsUnstable.callPackage ./packages/geteduroam.nix {})
     prismlauncher
     cryptomator
+    pkgsUnstable.opencode
     ];
 
 
